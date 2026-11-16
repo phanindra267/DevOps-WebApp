@@ -78,5 +78,21 @@ services:
       - ./monitoring/grafana-dashboard.json:/var/lib/grafana/dashboards/cloudops-dashboard.json
     restart: unless-stopped
 
+  jenkins:
+    image: jenkins/jenkins:lts-alpine
+    container_name: cloudops-jenkins
+    user: root
+    environment:
+      JAVA_OPTS: "-Djenkins.install.runSetupWizard=false"
+    ports:
+      - "8085:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - ./ci/init.groovy.d:/usr/share/jenkins/ref/init.groovy.d
+      - ./ci/Jenkinsfile:/var/jenkins_home/Jenkinsfile
+    restart: unless-stopped
+
 volumes:
   pgdata:
+  jenkins_home:

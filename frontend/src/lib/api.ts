@@ -54,7 +54,10 @@ export const getPipelines = (projectId: number) =>
   api.get(`/api/v1/projects/${projectId}/pipelines`)
 export const triggerPipeline = (projectId: number) =>
   api.post(`/api/v1/projects/${projectId}/pipelines`)
-export const getPipeline = (id: number) => api.get(`/api/v1/pipelines/${id}`)
+export const getPipeline = (id: number) =>
+  api.get(`/api/v1/pipelines/${id}`)
+export const getJenkinsStatus = () =>
+  api.get('/api/v1/jenkins/status')
 
 // ── Security ──────────────────────────────────────────────────────────────
 export const triggerScan = (deploymentId: number) =>

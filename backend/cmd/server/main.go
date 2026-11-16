@@ -80,10 +80,11 @@ func main() {
 	api.HandleFunc("/deployments/{id:[0-9]+}/status", deployment.GetDeploymentStatus).Methods(http.MethodGet)
 	api.HandleFunc("/deployments/{id:[0-9]+}/rollback", deployment.RollbackDeployment).Methods(http.MethodPost)
 
-	// Pipelines
+	// Pipelines & Jenkins CI/CD
 	api.HandleFunc("/projects/{projectId:[0-9]+}/pipelines", pipeline.GetPipelines).Methods(http.MethodGet)
 	api.HandleFunc("/projects/{projectId:[0-9]+}/pipelines", pipeline.TriggerPipeline).Methods(http.MethodPost)
 	api.HandleFunc("/pipelines/{id:[0-9]+}", pipeline.GetPipeline).Methods(http.MethodGet)
+	api.HandleFunc("/jenkins/status", pipeline.GetJenkinsStatus).Methods(http.MethodGet)
 
 	// Security
 	api.HandleFunc("/deployments/{deploymentId:[0-9]+}/scan", security.TriggerScan).Methods(http.MethodPost)

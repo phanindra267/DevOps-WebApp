@@ -143,6 +143,16 @@ export default function Layout({ children }: { children: ReactNode }) {
           </div>
           <div className="topbar-right">
             <a
+              href="http://localhost:8085"
+              target="_blank"
+              rel="noreferrer"
+              className="btn btn-sm"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#38bdf8', borderColor: 'rgba(56, 189, 248, 0.3)' }}
+            >
+              <span>Jenkins CI</span>
+              <FiExternalLink size={12} />
+            </a>
+            <a
               href="http://localhost:9090"
               target="_blank"
               rel="noreferrer"
