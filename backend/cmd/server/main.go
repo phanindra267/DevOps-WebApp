@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/mux"
 
 	"cloudops-sentinel/internal/auth"
+	"cloudops-sentinel/internal/cloud"
 	"cloudops-sentinel/internal/cost"
 	"cloudops-sentinel/internal/db"
 	"cloudops-sentinel/internal/deployment"
@@ -27,6 +28,9 @@ func main() {
 	if err := db.Init(); err != nil {
 		log.Fatalf("database init failed: %v", err)
 	}
+
+	// ── AWS Cloud Free-Tier Manager ──────────────────────────────────────────
+	cloud.InitAWS()
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -118,6 +122,11 @@ func main() {
 	api.HandleFunc("/projects/{projectId:[0-9]+}/budget", cost.GetBudget).Methods(http.MethodGet)
 	api.HandleFunc("/projects/{projectId:[0-9]+}/budget", cost.SetBudget).Methods(http.MethodPost)
 	api.HandleFunc("/projects/{projectId:[0-9]+}/simulate-billing", cost.SimulateBillingCycle).Methods(http.MethodPost)
+
+	// AWS Free-Tier & Cloud Integration
+	api.HandleFunc("/aws/status", cloud.GetStatusHandler).Methods(http.MethodGet)
+	api.HandleFunc("/aws/artifacts", cloud.UploadArtifactHandler).Methods(http.MethodPost)
+	api.HandleFunc("/aws/artifacts", cloud.GetArtifactHandler).Methods(http.MethodGet)
 
 	// ── Global middleware ───────────────────────────────────────────────────
 	handler := middleware.CORS(monitor.PrometheusMiddleware(router))

@@ -1,11 +1,14 @@
 package security
 
 import (
+	"context"
 	"encoding/json"
+	"fmt"
 	"math/rand"
 	"net/http"
 	"strconv"
 
+	"cloudops-sentinel/internal/cloud"
 	"cloudops-sentinel/internal/db"
 
 	"github.com/gorilla/mux"
@@ -101,6 +104,14 @@ func TriggerScan(w http.ResponseWriter, r *http.Request) {
 	}
 	summary += strconv.Itoa(critical) + " critical, " + strconv.Itoa(high) + " high, " + strconv.Itoa(medium) + " medium, " + strconv.Itoa(low) + " low."
 	db.DB.Exec("UPDATE security_scans SET summary=$1 WHERE id=$2", summary, scanID)
+
+	// Persist scan report into AWS S3 (or cost-free local fallback) and publish CloudWatch metric
+	if cloud.GlobalAWS != nil {
+		reportPayload := fmt.Sprintf(`{"scan_id":%d,"deployment_id":%d,"critical":%d,"high":%d,"medium":%d,"low":%d,"summary":"%s"}`,
+			scanID, did, critical, high, medium, low, summary)
+		cloud.GlobalAWS.PutArtifact(context.Background(), "cloudops-sentinel-reports", fmt.Sprintf("scans/scan_%d.json", scanID), []byte(reportPayload), "application/json")
+		cloud.GlobalAWS.PutMetric(context.Background(), "CloudOps/Security", "VulnerabilitiesDetected", float64(critical+high), "Count")
+	}
 
 	writeJSON(w, http.StatusCreated, map[string]interface{}{
 		"scan_id":  scanID,

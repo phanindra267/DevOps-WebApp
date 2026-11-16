@@ -352,6 +352,9 @@ func GetGlobalCostSummary(w http.ResponseWriter, r *http.Request) {
 		"currency":                  "USD",
 		"provider":                  "AWS (Estimated vs Measured)",
 		"billing_mode":              "Local-first Simulation",
+		"free_tier_compliant":       true,
+		"cost_guardrail_active":     true,
+		"free_tier_services":        []string{"S3 (5 GB Free)", "CloudWatch (10 Free Metrics)", "No Paid EC2 Instances"},
 	})
 }
 

@@ -60,7 +60,10 @@ export default function CostPage() {
             Local billing simulation · 100% offline · no cloud charges incurred
           </p>
         </div>
-        <span className="badge badge-cyan">Local-first Simulation</span>
+        <div style={{ display: 'flex', gap: 10 }}>
+          <span className="badge badge-success">✓ AWS Free-Tier Guard Active</span>
+          <span className="badge badge-cyan">Local Simulation</span>
+        </div>
       </div>
 
       {/* Summary Cards */}

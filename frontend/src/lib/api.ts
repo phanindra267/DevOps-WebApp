@@ -109,4 +109,10 @@ export const simulateBilling = (projectId: number) =>
 export const getGlobalCostSummary = () =>
   api.get('/api/v1/costs/summary')
 
+// ── AWS Cloud & Free-Tier Integration ─────────────────────────────────────
+export const getAWSStatus = () =>
+  api.get('/api/v1/aws/status')
+export const uploadAWSArtifact = (bucket: string, key: string, content: string, content_type = 'application/json') =>
+  api.post('/api/v1/aws/artifacts', { bucket, key, content, content_type })
+
 export default api
