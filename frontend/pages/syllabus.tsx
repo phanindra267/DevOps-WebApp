@@ -76,6 +76,7 @@ export default function SyllabusPage() {
   }
 
   const units = [
+    { id: 0, label: 'Master Architecture', icon: FiLayers },
     { id: 1, label: 'Unit I: Cloud & Containers', icon: FiCloud },
     { id: 2, label: 'Unit II: IaC & Automation', icon: FiServer },
     { id: 3, label: 'Unit III: Agile, BDD & A/B', icon: FiGitBranch },
@@ -171,6 +172,93 @@ export default function SyllabusPage() {
           )
         })}
       </div>
+
+      {/* ══════════════════════════════════════════════════════════════════════════
+          TAB 0: MASTER END-TO-END SYSTEM ARCHITECTURE BLUEPRINT
+      ══════════════════════════════════════════════════════════════════════════ */}
+      {activeTab === 0 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <div className="card">
+            <div className="card-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <FiLayers size={18} color="var(--accent)" />
+                <h3 className="card-title">Master System Architecture Blueprint</h3>
+              </div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <a
+                  href="/architecture.png"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-sm btn-primary"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
+                >
+                  <FiExternalLink size={12} />
+                  <span>Open Full-Res (300 DPI)</span>
+                </a>
+              </div>
+            </div>
+
+            <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 16 }}>
+              Complete architectural topology showing the Next.js presentation tier, the Go 1.22 modular monolith control plane, the 10 internal micro-engines, and the underlying persistence, orchestration, and telemetry targets.
+            </p>
+
+            <div
+              style={{
+                borderRadius: 8,
+                overflow: 'hidden',
+                border: '1px solid var(--border)',
+                background: '#04060a',
+                padding: 12,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <img
+                src="/architecture.png"
+                alt="CloudOps Sentinel Master System Architecture"
+                style={{
+                  maxWidth: '100%',
+                  height: 'auto',
+                  borderRadius: 6,
+                  display: 'block',
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Core Tiers Summary Grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 14 }}>
+            <div style={{ padding: 14, background: 'rgba(255,255,255,0.02)', borderRadius: 8, border: '1px solid var(--border)' }}>
+              <div style={{ fontWeight: 700, color: '#38bdf8', marginBottom: 4 }}>Layer 1: Presentation (Port 3000)</div>
+              <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+                Next.js 14, React 18, and TypeScript delivering a dark DevOps theme. Axios handles automatic JWT Bearer injection for authenticated endpoints.
+              </div>
+            </div>
+
+            <div style={{ padding: 14, background: 'rgba(255,255,255,0.02)', borderRadius: 8, border: '1px solid var(--border)' }}>
+              <div style={{ fontWeight: 700, color: '#818cf8', marginBottom: 4 }}>Layer 2: Go 1.22 Control Plane (Port 8080)</div>
+              <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+                Gorilla Mux routing with 10 internal engines: Auth/RBAC, IaC Stacks, Deployments, Jenkins CI/CD, Trivy DevSecOps, SRE Monitoring, FinOps, and AWS SDK v2.
+              </div>
+            </div>
+
+            <div style={{ padding: 14, background: 'rgba(255,255,255,0.02)', borderRadius: 8, border: '1px solid var(--border)' }}>
+              <div style={{ fontWeight: 700, color: '#34d399', marginBottom: 4 }}>Layer 3: Persistence &amp; Orchestration</div>
+              <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+                PostgreSQL 16 Alpine container (:5432) with connection pool. Kubernetes cluster with HPA autoscaling (2-5 replicas) and zero-trust NetworkPolicy.
+              </div>
+            </div>
+
+            <div style={{ padding: 14, background: 'rgba(255,255,255,0.02)', borderRadius: 8, border: '1px solid var(--border)' }}>
+              <div style={{ fontWeight: 700, color: '#fb923c', marginBottom: 4 }}>Observability &amp; Guardrails</div>
+              <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+                Prometheus (:9090) scrapes /metrics every 15s. Grafana (:3001) visualizes golden signals. Strict zero-cost fallback ensures $0.00 cloud charges.
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ══════════════════════════════════════════════════════════════════════════
           UNIT I: ADVANCED CLOUD INFRASTRUCTURE & CONTAINERIZATION

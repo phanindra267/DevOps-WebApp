@@ -34,6 +34,11 @@ def set_slide_background(slide):
     bg_shape.line.color.rgb = BG_COLOR
     return bg_shape
 
+def set_speaker_notes(slide, notes_text):
+    notes_slide = slide.notes_slide
+    text_frame = notes_slide.notes_text_frame
+    text_frame.text = notes_text
+
 def add_header(slide, title, subtitle="", tag="INT 378 ACADEMIC DEFENSE"):
     set_slide_background(slide)
     
@@ -210,6 +215,13 @@ p_inst.font.size = Pt(10)
 p_inst.font.color.rgb = TEXT_MUTED
 p_inst.space_before = Pt(4)
 
+set_speaker_notes(s1, 
+    "Respected professors, evaluators, and colleagues. Good morning/afternoon. "
+    "My name is Kakumani Phaneendra, Registration Number 12418953, Section K202313, from the School of Computer Science & Engineering at Lovely Professional University. "
+    "Today, I am proud to present my capstone project defense for course INT 378: CloudOps Sentinel — A Cloud-Native DevSecOps, Infrastructure Automation & Observability Platform. "
+    "The platform governs the complete software engineering lifecycle from planning to governance, designed with a strict zero-cost, local-first engineering guarantee."
+)
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # SLIDE 2: EXECUTIVE SUMMARY (PROBLEM & SOLUTION)
@@ -237,6 +249,14 @@ add_stat_box(s2, 0.8, 6.0, 3.7, 1.0, "100%", "INT 378 Syllabus Covered", ACCENT_
 add_stat_box(s2, 4.8, 6.0, 3.7, 1.0, "$0.00", "Cloud Spend (Local-First Guarantee)", ACCENT_GREEN)
 add_stat_box(s2, 8.8, 6.0, 3.7, 1.0, "12 / 12", "12-Factor App Verified", ACCENT_AMBER)
 
+set_speaker_notes(s2,
+    "Let us examine the core industry dilemma that motivated this project. "
+    "In modern engineering teams, developers, operations engineers, and security analysts often operate in silos using disconnected tools. "
+    "Security audits are traditionally conducted at the very end of the release cycle, creating costly release delays when critical CVEs are uncovered late. "
+    "Moreover, manual changes to cloud infrastructure introduce configuration drift, while uncontrolled cluster provisioning bleeds budgets. "
+    "CloudOps Sentinel bridges these disconnected processes into a single, automated control plane governing a 10-stage lifecycle with Shift-Left quality gates and in-cluster FinOps."
+)
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # SLIDE 3: MASTER END-TO-END SYSTEM ARCHITECTURE DIAGRAM
@@ -245,9 +265,15 @@ s3 = prs.slides.add_slide(blank_layout)
 add_header(s3, "Master End-to-End System Architecture Diagram", 
            "Complete architectural blueprint: Presentation, Control Plane, Micro-Engines, Persistence, and Targets", "ARCHITECTURE")
 
-# Display the master full-width architecture diagram
 if os.path.exists('docs/slides_assets/full_architecture_diagram.png'):
     s3.shapes.add_picture('docs/slides_assets/full_architecture_diagram.png', Inches(0.8), Inches(1.65), Inches(11.73), Inches(5.45))
+
+set_speaker_notes(s3,
+    "This is our Master End-to-End System Architecture Diagram, illustrating the entire platform blueprint across three operational layers. "
+    "At Layer 1, the client presentation layer is delivered via Next.js 14 and TypeScript, featuring a dark DevOps theme with real-time Recharts visualizations. "
+    "At Layer 2, our core Go 1.22 modular monolith REST API runs on port 8080. It incorporates 10 dedicated micro-engines: Auth & RBAC, Projects, IaC Stacks, Deployments, Jenkins Pipelines, Trivy Security Gates, SRE Monitoring, FinOps Billing, Policy-as-Code Governance, and the AWS SDK v2 integration. "
+    "At Layer 3, we have state persistence in PostgreSQL 16 Alpine, automated CI/CD runners, Kubernetes cluster orchestration with HPA autoscaling, Prometheus telemetry scraping on port 9090, Grafana dashboards on port 3001, and our zero-cost AWS fallback."
+)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -279,6 +305,14 @@ add_stat_box(s4, 3.8, 6.0, 2.7, 1.0, "Port 8080", "Core Go REST API", ACCENT_IND
 add_stat_box(s4, 6.8, 6.0, 2.7, 1.0, "Port 5432", "PostgreSQL 16 DB", ACCENT_GREEN)
 add_stat_box(s4, 9.8, 6.0, 2.7, 1.0, "9090 / 3001", "Prometheus & Grafana", ACCENT_AMBER)
 
+set_speaker_notes(s4,
+    "Here we break down the microservices topology and communication protocols across the 5 primary container tiers. "
+    "All client communications use HTTPS with automatic JWT Bearer token injection. "
+    "The Go API interacts with PostgreSQL over port 5432 using a connection pool for maximum throughput. "
+    "Prometheus queries our /metrics endpoint every 15 seconds, and Grafana connects via PromQL to display dashboards on port 3001. "
+    "Crucially, our Kubernetes NetworkPolicy enforces a zero-trust default-deny ingress model: frontend pods cannot directly touch the database, eliminating lateral movement vectors."
+)
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # SLIDE 5: UNIT I — ADVANCED CLOUD SERVICES & CONTAINERIZATION
@@ -308,6 +342,13 @@ add_card_content(s5, 6.8, 4.7, 5.7, 2.3, "Scalable Case Studies (Netflix, Amazon
     "Amazon: Decentralized Two-Pizza Teams owning isolated microservices & multi-AZ VPC.",
     "Uber: DOMA (Domain-Oriented Microservice Architecture) & Jaeger distributed tracing."
 ], title_color=ACCENT_GREEN)
+
+set_speaker_notes(s5,
+    "Unit I focuses on Advanced Cloud Infrastructure and Containerization. "
+    "We established an enterprise parity matrix between AWS and Microsoft Azure across Compute, Containers, Storage, Database, and Telemetry. "
+    "Our container engine implements the full Docker lifecycle state machine from Created to Running, Paused, Stopped, and Deleted, using multi-stage builds to compress our Go container to under 30 megabytes. "
+    "Additionally, we synthesized scalable cloud architectures from Netflix (Chaos Monkey resilience), Amazon (autonomous Two-Pizza teams and multi-AZ VPC isolation), and Uber (Domain-Oriented Microservice Architecture and real-time telemetry)."
+)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -354,6 +395,13 @@ add_card_content(s6, 9.8, 4.6, 2.7, 2.4, "Policy-as-Code", [
     "Integrated governance engine."
 ], title_color=ACCENT_AMBER)
 
+set_speaker_notes(s6,
+    "Unit II covers Infrastructure as Code. We built modular templates in both HashiCorp Terraform (HCL) and AWS CloudFormation (YAML). "
+    "Terraform enables multi-cloud portability with explicit remote state files, while CloudFormation provides managed AWS rollback capabilities. "
+    "In the UI, users can view both templates side-by-side and execute dry-run plans before applying. "
+    "We also addressed future IaC trends: OpenTofu under the Linux Foundation, Pulumi for programming in TypeScript and Go, Crossplane for turning Kubernetes into a universal cloud control plane, and Policy-as-Code using Open Policy Agent."
+)
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # SLIDE 7: UNIT III — AGILE AT SCALE, CI/CD & DEPLOYMENT STRATEGIES
@@ -383,6 +431,13 @@ add_card_content(s7, 8.8, 4.2, 3.7, 2.8, "A/B & Canary Deployments", [
     "Automated Rollback: Reverts to 100% Stable if 5xx errors breach threshold."
 ], title_color=ACCENT_GREEN)
 
+set_speaker_notes(s7,
+    "Unit III examines Agile and CI/CD Practices for Scalable Product Development. "
+    "We compare SAFe, which coordinates multi-train dependencies across large enterprises, with LeSS, which prioritizes a single backlog for lean execution. "
+    "Our engineering combines Test-Driven Development via Go unit tests with Behavior-Driven Development using executable Cucumber/Gherkin specifications. "
+    "We integrated an automated 13-stage Jenkins declarative pipeline, as well as an interactive Canary A/B testing controller allowing real-time traffic splitting with automated rollback if error thresholds are exceeded."
+)
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # SLIDE 8: UNIT IV — MONITORING & OBSERVABILITY (PROMETHEUS & GRAFANA)
@@ -409,6 +464,13 @@ add_card_content(s8, 6.8, 4.5, 5.7, 2.5, "Actionable Alerting & Incident Recover
     "Closed-Loop Workflow: Detect -> Alert -> Diagnose -> Rollback -> Verify.",
     "Audit Recording: All alerts and recovery actions saved to immutable log."
 ], title_color=ACCENT_ROSE)
+
+set_speaker_notes(s8,
+    "In Unit IV, we delve into Monitoring and Observability. "
+    "Our Go backend instruments the SRE Four Golden Signals: Latency, Traffic, Errors, and Saturation. "
+    "Prometheus scrapes our custom /metrics endpoint every 15 seconds, feeding pre-configured Grafana executive dashboards on port 3001. "
+    "Crucially, our system completes a closed-loop incident recovery cycle: when Prometheus alert rules such as HighErrorRate or ServiceDown trigger, our platform automatically initiates a zero-downtime rollback to the prior healthy replica, restoring service health without manual intervention."
+)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -454,6 +516,14 @@ p2.font.size = Pt(9.5)
 p2.font.color.rgb = TEXT_MUTED
 p2.space_before = Pt(4)
 
+set_speaker_notes(s9,
+    "Unit V covers DevSecOps and Cloud Security. "
+    "We embody the Shift-Left philosophy by running secret scanning and Aqua Trivy container vulnerability inspections during CI/CD. "
+    "Our automated security quality gate blocks deployment if any Critical CVEs are detected. "
+    "For runtime defense, we implement Role-Based Access Control, salted Bcrypt password hashing, non-root container users, and Kubernetes NetworkPolicies. "
+    "We also incorporate modern software supply chain security: the SLSA framework levels 1 through 4, automated SBOM software bill of materials generation, and Sigstore/Cosign image signing."
+)
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # SLIDE 10: UNIT VI — 12-FACTOR APP & CLOUD-NATIVE ARCHITECTURE
@@ -479,6 +549,13 @@ add_card_content(s10, 0.8, 5.2, 11.7, 1.8, "The 12-Factor App Methodology — 12
     "V. Build/Release/Run (Docker multi-stage)  |  VI. Processes (Stateless Go API)  |  VII. Port Binding (:8080, :3000)  |  VIII. Concurrency (HPA Replicas)",
     "IX. Disposability (<2s boot, SIGTERM)  |  X. Dev/Prod Parity (Docker containers)  |  XI. Logs (stdout stream)  |  XII. Admin Tasks (Auto-migrations)"
 ], title_color=ACCENT_GREEN)
+
+set_speaker_notes(s10,
+    "Unit VI examines Cloud-Native Development. "
+    "I am pleased to report that CloudOps Sentinel is 100% compliant with all Twelve Factors of the 12-Factor App methodology. "
+    "Dependencies are declared explicitly in go.mod and package-lock.json; config is decoupled into environment variables; backing services are attached via URL endpoints; processes are stateless; and concurrency scales horizontally via Kubernetes HPA. "
+    "We also analyzed Serverless vs. Containerized microservices, comparing cold start latency, cost break-even curves, and operational overhead."
+)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -515,6 +592,13 @@ p2.text = "Offline billing simulation allows realistic FinOps demonstration with
 p2.font.size = Pt(9)
 p2.font.color.rgb = TEXT_MUTED
 
+set_speaker_notes(s11,
+    "Continuing Unit VI, we explore FinOps and Cloud Cost Optimization. "
+    "Following the FinOps Foundation's Inform, Optimize, and Operate framework, our local billing engine calculates granular monthly spend across EC2, EKS, RDS, and EBS storage. "
+    "Our rightsizing algorithms detect idle volumes and over-provisioned RAM, recommending optimizations that yield up to 35% in savings. "
+    "We also enforce Policy-as-Code with automated compliance scoring and immutable audit trails, all while operating 100% offline with zero cloud expense."
+)
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # SLIDE 12: PLATFORM VERIFICATION & LIVE DEMONSTRATION
@@ -545,6 +629,14 @@ add_stat_box(s12, 0.8, 5.8, 2.7, 1.1, "15 / 15", "Routes Compiled", ACCENT_BLUE)
 add_stat_box(s12, 3.8, 5.8, 2.7, 1.1, "100%", "Go Tests Passing", ACCENT_GREEN)
 add_stat_box(s12, 6.8, 5.8, 2.7, 1.1, "$0.00", "Cloud Charges", ACCENT_AMBER)
 add_stat_box(s12, 9.8, 5.8, 2.7, 1.1, "0 Errors", "Build Status", ACCENT_INDIGO)
+
+set_speaker_notes(s12,
+    "Here are our empirical verification and test results. "
+    "All Go backend unit tests pass with a 100% success rate. "
+    "The Next.js frontend compiles cleanly across all 15 routes with zero TypeScript errors. "
+    "Our automated 9-stage integration test script verifies the full lifecycle: authentication, project creation, Terraform planning, Docker deployment, Trivy CVE evaluation, and FinOps budgeting. "
+    "The platform is live and demonstratable locally across ports 3000, 8080, 9090, 3001, and 5432."
+)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -580,9 +672,15 @@ p_ty.font.bold = True
 p_ty.font.color.rgb = ACCENT_GREEN
 p_ty.alignment = PP_ALIGN.CENTER
 
+set_speaker_notes(s13,
+    "In conclusion, CloudOps Sentinel successfully fulfills 100% of the INT 378 syllabus, unifying DevSecOps, Infrastructure as Code, Observability, and FinOps into an end-to-end, local-first platform. "
+    "Looking forward, future horizons include eBPF kernel-level tracing, AI-driven self-healing incident remediation, and cross-cloud active-active failover. "
+    "Thank you very much for your time, attention, and valuable guidance. I am now open to answer any questions from the evaluators."
+)
+
 # ─────────────────────────────────────────────────────────────────────────────
 # SAVE PRESENTATION
 # ─────────────────────────────────────────────────────────────────────────────
 output_path = "CloudOps_Sentinel_INT378_Presentation.pptx"
 prs.save(output_path)
-print(f"Master presentation with complete architecture visuals saved successfully to: {output_path} ({len(prs.slides)} slides)")
+print(f"Presentation with embedded speaker notes saved successfully to: {output_path} ({len(prs.slides)} slides)")
