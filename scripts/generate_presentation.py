@@ -38,33 +38,33 @@ def add_header(slide, title, subtitle="", tag="INT 378 ACADEMIC DEFENSE"):
     set_slide_background(slide)
     
     # Tag badge
-    tb_tag = slide.shapes.add_textbox(Inches(0.8), Inches(0.4), Inches(6.0), Inches(0.3))
+    tb_tag = slide.shapes.add_textbox(Inches(0.8), Inches(0.38), Inches(6.0), Inches(0.28))
     tf_tag = tb_tag.text_frame
     tf_tag.word_wrap = True
     p_tag = tf_tag.paragraphs[0]
     p_tag.text = tag.upper()
-    p_tag.font.size = Pt(9)
+    p_tag.font.size = Pt(8.5)
     p_tag.font.bold = True
     p_tag.font.color.rgb = ACCENT_BLUE
 
     # Title
-    tb_title = slide.shapes.add_textbox(Inches(0.8), Inches(0.68), Inches(11.7), Inches(0.55))
+    tb_title = slide.shapes.add_textbox(Inches(0.8), Inches(0.64), Inches(11.7), Inches(0.52))
     tf_title = tb_title.text_frame
     tf_title.word_wrap = True
     p_title = tf_title.paragraphs[0]
     p_title.text = title
-    p_title.font.size = Pt(21)
+    p_title.font.size = Pt(20)
     p_title.font.bold = True
     p_title.font.color.rgb = TEXT_WHITE
 
     # Subtitle
     if subtitle:
-        tb_sub = slide.shapes.add_textbox(Inches(0.8), Inches(1.22), Inches(11.7), Inches(0.35))
+        tb_sub = slide.shapes.add_textbox(Inches(0.8), Inches(1.16), Inches(11.7), Inches(0.35))
         tf_sub = tb_sub.text_frame
         tf_sub.word_wrap = True
         p_sub = tf_sub.paragraphs[0]
         p_sub.text = subtitle
-        p_sub.font.size = Pt(11)
+        p_sub.font.size = Pt(10.5)
         p_sub.font.color.rgb = TEXT_MUTED
 
 def add_card(slide, left, top, width, height, border_color=CARD_BORDER, bg_color=CARD_BG):
@@ -77,13 +77,13 @@ def add_card(slide, left, top, width, height, border_color=CARD_BORDER, bg_color
 
 def add_card_content(slide, left, top, width, height, title, items, title_color=ACCENT_BLUE):
     add_card(slide, left, top, width, height, border_color=CARD_BORDER)
-    tb = slide.shapes.add_textbox(Inches(left + 0.22), Inches(top + 0.18), Inches(width - 0.44), Inches(height - 0.36))
+    tb = slide.shapes.add_textbox(Inches(left + 0.2), Inches(top + 0.16), Inches(width - 0.4), Inches(height - 0.32))
     tf = tb.text_frame
     tf.word_wrap = True
     
     p0 = tf.paragraphs[0]
     p0.text = title
-    p0.font.size = Pt(12)
+    p0.font.size = Pt(11.5)
     p0.font.bold = True
     p0.font.color.rgb = title_color
     p0.space_after = Pt(6)
@@ -148,7 +148,7 @@ def add_stat_box(slide, left, top, width, height, number, label, num_color=ACCEN
     
     p_lbl = tf.add_paragraph()
     p_lbl.text = label
-    p_lbl.font.size = Pt(9)
+    p_lbl.font.size = Pt(8.5)
     p_lbl.font.color.rgb = TEXT_MUTED
     p_lbl.alignment = PP_ALIGN.CENTER
 
@@ -158,7 +158,6 @@ def add_stat_box(slide, left, top, width, height, number, label, num_color=ACCEN
 s1 = prs.slides.add_slide(blank_layout)
 set_slide_background(s1)
 
-# Clean decorative bar
 bar = s1.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.8), Inches(1.8), Inches(1.5), Inches(0.06))
 bar.fill.solid()
 bar.fill.fore_color.rgb = ACCENT_INDIGO
@@ -182,7 +181,7 @@ p2.font.color.rgb = ACCENT_BLUE
 p2.space_before = Pt(8)
 
 p3 = tf.add_paragraph()
-p3.text = "Course: INT 378 (Advanced Cloud Infrastructure, DevSecOps & FinOps) — Units I through VI"
+p3.text = "Academic Project Defense for Course INT 378 (Units I through VI)"
 p3.font.size = Pt(12)
 p3.font.color.rgb = TEXT_MUTED
 p3.space_before = Pt(6)
@@ -240,30 +239,52 @@ add_stat_box(s2, 8.8, 6.0, 3.7, 1.0, "12 / 12", "12-Factor App Verified", ACCENT
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SLIDE 3: SYSTEM ARCHITECTURE & TOPOLOGY
+# SLIDE 3: MASTER END-TO-END SYSTEM ARCHITECTURE DIAGRAM
 # ─────────────────────────────────────────────────────────────────────────────
 s3 = prs.slides.add_slide(blank_layout)
-add_header(s3, "System Architecture & Microservices Topology", 
-           "5-tier modular monolith architecture with real-time telemetry and stateful persistence")
+add_header(s3, "Master End-to-End System Architecture Diagram", 
+           "Complete architectural blueprint: Presentation, Control Plane, Micro-Engines, Persistence, and Targets", "ARCHITECTURE")
 
-if os.path.exists('docs/slides_assets/arch_diagram.png'):
-    s3.shapes.add_picture('docs/slides_assets/arch_diagram.png', Inches(0.8), Inches(1.8), Inches(7.5), Inches(5.1))
-
-add_card_content(s3, 8.6, 1.8, 3.9, 5.1, "Core Platform Tiers", [
-    "Frontend (:3000): Next.js 14, React 18, TypeScript, Tailwind Dark Theme.",
-    "API Server (:8080): Go 1.22 modular monolith with Gorilla Mux & JWT RBAC.",
-    "Database (:5432): PostgreSQL 16 Alpine with connection pool & auto-migrations.",
-    "Telemetry (:9090): Prometheus scraping custom Go /metrics endpoint every 15s.",
-    "Dashboards (:3001): Grafana OSS with pre-provisioned executive panels.",
-    "Zero-Cost Guardrail: Built-in in-memory fallback for S3 & CloudWatch."
-], title_color=ACCENT_BLUE)
+# Display the master full-width architecture diagram
+if os.path.exists('docs/slides_assets/full_architecture_diagram.png'):
+    s3.shapes.add_picture('docs/slides_assets/full_architecture_diagram.png', Inches(0.8), Inches(1.65), Inches(11.73), Inches(5.45))
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SLIDE 4: UNIT I — ADVANCED CLOUD SERVICES & CONTAINERIZATION
+# SLIDE 4: MICROSERVICES TIERS, WORKFLOWS & PORT TOPOLOGY
 # ─────────────────────────────────────────────────────────────────────────────
 s4 = prs.slides.add_slide(blank_layout)
-add_header(s4, "Unit I — Advanced Cloud Services & Containerization", 
+add_header(s4, "Microservices Topology, Component Workflows & Network Ports", 
+           "Detailed specifications for the 5 containerized tiers, protocols, and security perimeters", "TOPOLOGY")
+
+add_card_content(s4, 0.8, 1.8, 5.7, 4.0, "Containerized Service Topology", [
+    "Frontend UI (Port 3000): Next.js 14, React 18, TypeScript, Tailwind Dark Theme, Recharts.",
+    "API Server (Port 8080): Go 1.22 modular monolith with Gorilla Mux and JWT RBAC.",
+    "Database (Port 5432): PostgreSQL 16 Alpine with connection pool & schema auto-migrations.",
+    "Telemetry Engine (Port 9090): Prometheus scraping /metrics endpoints every 15s.",
+    "Executive Visuals (Port 3001): Grafana OSS with pre-provisioned datasource & dashboards."
+], title_color=ACCENT_BLUE)
+
+add_card_content(s4, 6.8, 1.8, 5.7, 4.0, "Workflows & Communication Protocols", [
+    "User Interaction: Browser sends HTTPS requests to Next.js; Axios injects JWT Bearer header.",
+    "API to Database: High-performance pgx connection pooling over TCP port 5432.",
+    "CI/CD Integration: Go API triggers Jenkins 13-stage pipelines and streams build logs.",
+    "Telemetry Pipeline: Prometheus scrapes Go API /metrics; Grafana executes PromQL queries.",
+    "Security Isolation: Kubernetes NetworkPolicy restricts ingress (Frontend -> Backend -> DB only)."
+], title_color=ACCENT_GREEN)
+
+# Bottom Architecture Summary Cards
+add_stat_box(s4, 0.8, 6.0, 2.7, 1.0, "Port 3000", "Frontend Web UI", ACCENT_BLUE)
+add_stat_box(s4, 3.8, 6.0, 2.7, 1.0, "Port 8080", "Core Go REST API", ACCENT_INDIGO)
+add_stat_box(s4, 6.8, 6.0, 2.7, 1.0, "Port 5432", "PostgreSQL 16 DB", ACCENT_GREEN)
+add_stat_box(s4, 9.8, 6.0, 2.7, 1.0, "9090 / 3001", "Prometheus & Grafana", ACCENT_AMBER)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SLIDE 5: UNIT I — ADVANCED CLOUD SERVICES & CONTAINERIZATION
+# ─────────────────────────────────────────────────────────────────────────────
+s5 = prs.slides.add_slide(blank_layout)
+add_header(s5, "Unit I — Advanced Cloud Services & Containerization", 
            "AWS vs. Azure parity, Docker architecture/lifecycle, and scalable industry case studies", "UNIT I")
 
 headers_u1 = ["Service Domain", "Amazon Web Services (AWS)", "Microsoft Azure", "CloudOps Implementation"]
@@ -274,15 +295,15 @@ rows_u1 = [
     ["Databases", "Amazon RDS PostgreSQL", "Azure Database for PostgreSQL", "PostgreSQL 16 Alpine container with connection pool"],
     ["Telemetry", "Amazon CloudWatch", "Azure Monitor", "Prometheus /metrics exporter + CloudWatch metric sync"]
 ]
-add_table(s4, 0.8, 1.8, 11.7, 2.7, headers_u1, rows_u1, col_widths=[1.8, 2.9, 2.8, 4.2])
+add_table(s5, 0.8, 1.8, 11.7, 2.7, headers_u1, rows_u1, col_widths=[1.8, 2.9, 2.8, 4.2])
 
-add_card_content(s4, 0.8, 4.7, 5.7, 2.3, "Docker Lifecycle State Machine", [
+add_card_content(s5, 0.8, 4.7, 5.7, 2.3, "Docker Lifecycle State Machine", [
     "Engine Architecture: Docker Client -> Host Daemon (dockerd) -> Hub Registry.",
     "State Flow: Created -> Running -> Paused -> Stopped -> Deleted.",
     "Multi-Stage Build: Slim Alpine binary (<30MB) with non-root security execution."
 ], title_color=ACCENT_BLUE)
 
-add_card_content(s4, 6.8, 4.7, 5.7, 2.3, "Scalable Case Studies (Netflix, Amazon, Uber)", [
+add_card_content(s5, 6.8, 4.7, 5.7, 2.3, "Scalable Case Studies (Netflix, Amazon, Uber)", [
     "Netflix: Chaos engineering (Simian Army) & automated canary deployments.",
     "Amazon: Decentralized Two-Pizza Teams owning isolated microservices & multi-AZ VPC.",
     "Uber: DOMA (Domain-Oriented Microservice Architecture) & Jaeger distributed tracing."
@@ -290,10 +311,10 @@ add_card_content(s4, 6.8, 4.7, 5.7, 2.3, "Scalable Case Studies (Netflix, Amazon
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SLIDE 5: UNIT II — INFRASTRUCTURE AS CODE (IaC) & FUTURE TRENDS
+# SLIDE 6: UNIT II — INFRASTRUCTURE AS CODE (IaC) & FUTURE TRENDS
 # ─────────────────────────────────────────────────────────────────────────────
-s5 = prs.slides.add_slide(blank_layout)
-add_header(s5, "Unit II — Infrastructure as Code: Terraform vs. CloudFormation", 
+s6 = prs.slides.add_slide(blank_layout)
+add_header(s6, "Unit II — Infrastructure as Code: Terraform vs. CloudFormation", 
            "Declarative automation, state management, and emerging tools shaping the future of IaC", "UNIT II")
 
 headers_u2 = ["Evaluation Criteria", "HashiCorp Terraform", "AWS CloudFormation", "Platform Implementation"]
@@ -303,30 +324,30 @@ rows_u2 = [
     ["State Storage", "Remote state (.tfstate in S3/PG)", "Managed automatically by AWS", "Automated plan dry-run verified before apply"],
     ["Modularity", "Composable reusable modules", "Nested Stacks & CFN Modules", "infrastructure/terraform/modules/ (VPC, ECS, Backend)"]
 ]
-add_table(s5, 0.8, 1.8, 11.7, 2.6, headers_u2, rows_u2, col_widths=[2.0, 3.1, 3.1, 3.5])
+add_table(s6, 0.8, 1.8, 11.7, 2.6, headers_u2, rows_u2, col_widths=[2.0, 3.1, 3.1, 3.5])
 
-add_card_content(s5, 0.8, 4.6, 2.7, 2.4, "OpenTofu", [
+add_card_content(s6, 0.8, 4.6, 2.7, 2.4, "OpenTofu", [
     "Linux Foundation open-source fork.",
     "Community governance.",
     "Full backwards compatibility.",
     "Zero licensing friction."
 ], title_color=ACCENT_BLUE)
 
-add_card_content(s5, 3.8, 4.6, 2.7, 2.4, "Pulumi", [
+add_card_content(s6, 3.8, 4.6, 2.7, 2.4, "Pulumi", [
     "Multi-Language IaC (TS, Python, Go).",
     "IDE autocompletion & type safety.",
     "Object-oriented modular reuse.",
     "Native unit testing support."
 ], title_color=ACCENT_INDIGO)
 
-add_card_content(s5, 6.8, 4.6, 2.7, 2.4, "Crossplane", [
+add_card_content(s6, 6.8, 4.6, 2.7, 2.4, "Crossplane", [
     "Kubernetes-native control plane.",
     "Cloud resources via K8s CRDs.",
     "Continuous reconciliation loop.",
     "Self-healing infrastructure."
 ], title_color=ACCENT_GREEN)
 
-add_card_content(s5, 9.8, 4.6, 2.7, 2.4, "Policy-as-Code", [
+add_card_content(s6, 9.8, 4.6, 2.7, 2.4, "Policy-as-Code", [
     "Open Policy Agent (OPA) / Rego.",
     "Automated pre-apply guardrails.",
     "Enforces tags & encryption.",
@@ -335,28 +356,28 @@ add_card_content(s5, 9.8, 4.6, 2.7, 2.4, "Policy-as-Code", [
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SLIDE 6: UNIT III — AGILE AT SCALE, CI/CD & DEPLOYMENT STRATEGIES
+# SLIDE 7: UNIT III — AGILE AT SCALE, CI/CD & DEPLOYMENT STRATEGIES
 # ─────────────────────────────────────────────────────────────────────────────
-s6 = prs.slides.add_slide(blank_layout)
-add_header(s6, "Unit III — Agile at Scale, CI/CD Automation & A/B Testing", 
+s7 = prs.slides.add_slide(blank_layout)
+add_header(s7, "Unit III — Agile at Scale, CI/CD Automation & A/B Testing", 
            "SAFe vs. LeSS, 13-stage Jenkins pipeline, BDD specifications, and Canary traffic splitting", "UNIT III")
 
 if os.path.exists('docs/slides_assets/devsecops_pipeline.png'):
-    s6.shapes.add_picture('docs/slides_assets/devsecops_pipeline.png', Inches(0.8), Inches(1.8), Inches(11.7), Inches(2.2))
+    s7.shapes.add_picture('docs/slides_assets/devsecops_pipeline.png', Inches(0.8), Inches(1.8), Inches(11.7), Inches(2.2))
 
-add_card_content(s6, 0.8, 4.2, 3.7, 2.8, "Scaling Agile: SAFe vs. LeSS", [
+add_card_content(s7, 0.8, 4.2, 3.7, 2.8, "Scaling Agile: SAFe vs. LeSS", [
     "SAFe: Agile Release Trains (50-125 engineers) & 8-12 week Program Increments.",
     "LeSS: Single Product Backlog, shared sprints, and cross-functional teams.",
     "Product Strategy: Trunk-based delivery with semantic versioning."
 ], title_color=ACCENT_BLUE)
 
-add_card_content(s6, 4.8, 4.2, 3.7, 2.8, "TDD & BDD Specifications", [
+add_card_content(s7, 4.8, 4.2, 3.7, 2.8, "TDD & BDD Specifications", [
     "TDD: Red -> Green -> Refactor cycle with Go unit tests (100% pass).",
     "BDD: Executable Gherkin syntax (Given-When-Then) for security gates.",
     "Technical Debt: Priority-ranked debt register tracking architectural debt."
 ], title_color=ACCENT_INDIGO)
 
-add_card_content(s6, 8.8, 4.2, 3.7, 2.8, "A/B & Canary Deployments", [
+add_card_content(s7, 8.8, 4.2, 3.7, 2.8, "A/B & Canary Deployments", [
     "Canary Splitting: 85% Stable (v1.4.2) / 15% Canary (v2.0.0).",
     "Dynamic Controller: Real-time slider via /api/v1/syllabus/ab-test/split.",
     "Automated Rollback: Reverts to 100% Stable if 5xx errors breach threshold."
@@ -364,16 +385,16 @@ add_card_content(s6, 8.8, 4.2, 3.7, 2.8, "A/B & Canary Deployments", [
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SLIDE 7: UNIT IV — MONITORING & OBSERVABILITY (PROMETHEUS & GRAFANA)
+# SLIDE 8: UNIT IV — MONITORING & OBSERVABILITY (PROMETHEUS & GRAFANA)
 # ─────────────────────────────────────────────────────────────────────────────
-s7 = prs.slides.add_slide(blank_layout)
-add_header(s7, "Unit IV — Observability: Prometheus Metrics & Grafana Dashboards", 
+s8 = prs.slides.add_slide(blank_layout)
+add_header(s8, "Unit IV — Observability: Prometheus Metrics & Grafana Dashboards", 
            "High-cardinality time-series collection, SRE Golden Signals, and automated incident recovery", "UNIT IV")
 
 if os.path.exists('docs/slides_assets/golden_signals.png'):
-    s7.shapes.add_picture('docs/slides_assets/golden_signals.png', Inches(0.8), Inches(1.8), Inches(11.7), Inches(2.5))
+    s8.shapes.add_picture('docs/slides_assets/golden_signals.png', Inches(0.8), Inches(1.8), Inches(11.7), Inches(2.5))
 
-add_card_content(s7, 0.8, 4.5, 5.7, 2.5, "Telemetry & Golden Signals", [
+add_card_content(s8, 0.8, 4.5, 5.7, 2.5, "Telemetry & Golden Signals", [
     "Prometheus Engine: Custom Go middleware exposing /metrics endpoint.",
     "Latency & Traffic: Tracked via http_request_duration_seconds & counters.",
     "Errors & Saturation: Real-time 5xx monitoring and CPU/memory utilization.",
@@ -381,7 +402,7 @@ add_card_content(s7, 0.8, 4.5, 5.7, 2.5, "Telemetry & Golden Signals", [
     "Scaling Strategy: Prometheus federation with Thanos/Cortex for long-term retention."
 ], title_color=ACCENT_BLUE)
 
-add_card_content(s7, 6.8, 4.5, 5.7, 2.5, "Actionable Alerting & Incident Recovery", [
+add_card_content(s8, 6.8, 4.5, 5.7, 2.5, "Actionable Alerting & Incident Recovery", [
     "HighErrorRate (>5% for 2m): Automated zero-downtime rollback triggered.",
     "HighLatency (p95 > 1s): Kubernetes HPA scales pod replicas from 2 to 5.",
     "ServiceDown (up == 0): Container restart policy and liveness reboot.",
@@ -391,35 +412,35 @@ add_card_content(s7, 6.8, 4.5, 5.7, 2.5, "Actionable Alerting & Incident Recover
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SLIDE 8: UNIT V — DEVSECOPS, CLOUD SECURITY & EMERGING TRENDS
+# SLIDE 9: UNIT V — DEVSECOPS, CLOUD SECURITY & EMERGING TRENDS
 # ─────────────────────────────────────────────────────────────────────────────
-s8 = prs.slides.add_slide(blank_layout)
-add_header(s8, "Unit V — DevSecOps: Shift-Left Gates, K8s Zero-Trust & SLSA", 
+s9 = prs.slides.add_slide(blank_layout)
+add_header(s9, "Unit V — DevSecOps: Shift-Left Gates, K8s Zero-Trust & SLSA", 
            "Embedding security early in CI/CD with blocking gates and supply chain integrity", "UNIT V")
 
-add_card_content(s8, 0.8, 1.8, 3.7, 3.0, "Shift-Left Quality Gates", [
+add_card_content(s9, 0.8, 1.8, 3.7, 3.0, "Shift-Left Quality Gates", [
     "Early Scanning: Secret detection and static analysis during pull requests.",
     "Trivy Vulnerability Scanner: Scans container image and OS packages.",
     "Blocking Gate Policy: Rejects builds if Critical CVEs > 0 or High > 2.",
     "Audited Results: Vulnerability reports persisted in PostgreSQL."
 ], title_color=ACCENT_ROSE)
 
-add_card_content(s8, 4.8, 1.8, 3.7, 3.0, "Cloud Security & Zero-Trust", [
+add_card_content(s9, 4.8, 1.8, 3.7, 3.0, "Cloud Security & Zero-Trust", [
     "IAM RBAC: Admin, DevOps, Auditor roles with JWT & salted Bcrypt.",
     "K8s Network Isolation: Default-deny ingress (kubernetes/networkpolicy.yaml).",
     "Container Hardening: Non-root execution and read-only root filesystems.",
     "Secrets Management: Base64 encrypted Secret manifests, zero code secrets."
 ], title_color=ACCENT_GREEN)
 
-add_card_content(s8, 8.8, 1.8, 3.7, 3.0, "Emerging Security Trends", [
+add_card_content(s9, 8.8, 1.8, 3.7, 3.0, "Emerging Security Trends", [
     "SLSA Framework (Levels 1–4): Cryptographic build provenance verification.",
     "SBOM Generation: SPDX and CycloneDX dependency inventory.",
     "Cosign / Sigstore: Keyless image signing verified by admission controllers.",
     "Zero-Trust Supply Chain: Only signed, verified images reach production."
 ], title_color=ACCENT_BLUE)
 
-add_card(s8, 0.8, 5.0, 11.7, 1.9, border_color=ACCENT_INDIGO)
-tb = s8.shapes.add_textbox(Inches(1.0), Inches(5.1), Inches(11.3), Inches(1.7))
+add_card(s9, 0.8, 5.0, 11.7, 1.9, border_color=ACCENT_INDIGO)
+tb = s9.shapes.add_textbox(Inches(1.0), Inches(5.1), Inches(11.3), Inches(1.7))
 tf = tb.text_frame
 tf.word_wrap = True
 p = tf.paragraphs[0]
@@ -435,14 +456,14 @@ p2.space_before = Pt(4)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SLIDE 9: UNIT VI — 12-FACTOR APP & CLOUD-NATIVE ARCHITECTURE
+# SLIDE 10: UNIT VI — 12-FACTOR APP & CLOUD-NATIVE ARCHITECTURE
 # ─────────────────────────────────────────────────────────────────────────────
-s9 = prs.slides.add_slide(blank_layout)
-add_header(s9, "Unit VI — The 12-Factor App Methodology & Serverless Tradeoffs", 
+s10 = prs.slides.add_slide(blank_layout)
+add_header(s10, "Unit VI — The 12-Factor App Methodology & Serverless Tradeoffs", 
            "100% compliance verification (12/12 factors) and Serverless vs. Container analysis", "UNIT VI")
 
 if os.path.exists('docs/slides_assets/twelve_factor_bar.png'):
-    s9.shapes.add_picture('docs/slides_assets/twelve_factor_bar.png', Inches(0.8), Inches(1.8), Inches(5.8), Inches(3.2))
+    s10.shapes.add_picture('docs/slides_assets/twelve_factor_bar.png', Inches(0.8), Inches(1.8), Inches(5.8), Inches(3.2))
 
 headers_serv = ["Dimension", "Serverless (Lambda / Fargate)", "Containerized (EKS / K8s)"]
 rows_serv = [
@@ -451,9 +472,9 @@ rows_serv = [
     ["Maintenance", "Zero server/OS patching", "Requires managing node groups & K8s"],
     ["Implementation", "ECS Fargate IaC templates", "Kubernetes manifests with HPA"]
 ]
-add_table(s9, 6.8, 1.8, 5.7, 3.2, headers_serv, rows_serv, col_widths=[1.5, 2.1, 2.1])
+add_table(s10, 6.8, 1.8, 5.7, 3.2, headers_serv, rows_serv, col_widths=[1.5, 2.1, 2.1])
 
-add_card_content(s9, 0.8, 5.2, 11.7, 1.8, "The 12-Factor App Methodology — 12/12 Verified Compliant", [
+add_card_content(s10, 0.8, 5.2, 11.7, 1.8, "The 12-Factor App Methodology — 12/12 Verified Compliant", [
     "I. Codebase (Git)  |  II. Dependencies (go.mod, package-lock)  |  III. Config (Environment variables)  |  IV. Backing Services (Attached URLs)",
     "V. Build/Release/Run (Docker multi-stage)  |  VI. Processes (Stateless Go API)  |  VII. Port Binding (:8080, :3000)  |  VIII. Concurrency (HPA Replicas)",
     "IX. Disposability (<2s boot, SIGTERM)  |  X. Dev/Prod Parity (Docker containers)  |  XI. Logs (stdout stream)  |  XII. Admin Tasks (Auto-migrations)"
@@ -461,16 +482,16 @@ add_card_content(s9, 0.8, 5.2, 11.7, 1.8, "The 12-Factor App Methodology — 12/
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SLIDE 10: UNIT VI — FINOPS COST OPTIMIZATION & GOVERNANCE
+# SLIDE 11: UNIT VI — FINOPS COST OPTIMIZATION & GOVERNANCE
 # ─────────────────────────────────────────────────────────────────────────────
-s10 = prs.slides.add_slide(blank_layout)
-add_header(s10, "Unit VI — FinOps Cost Optimization & Policy-as-Code Governance", 
+s11 = prs.slides.add_slide(blank_layout)
+add_header(s11, "Unit VI — FinOps Cost Optimization & Policy-as-Code Governance", 
            "Granular cloud workload billing, rightsizing recommendations, and compliance audit trails", "UNIT VI")
 
 if os.path.exists('docs/slides_assets/finops_breakdown.png'):
-    s10.shapes.add_picture('docs/slides_assets/finops_breakdown.png', Inches(0.8), Inches(1.8), Inches(5.5), Inches(3.5))
+    s11.shapes.add_picture('docs/slides_assets/finops_breakdown.png', Inches(0.8), Inches(1.8), Inches(5.5), Inches(3.5))
 
-add_card_content(s10, 6.5, 1.8, 6.0, 5.0, "FinOps Engine & Policy Governance", [
+add_card_content(s11, 6.5, 1.8, 6.0, 5.0, "FinOps Engine & Policy Governance", [
     "FinOps Lifecycle: Inform (visibility) -> Optimize (rightsizing) -> Operate (budget alerts).",
     "Granular Workload Costing: Simulates EC2 compute, EKS, RDS, EBS, and CloudWatch spend.",
     "Rightsizing Engine: Detects idle resources & oversized memory, saving up to 35% monthly spend.",
@@ -480,8 +501,8 @@ add_card_content(s10, 6.5, 1.8, 6.0, 5.0, "FinOps Engine & Policy Governance", [
     "Zero-Cost Demo: 100% offline local billing in PostgreSQL (no cloud charges incurred)."
 ], title_color=ACCENT_BLUE)
 
-add_card(s10, 0.8, 5.5, 5.5, 1.3, border_color=ACCENT_GREEN)
-tb = s10.shapes.add_textbox(Inches(1.0), Inches(5.6), Inches(5.1), Inches(1.1))
+add_card(s11, 0.8, 5.5, 5.5, 1.3, border_color=ACCENT_GREEN)
+tb = s11.shapes.add_textbox(Inches(1.0), Inches(5.6), Inches(5.1), Inches(1.1))
 tf = tb.text_frame
 tf.word_wrap = True
 p = tf.paragraphs[0]
@@ -496,13 +517,13 @@ p2.font.color.rgb = TEXT_MUTED
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SLIDE 11: PLATFORM VERIFICATION & LIVE DEMONSTRATION
+# SLIDE 12: PLATFORM VERIFICATION & LIVE DEMONSTRATION
 # ─────────────────────────────────────────────────────────────────────────────
-s11 = prs.slides.add_slide(blank_layout)
-add_header(s11, "Platform Verification, Empirical Test Results & Live Endpoints", 
+s12 = prs.slides.add_slide(blank_layout)
+add_header(s12, "Platform Verification, Empirical Test Results & Live Endpoints", 
            "Verifying 100% build health, unit test coverage, and local demo readiness", "VERIFICATION")
 
-add_card_content(s11, 0.8, 1.8, 5.7, 3.8, "Local Platform Endpoints", [
+add_card_content(s12, 0.8, 1.8, 5.7, 3.8, "Local Platform Endpoints", [
     "Frontend Dashboard: http://localhost:3000 (Next.js 14 Web UI)",
     "API Server Health: http://localhost:8080/api/v1/health (Go REST API)",
     "Prometheus Telemetry: http://localhost:9090 (Metrics Scraper)",
@@ -511,7 +532,7 @@ add_card_content(s11, 0.8, 1.8, 5.7, 3.8, "Local Platform Endpoints", [
     "Curriculum Hub: http://localhost:3000/syllabus (Interactive Center)"
 ], title_color=ACCENT_BLUE)
 
-add_card_content(s11, 6.8, 1.8, 5.7, 3.8, "Empirical Test Results", [
+add_card_content(s12, 6.8, 1.8, 5.7, 3.8, "Empirical Test Results", [
     "Backend Unit Tests: 100% PASS rate across all Go modules (go test ./...).",
     "Frontend Production Build: 15 / 15 static routes compiled with 0 errors.",
     "End-to-End Lifecycle Test: 9-stage verification in tests/e2e/test_lifecycle.sh.",
@@ -520,20 +541,20 @@ add_card_content(s11, 6.8, 1.8, 5.7, 3.8, "Empirical Test Results", [
 ], title_color=ACCENT_GREEN)
 
 # Stat boxes
-add_stat_box(s11, 0.8, 5.8, 2.7, 1.1, "15 / 15", "Routes Compiled", ACCENT_BLUE)
-add_stat_box(s11, 3.8, 5.8, 2.7, 1.1, "100%", "Go Tests Passing", ACCENT_GREEN)
-add_stat_box(s11, 6.8, 5.8, 2.7, 1.1, "$0.00", "Cloud Charges", ACCENT_AMBER)
-add_stat_box(s11, 9.8, 5.8, 2.7, 1.1, "0 Errors", "Build Status", ACCENT_INDIGO)
+add_stat_box(s12, 0.8, 5.8, 2.7, 1.1, "15 / 15", "Routes Compiled", ACCENT_BLUE)
+add_stat_box(s12, 3.8, 5.8, 2.7, 1.1, "100%", "Go Tests Passing", ACCENT_GREEN)
+add_stat_box(s12, 6.8, 5.8, 2.7, 1.1, "$0.00", "Cloud Charges", ACCENT_AMBER)
+add_stat_box(s12, 9.8, 5.8, 2.7, 1.1, "0 Errors", "Build Status", ACCENT_INDIGO)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SLIDE 12: CONCLUSION & DEFENSE SUMMARY
+# SLIDE 13: CONCLUSION & DEFENSE SUMMARY
 # ─────────────────────────────────────────────────────────────────────────────
-s12 = prs.slides.add_slide(blank_layout)
-add_header(s12, "Conclusion, Future Roadmap & Defense Summary", 
+s13 = prs.slides.add_slide(blank_layout)
+add_header(s13, "Conclusion, Future Roadmap & Defense Summary", 
            "CloudOps Sentinel demonstrates enterprise-grade DevSecOps, IaC, and FinOps governance", "CONCLUSION")
 
-add_card_content(s12, 0.8, 1.8, 5.7, 4.0, "Key Academic Achievements", [
+add_card_content(s13, 0.8, 1.8, 5.7, 4.0, "Key Academic Achievements", [
     "Complete Syllabus Coverage: Implements 100% of INT 378 across Units I through VI.",
     "End-to-End Lifecycle: Integrates Plan, Commit, Test, Secure, Build, IaC, Deploy, Observe, Recover, and Govern.",
     "Zero-Cost Architecture: Production-grade enterprise emulation requiring $0.00 cloud spend.",
@@ -541,7 +562,7 @@ add_card_content(s12, 0.8, 1.8, 5.7, 4.0, "Key Academic Achievements", [
     "Production Ready: Docker Compose orchestration and declarative Kubernetes manifests with HPA."
 ], title_color=ACCENT_BLUE)
 
-add_card_content(s12, 6.8, 1.8, 5.7, 4.0, "Future Engineering Horizons", [
+add_card_content(s13, 6.8, 1.8, 5.7, 4.0, "Future Engineering Horizons", [
     "eBPF Observability: Kernel-level network packet tracing without user-space overhead.",
     "AI-Driven Remediation: Automated LLM root-cause analysis and self-healing PRs.",
     "Multi-Region Active-Active: Automated cross-cloud disaster recovery between AWS and Azure.",
@@ -549,8 +570,8 @@ add_card_content(s12, 6.8, 1.8, 5.7, 4.0, "Future Engineering Horizons", [
 ], title_color=ACCENT_INDIGO)
 
 # Thank you banner
-add_card(s12, 0.8, 6.0, 11.7, 1.0, border_color=ACCENT_GREEN)
-tb_ty = s12.shapes.add_textbox(Inches(1.0), Inches(6.1), Inches(11.3), Inches(0.8))
+add_card(s13, 0.8, 6.0, 11.7, 1.0, border_color=ACCENT_GREEN)
+tb_ty = s13.shapes.add_textbox(Inches(1.0), Inches(6.1), Inches(11.3), Inches(0.8))
 tf_ty = tb_ty.text_frame
 p_ty = tf_ty.paragraphs[0]
 p_ty.text = "Thank you! Open for Questions & Evaluation  |  Kakumani Phaneendra (Reg: 12418953, LPU)"
@@ -564,4 +585,4 @@ p_ty.alignment = PP_ALIGN.CENTER
 # ─────────────────────────────────────────────────────────────────────────────
 output_path = "CloudOps_Sentinel_INT378_Presentation.pptx"
 prs.save(output_path)
-print(f"Concise professional presentation saved successfully to: {output_path} ({len(prs.slides)} slides)")
+print(f"Master presentation with complete architecture visuals saved successfully to: {output_path} ({len(prs.slides)} slides)")
