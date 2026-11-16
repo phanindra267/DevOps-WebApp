@@ -1,0 +1,32 @@
+# ==============================================================================
+# [SAFE LOCAL DEMO MODE] 
+# This CloudFormation template is for academic demonstration & IaC comparison only.
+# Running the CloudOps Sentinel local app does NOT deploy this to AWS CloudFormation.
+# Zero cloud costs will be incurred during local evaluation.
+# ==============================================================================
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'CloudOps Sentinel - Amazon ECS Cluster and Fargate Workload Infrastructure'
+
+Parameters:
+  EnvironmentName:
+    Type: String
+    Default: dev
+
+Resources:
+  ECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Sub '${EnvironmentName}-cloudops-cluster'
+      CapacityProviders:
+        - FARGATE
+        - FARGATE_SPOT
+      Tags:
+        - Key: Environment
+          Value: !Ref EnvironmentName
+        - Key: Platform
+          Value: CloudOps Sentinel
+
+Outputs:
+  ClusterName:
+    Description: ECS Cluster Name
+    Value: !Ref ECSCluster

@@ -1,0 +1,22 @@
+# CloudOps Sentinel DevSecOps Quality Gate Policy
+apiVersion: policy.cloudops.local/v1
+kind: SecurityGatePolicy
+metadata:
+  name: production-delivery-gate
+spec:
+  enforcement: strict
+  rules:
+    - name: no-critical-cve
+      description: "Block deployment if any critical CVE is found"
+      severity: CRITICAL
+      maxAllowed: 0
+    - name: high-cve-threshold
+      description: "Allow at most 3 high severity CVEs with mandatory remediation plan"
+      severity: HIGH
+      maxAllowed: 3
+    - name: secrets-zero-tolerance
+      description: "Zero secrets allowed in codebase, container images, or env configs"
+      maxAllowed: 0
+    - name: root-container-forbidden
+      description: "Containers must run with runAsNonRoot: true"
+      action: block

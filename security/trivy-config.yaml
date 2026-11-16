@@ -1,0 +1,17 @@
+# Trivy Security Scanner Configuration for CloudOps Sentinel
+timeout: 5m
+severity:
+  - CRITICAL
+  - HIGH
+  - MEDIUM
+vuln-type:
+  - os
+  - library
+security-checks:
+  - vuln
+  - config
+  - secret
+exit-code: 1 # Fail build on critical vulnerabilities
+format: json
+output: trivy-results.json
+ignore-unfixed: true

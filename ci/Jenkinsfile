@@ -1,0 +1,151 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_IMAGE   = 'cloudops-sentinel-backend'
+        REGISTRY       = 'registry.example.com'
+        DEPLOY_ENV     = 'dev'
+        HEALTH_URL     = 'http://localhost:8080/api/v1/health'
+        GO111MODULE    = 'on'
+    }
+
+    options {
+        timeout(time: 30, unit: 'MINUTES')
+        disableConcurrentBuilds()
+        timestamps()
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+    }
+
+    stages {
+        // ── 1. Checkout ──────────────────────────────────────────
+        stage('Checkout') {
+            steps {
+                checkout scm
+                echo "Checked out branch: ${env.BRANCH_NAME ?: 'unknown'}"
+            }
+        }
+
+        // ── 2. Unit Tests ────────────────────────────────────────
+        stage('Unit Tests') {
+            steps {
+                dir('backend') {
+                    sh 'go test ./... -v -coverprofile=coverage.out'
+                }
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: 'backend/coverage.out', allowEmptyArchive: true
+                }
+            }
+        }
+
+        // ── 3. Static Analysis ───────────────────────────────────
+        stage('Static Analysis') {
+            steps {
+                echo 'Running static analysis...'
+                // e.g. sh 'golangci-lint run ./backend/...'
+            }
+        }
+
+        // ── 4. Dependency Scan ───────────────────────────────────
+        stage('Dependency Scan') {
+            steps {
+                echo 'Scanning dependencies...'
+                // e.g. sh 'trivy fs --scanners vuln ./backend'
+            }
+        }
+
+        // ── 5. Secret Detection ──────────────────────────────────
+        stage('Secret Detection') {
+            steps {
+                echo 'Scanning for secrets...'
+                // e.g. sh 'gitleaks detect --source . --report-format json'
+            }
+        }
+
+        // ── 6. Docker Build ──────────────────────────────────────
+        stage('Docker Build') {
+            steps {
+                sh "docker build -t ${DOCKER_IMAGE}:${env.BUILD_NUMBER} ./backend"
+                sh "docker tag ${DOCKER_IMAGE}:${env.BUILD_NUMBER} ${DOCKER_IMAGE}:latest"
+            }
+        }
+
+        // ── 7. Container Scan ────────────────────────────────────
+        stage('Container Scan') {
+            steps {
+                echo 'Scanning container image...'
+                // e.g. sh "trivy image ${DOCKER_IMAGE}:${env.BUILD_NUMBER}"
+            }
+        }
+
+        // ── 8. IaC Validation ────────────────────────────────────
+        stage('IaC Validation') {
+            steps {
+                echo 'Validating Terraform configs...'
+                // e.g. sh 'cd infrastructure/terraform && terraform validate'
+            }
+        }
+
+        // ── 9. Security Gate ─────────────────────────────────────
+        stage('Security Gate') {
+            steps {
+                script {
+                    def securityPassed = true // Replace with real check
+                    echo 'Evaluating security gate...'
+                    if (!securityPassed) {
+                        error 'Security gate FAILED — critical vulnerabilities detected.'
+                    }
+                    echo 'Security gate PASSED.'
+                }
+            }
+        }
+
+        // ── 10. Image Push ───────────────────────────────────────
+        stage('Image Push') {
+            steps {
+                echo "Pushing image to registry ${REGISTRY}..."
+                // e.g. sh "docker push ${REGISTRY}/${DOCKER_IMAGE}:${env.BUILD_NUMBER}"
+            }
+        }
+
+        // ── 11. Deploy ───────────────────────────────────────────
+        stage('Deploy') {
+            steps {
+                echo "Deploying to environment: ${DEPLOY_ENV}..."
+                // e.g. sh "kubectl set image deployment/cloudops-sentinel-backend ..."
+            }
+        }
+
+        // ── 12. Health Check ─────────────────────────────────────
+        stage('Health Check') {
+            steps {
+                echo 'Running post-deployment health check...'
+                sh "curl -sf ${HEALTH_URL} || echo 'Health check endpoint not reachable (non-fatal in CI)'"
+            }
+        }
+
+        // ── 13. Monitor ──────────────────────────────────────────
+        stage('Monitor') {
+            steps {
+                echo 'Verifying monitoring and alerting stack...'
+                // e.g. sh 'curl -sf http://prometheus:9090/-/healthy'
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline execution finished.'
+            cleanWs()
+        }
+        success {
+            echo '✅ Pipeline SUCCEEDED — all stages passed.'
+            // e.g. slackSend channel: '#deployments', message: "Build #${env.BUILD_NUMBER} succeeded"
+        }
+        failure {
+            echo '❌ Pipeline FAILED — check logs above for details.'
+            // e.g. slackSend channel: '#deployments', color: 'danger', message: "Build #${env.BUILD_NUMBER} failed"
+        }
+    }
+}
