@@ -19,6 +19,7 @@ const navItems: NavItem[] = [
   { href: '/cost', label: 'Cost & FinOps', icon: '💰' },
   { href: '/governance', label: 'Governance', icon: '📋' },
   { href: '/reliability', label: 'Reliability', icon: '🔧' },
+  { href: '/syllabus', label: 'Curriculum Hub', icon: '🎓' },
 ];
 
 const Sidebar: React.FC = () => {

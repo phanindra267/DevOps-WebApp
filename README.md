@@ -162,16 +162,18 @@ bash tests/e2e/test_lifecycle.sh
 
 ---
 
-## 🎓 Academic Syllabus Mapping (INT 378)
+## 🎓 Academic Syllabus Mapping (INT 378) — 100% Implemented & Demonstrated
 
-| Unit | Syllabus Domain | Platform Implementation |
+Access the live interactive **Curriculum Hub** directly at **`/syllabus`** in the dashboard.
+
+| Unit | Syllabus Domain | Platform Implementation & Live Features |
 |---|---|---|
-| **Unit I** | Advanced Cloud Infrastructure & Services | Multi-tier architecture, VPC networking, containerized microservices, Docker & Docker Hub workflow. |
-| **Unit II** | Infrastructure as Code | Modular Terraform modules (VPC, ECS), environment isolation (`dev`/`prod`), AWS CloudFormation side-by-side comparison. |
-| **Unit III** | Agile / CI/CD Delivery | 13-stage Jenkins declarative pipeline (`ci/Jenkinsfile`), automated test runs, container builds, zero-downtime rollbacks. |
-| **Unit IV** | Monitoring & Observability | Prometheus custom metrics (`/metrics`), actionable alerts (`alert_rules.yml`), interactive Grafana dashboard (`:3001`). |
-| **Unit V** | DevSecOps & Cloud Security | Role-based access control (RBAC), JWT authentication, Bcrypt hashing, Trivy scanning rules, blocking quality gates. |
-| **Unit VI** | Cloud-Native, Reliability & Cost | Kubernetes manifests (Deployment, HPA, NetworkPolicy), chaos engineering simulations, FinOps local cost optimization engine. |
+| **Unit I** | Advanced Cloud Infrastructure & Services | • **AWS vs. Azure**: Enterprise cloud service parity matrix (Compute, Storage, DB, Network, IAM, Monitor).<br>• **Containerization**: Docker Architecture (Client, Daemon, Host) & Lifecycle (`Created` $\to$ `Running` $\to$ `Paused` $\to$ `Stopped` $\to$ `Deleted`).<br>• **Case Studies**: Scalable architecture breakdowns for **Netflix** (Chaos Engineering / Simian Army), **Amazon** (Two-Pizza Teams & Multi-AZ VPC), and **Uber** (DOMA microservices & Jaeger distributed tracing). |
+| **Unit II** | Infrastructure as Code (IaC) | • **Terraform & AWS CloudFormation**: Modular VPC, ECS Cluster, and Backend provisioning.<br>• **Comparative Matrix**: Syntax (HCL vs YAML), state management, drift detection, and multi-cloud portability.<br>• **Future Trends & Emerging Tools**: OpenTofu, Pulumi, Crossplane, AWS CDK, and Policy-as-Code (OPA). |
+| **Unit III** | Agile & CI/CD for Scalable Product Development | • **Scaling Agile**: SAFe (Agile Release Trains) vs. LeSS (Single Backlog) enterprise models.<br>• **TDD & BDD**: Unit test coverage (`go test ./...`) and interactive Gherkin specification tester (`Given-When-Then`).<br>• **A/B Testing & Canary**: Dynamic traffic split controller (`/api/v1/syllabus/ab-test/split`) with conversion telemetry.<br>• **Technical Debt**: Dedicated debt tracking register & 13-stage Jenkins declarative pipeline (`ci/Jenkinsfile`). |
+| **Unit IV** | Monitoring & Observability | • **Prometheus & Grafana**: High-cardinality time-series metrics (`/metrics`), custom middleware, and pre-configured dashboards (`:3001`).<br>• **Four Golden Signals**: Latency, Traffic, Errors, and Saturation monitoring.<br>• **Actionable Alerting**: Automated rules (`HighErrorRate`, `HighLatency`, `ServiceDown`) with incident resolution loop.<br>• **Advanced Observability**: Prometheus federation, Thanos/Cortex retention, and OpenTelemetry. |
+| **Unit V** | DevSecOps & Cloud Security | • **Shift-Left Security**: Secret scanning, dependency audits, and Trivy CVE container scanning.<br>• **Quality Gates**: Automated blocking threshold enforcement before deployments.<br>• **Cloud & K8s Security**: RBAC, JWT, salted Bcrypt hashing, non-root users, and zero-trust `NetworkPolicy`.<br>• **Emerging Trends**: SLSA Provenance (Levels 1-4), SBOM generation (SPDX/CycloneDX), and Cosign image signing. |
+| **Unit VI** | Cloud-Native Development & Optimization | • **12-Factor App Methodology**: Interactive 100% compliant audit scorecard verifying all 12 factors.<br>• **Serverless Architectures**: AWS Lambda/Fargate serverless vs. EKS/EC2 containerized cost and scaling curves.<br>• **FinOps & Cost Optimization**: Workload cost estimation, rightsizing recommendations, budget alerts, and AWS Cost Explorer / Stripe hooks.<br>• **Governance & Auditing**: Policy-as-Code engine and immutable compliance audit trails. |
 
 ---
 

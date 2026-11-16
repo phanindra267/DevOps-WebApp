@@ -118,4 +118,16 @@ export const getAWSStatus = () =>
 export const uploadAWSArtifact = (bucket: string, key: string, content: string, content_type = 'application/json') =>
   api.post('/api/v1/aws/artifacts', { bucket, key, content, content_type })
 
+// ── Academic Syllabus (INT 378) & Deep Capabilities ───────────────────────
+export const getSyllabusOverview = () =>
+  api.get('/api/v1/syllabus/overview')
+export const getCaseStudies = () =>
+  api.get('/api/v1/syllabus/case-studies')
+export const getTwelveFactorScorecard = () =>
+  api.get('/api/v1/syllabus/twelve-factor')
+export const getABTest = () =>
+  api.get('/api/v1/syllabus/ab-test')
+export const updateABSplit = (split_ratio_b: number) =>
+  api.post('/api/v1/syllabus/ab-test/split', { split_ratio_b })
+
 export default api

@@ -16,6 +16,7 @@ import {
   FiCloud,
   FiLogOut,
   FiExternalLink,
+  FiBookOpen,
 } from 'react-icons/fi'
 
 const sections = [
@@ -42,6 +43,12 @@ const sections = [
     items: [
       { href: '/cost',       label: 'Cost & FinOps', icon: FiDollarSign },
       { href: '/governance', label: 'Governance',    icon: FiCheckSquare },
+    ],
+  },
+  {
+    label: 'Academic (INT 378)',
+    items: [
+      { href: '/syllabus',   label: 'Curriculum Hub', icon: FiBookOpen },
     ],
   },
 ]

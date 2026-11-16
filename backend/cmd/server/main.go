@@ -21,6 +21,7 @@ import (
 	"cloudops-sentinel/internal/project"
 	"cloudops-sentinel/internal/reliability"
 	"cloudops-sentinel/internal/security"
+	"cloudops-sentinel/internal/syllabus"
 )
 
 func main() {
@@ -44,6 +45,13 @@ func main() {
 	router.HandleFunc("/api/v1/register", auth.Register).Methods(http.MethodPost, http.MethodOptions)
 	router.HandleFunc("/api/v1/health", monitor.HealthCheck).Methods(http.MethodGet)
 	router.Handle("/metrics", monitor.MetricsHandler())
+
+	// Syllabus & INT 378 Academic Public / Demo routes
+	router.HandleFunc("/api/v1/syllabus/overview", syllabus.GetSyllabusOverview).Methods(http.MethodGet)
+	router.HandleFunc("/api/v1/syllabus/case-studies", syllabus.GetCaseStudies).Methods(http.MethodGet)
+	router.HandleFunc("/api/v1/syllabus/twelve-factor", syllabus.GetTwelveFactorScorecard).Methods(http.MethodGet)
+	router.HandleFunc("/api/v1/syllabus/ab-test", syllabus.GetABTest).Methods(http.MethodGet)
+	router.HandleFunc("/api/v1/syllabus/ab-test/split", syllabus.UpdateABSplit).Methods(http.MethodPost, http.MethodOptions)
 
 	// ── Protected endpoints ─────────────────────────────────────────────────
 	api := router.PathPrefix("/api/v1").Subrouter()
@@ -128,6 +136,13 @@ func main() {
 	api.HandleFunc("/aws/status", cloud.GetStatusHandler).Methods(http.MethodGet)
 	api.HandleFunc("/aws/artifacts", cloud.UploadArtifactHandler).Methods(http.MethodPost)
 	api.HandleFunc("/aws/artifacts", cloud.GetArtifactHandler).Methods(http.MethodGet)
+
+	// Syllabus & Curriculum endpoints (authenticated)
+	api.HandleFunc("/syllabus/overview", syllabus.GetSyllabusOverview).Methods(http.MethodGet)
+	api.HandleFunc("/syllabus/case-studies", syllabus.GetCaseStudies).Methods(http.MethodGet)
+	api.HandleFunc("/syllabus/twelve-factor", syllabus.GetTwelveFactorScorecard).Methods(http.MethodGet)
+	api.HandleFunc("/syllabus/ab-test", syllabus.GetABTest).Methods(http.MethodGet)
+	api.HandleFunc("/syllabus/ab-test/split", syllabus.UpdateABSplit).Methods(http.MethodPost)
 
 	// ── Global middleware ───────────────────────────────────────────────────
 	handler := middleware.CORS(monitor.PrometheusMiddleware(router))
