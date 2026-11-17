@@ -323,16 +323,16 @@ set_speaker_notes(s4,
 )
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SLIDE 5: UNIT I — ADVANCED CLOUD SERVICES & CONTAINERIZATION
+# SLIDE 5: UNIT I — ADVANCED CLOUD SERVICES & CONTAINERIZATION (Exp 1 & 4)
 # ─────────────────────────────────────────────────────────────────────────────
 s5 = prs.slides.add_slide(blank_layout)
-add_header(s5, "Unit I — Advanced Cloud Services & Containerization", 
-           "AWS vs. Azure parity, Docker architecture/lifecycle, and scalable industry case studies", "UNIT I")
+add_header(s5, "Unit I — Cloud Compute, VPC Networking & Docker Lifecycle", 
+           "Syllabus Exp 1 (EC2/VPC/Nginx/Public IP) & Exp 4 (Docker Build/Ports/Hub/Lifecycle)", "UNIT I | EXP 1 & 4")
 
 headers_u1 = ["Service Domain", "Amazon Web Services (AWS)", "Microsoft Azure", "CloudOps Implementation"]
 rows_u1 = [
-    ["Virtual Compute", "Amazon EC2 / Auto Scaling", "Azure Virtual Machines (VM)", "Local Go microservices & simulated EC2 pricing"],
-    ["Containers", "Amazon ECS / EKS", "Azure AKS / Container Apps", "Declarative K8s manifests, HPA, and ECS templates"],
+    ["Virtual Compute", "Amazon EC2 / Auto Scaling", "Azure Virtual Machines (VM)", "EC2 Nginx web server module (Exp 1) & multi-container runtime"],
+    ["Containers", "Amazon ECS / EKS", "Azure AKS / Container Apps", "Declarative K8s manifests, HPA, and ECS Fargate templates"],
     ["Object Storage", "Amazon S3", "Azure Blob Storage", "AWS SDK v2 with zero-cost fallback in internal/cloud"],
     ["Databases", "Amazon RDS PostgreSQL", "Azure Database for PostgreSQL", "PostgreSQL 16 Alpine container with connection pool"],
     ["Telemetry", "Amazon CloudWatch", "Azure Monitor", "Prometheus /metrics exporter + CloudWatch metric sync"]
@@ -342,38 +342,38 @@ add_table(s5, 0.8, 1.75, 9.3, 2.65, headers_u1, rows_u1, col_widths=[1.5, 2.4, 2
 if os.path.exists('docs/slides_assets/side_banner_cloud_compare.png'):
     s5.shapes.add_picture('docs/slides_assets/side_banner_cloud_compare.png', Inches(10.3), Inches(1.75), Inches(2.23), Inches(4.9))
 
-add_card_content(s5, 0.8, 4.60, 4.55, 2.15, "Docker Lifecycle State Machine", [
+add_card_content(s5, 0.8, 4.60, 4.55, 2.15, "Docker Lifecycle State Machine (Exp 4)", [
     "Engine Architecture: Docker Client -> Host Daemon (dockerd) -> Hub Registry.",
-    "State Flow: Created -> Running -> Paused -> Stopped -> Deleted.",
+    "State Flow: Created -> Running -> Paused -> Stopped -> Deleted (Verified).",
     "Multi-Stage Build: Slim Alpine binary (<30MB) with non-root security execution."
 ], title_color=ACCENT_BLUE)
 
-add_card_content(s5, 5.55, 4.60, 4.55, 2.15, "Scalable Case Studies (Netflix, Amazon, Uber)", [
+add_card_content(s5, 5.55, 4.60, 4.55, 2.15, "EC2 & Scalable Case Studies (Exp 1)", [
+    "EC2 Nginx Deployment: Automated UserData provisioning with public IP accessibility.",
     "Netflix: Chaos engineering (Simian Army) & automated canary deployments.",
-    "Amazon: Decentralized Two-Pizza Teams owning isolated microservices & multi-AZ VPC.",
-    "Uber: DOMA (Domain-Oriented Microservice Architecture) & Jaeger distributed tracing."
+    "Uber: DOMA (Domain-Oriented Microservice Architecture) & distributed tracing."
 ], title_color=ACCENT_GREEN)
 
 set_speaker_notes(s5,
-    "Unit I focuses on Advanced Cloud Infrastructure and Containerization. "
-    "We established an enterprise parity matrix between AWS and Microsoft Azure across Compute, Containers, Storage, Database, and Telemetry. "
-    "Our container engine implements the full Docker lifecycle state machine from Created to Running, Paused, Stopped, and Deleted, using multi-stage builds to compress our Go container to under 30 megabytes. "
-    "Additionally, we synthesized scalable cloud architectures from Netflix (Chaos Monkey resilience), Amazon (autonomous Two-Pizza teams and multi-AZ VPC isolation), and Uber (Domain-Oriented Microservice Architecture and real-time telemetry)."
+    "Unit I covers Advanced Cloud Infrastructure and Containerization, directly satisfying Lab Experiment 1 and Experiment 4. "
+    "For Experiment 1, we implemented EC2 instance provisioning with VPC networking, ingress security groups for ports 80, 443, and 22, and automated Nginx web server installation with public IP verification. "
+    "For Experiment 4, our container engine implements the full Docker lifecycle state machine from Created to Running, Paused, Stopped, and Deleted, using multi-stage builds to compress our Go binary under 30MB, ready for Docker Hub tagging and distribution. "
+    "We also synthesized scalable cloud architectures from Netflix, Amazon, and Uber."
 )
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SLIDE 6: UNIT II — INFRASTRUCTURE AS CODE (IaC) & FUTURE TRENDS
+# SLIDE 6: UNIT II — INFRASTRUCTURE AS CODE: CLOUDFORMATION & TERRAFORM (Exp 3 & 5)
 # ─────────────────────────────────────────────────────────────────────────────
 s6 = prs.slides.add_slide(blank_layout)
 add_header(s6, "Unit II — Infrastructure as Code: Terraform vs. CloudFormation", 
-           "Declarative automation, state management, and emerging tools shaping the future of IaC", "UNIT II")
+           "Syllabus Exp 3 (CloudFormation Stacks & Rollbacks) & Exp 5 (Terraform EC2/S3 & State)", "UNIT II | EXP 3 & 5")
 
-headers_u2 = ["Evaluation Criteria", "HashiCorp Terraform", "AWS CloudFormation", "Platform Implementation"]
+headers_u2 = ["Evaluation Criteria", "HashiCorp Terraform (Exp 5)", "AWS CloudFormation (Exp 3)", "Platform Implementation"]
 rows_u2 = [
     ["Syntax & DSL", "HCL (HashiCorp Config Language)", "JSON / YAML template schema", "Side-by-side template preview in /infrastructure"],
     ["Portability", "Multi-cloud (AWS, Azure, GCP)", "AWS-native managed engine", "Terraform provides neutrality; CFN offers native rollbacks"],
     ["State Storage", "Remote state (.tfstate in S3/PG)", "Managed automatically by AWS", "Automated plan dry-run verified before apply"],
-    ["Modularity", "Composable reusable modules", "Nested Stacks & CFN Modules", "infrastructure/terraform/modules/ (VPC, ECS, Backend)"]
+    ["Modularity", "Composable modules (VPC, S3, EC2)", "Nested Stacks & CFN Modules", "infrastructure/terraform/modules/ & cloudformation/"]
 ]
 add_table(s6, 0.8, 1.75, 9.3, 2.65, headers_u2, rows_u2, col_widths=[1.6, 2.5, 2.5, 2.7])
 
@@ -409,18 +409,18 @@ add_card_content(s6, 7.85, 4.60, 2.25, 2.15, "Policy-as-Code", [
 ], title_color=ACCENT_AMBER)
 
 set_speaker_notes(s6,
-    "Unit II covers Infrastructure as Code. We built modular templates in both HashiCorp Terraform (HCL) and AWS CloudFormation (YAML). "
-    "Terraform enables multi-cloud portability with explicit remote state files, while CloudFormation provides managed AWS rollback capabilities. "
-    "In the UI, users can view both templates side-by-side and execute dry-run plans before applying. "
-    "We also addressed future IaC trends: OpenTofu under the Linux Foundation, Pulumi for programming in TypeScript and Go, Crossplane for turning Kubernetes into a universal cloud control plane, and Policy-as-Code using Open Policy Agent."
+    "Unit II covers Infrastructure as Code, directly fulfilling Lab Experiment 3 and Experiment 5. "
+    "For Experiment 3, we developed declarative AWS CloudFormation templates in infrastructure/cloudformation/ with validation commands, stack updates, and automated rollback configuration (on-failure ROLLBACK). "
+    "For Experiment 5, we authored Terraform HCL modules for both EC2 and S3 storage, demonstrating the complete lifecycle: terraform init, validate, plan, apply, state inspection with .tfstate, and clean destroy. "
+    "We also evaluated emerging IaC trends including OpenTofu, Pulumi, Crossplane, and OPA Policy-as-Code."
 )
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SLIDE 7: UNIT III — AGILE AT SCALE, CI/CD & DEPLOYMENT STRATEGIES
+# SLIDE 7: UNIT III — AGILE, JENKINS CI/CD & CANARY A/B TESTING (Exp 6)
 # ─────────────────────────────────────────────────────────────────────────────
 s7 = prs.slides.add_slide(blank_layout)
-add_header(s7, "Unit III — Agile at Scale, CI/CD Automation & A/B Testing", 
-           "SAFe vs. LeSS, 13-stage Jenkins pipeline, BDD specifications, and Canary traffic splitting", "UNIT III")
+add_header(s7, "Unit III — Agile at Scale, Jenkins CI/CD & A/B Testing", 
+           "Syllabus Exp 6 (Jenkins Pipeline, GitHub Webhooks, Automated Delivery) & SAFe/LeSS", "UNIT III | EXP 6")
 
 if os.path.exists('docs/slides_assets/devsecops_pipeline.png'):
     s7.shapes.add_picture('docs/slides_assets/devsecops_pipeline.png', Inches(0.8), Inches(1.75), Inches(9.3), Inches(2.35))
@@ -454,60 +454,60 @@ set_speaker_notes(s7,
 )
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SLIDE 8: UNIT IV — MONITORING & OBSERVABILITY (PROMETHEUS & GRAFANA)
+# SLIDE 8: UNIT IV — MONITORING & OBSERVABILITY (Exp 8 & 9)
 # ─────────────────────────────────────────────────────────────────────────────
 s8 = prs.slides.add_slide(blank_layout)
 add_header(s8, "Unit IV — Observability: Prometheus Metrics & Grafana Dashboards", 
-           "High-cardinality time-series collection, SRE Golden Signals, and automated incident recovery", "UNIT IV")
+           "Syllabus Exp 8 (Prometheus & Node Exporter Metrics/Alerts) & Exp 9 (Grafana Dashboards)", "UNIT IV | EXP 8 & 9")
 
 if os.path.exists('docs/slides_assets/golden_signals.png'):
     s8.shapes.add_picture('docs/slides_assets/golden_signals.png', Inches(0.8), Inches(1.75), Inches(11.73), Inches(2.45))
 
-add_card_content(s8, 0.8, 4.40, 5.75, 2.55, "Telemetry & Golden Signals", [
-    "Prometheus Engine: Custom Go middleware exposing /metrics endpoint.",
+add_card_content(s8, 0.8, 4.40, 5.75, 2.55, "Prometheus & Node Exporter (Exp 8)", [
+    "Prometheus Engine (:9090): Custom Go middleware & Node Exporter (:9100).",
+    "Metric Collection: CPU, Memory, Disk space, and Network bandwidth.",
     "Latency & Traffic: Tracked via http_request_duration_seconds & counters.",
-    "Errors & Saturation: Real-time 5xx monitoring and CPU/memory utilization.",
-    "Grafana Dashboards: Pre-provisioned executive panels on port 3001.",
-    "Scaling Strategy: Prometheus federation with Thanos/Cortex for long-term retention."
+    "Alerting Rules: HighErrorRate (>5% for 2m), HighLatency (p95 > 1s), ServiceDown.",
+    "Prometheus Federation: Thanos/Cortex for scalable long-term metric retention."
 ], title_color=ACCENT_BLUE)
 
-add_card_content(s8, 6.75, 4.40, 5.78, 2.55, "Actionable Alerting & Incident Recovery", [
-    "HighErrorRate (>5% for 2m): Automated zero-downtime rollback triggered.",
-    "HighLatency (p95 > 1s): Kubernetes HPA scales pod replicas from 2 to 5.",
-    "ServiceDown (up == 0): Container restart policy and liveness reboot.",
+add_card_content(s8, 6.75, 4.40, 5.78, 2.55, "Grafana Dashboards & Incident Recovery (Exp 9)", [
+    "Grafana OSS (:3001): Pre-provisioned Prometheus datasource & executive panels.",
+    "Resource Visualization: Live gauges for CPU, memory, storage, and network trends.",
+    "Automated Incident Recovery: Reverts deployments automatically on ServiceDown alert.",
     "Closed-Loop Workflow: Detect -> Alert -> Diagnose -> Rollback -> Verify.",
     "Audit Recording: All alerts and recovery actions saved to immutable log."
 ], title_color=ACCENT_ROSE)
 
 set_speaker_notes(s8,
-    "In Unit IV, we delve into Monitoring and Observability. "
-    "Our Go backend instruments the SRE Four Golden Signals: Latency, Traffic, Errors, and Saturation. "
-    "Prometheus scrapes our custom /metrics endpoint every 15 seconds, feeding pre-configured Grafana executive dashboards on port 3001. "
-    "Crucially, our system completes a closed-loop incident recovery cycle: when Prometheus alert rules such as HighErrorRate or ServiceDown trigger, our platform automatically initiates a zero-downtime rollback to the prior healthy replica, restoring service health without manual intervention."
+    "In Unit IV, we address Monitoring and Observability, fulfilling Lab Experiment 8 and Experiment 9. "
+    "For Experiment 8, we deployed Prometheus on port 9090 and Node Exporter on port 9100 to collect CPU, memory, disk, and network metrics, defining alerting rules such as HighErrorRate and ServiceDown. "
+    "For Experiment 9, we integrated Grafana on port 3001 with Prometheus as a datasource, designing executive dashboards that track SRE Golden Signals and historical performance trends. "
+    "When an alert fires, our closed-loop controller automatically triggers a zero-downtime rollback to restore service stability."
 )
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SLIDE 9: UNIT V — DEVSECOPS, CLOUD SECURITY & EMERGING TRENDS (With Side Banner)
+# SLIDE 9: UNIT V — DEVSECOPS, IAM RBAC/MFA & SUPPLY CHAIN (Exp 2 & 7)
 # ─────────────────────────────────────────────────────────────────────────────
 s9 = prs.slides.add_slide(blank_layout)
-add_header(s9, "Unit V — DevSecOps: Shift-Left Gates, K8s Zero-Trust & SLSA", 
-           "Embedding security early in CI/CD with blocking gates and supply chain integrity", "UNIT V")
+add_header(s9, "Unit V — DevSecOps: IAM RBAC/MFA, Trivy Gates & SLSA", 
+           "Syllabus Exp 2 (IAM Users/Roles/MFA/RBAC) & Exp 7 (DevSecOps Jenkins Scan & Secrets)", "UNIT V | EXP 2 & 7")
 
-add_card_content(s9, 0.8, 1.75, 3.0, 3.2, "Shift-Left Quality Gates", [
-    "Early Scanning: Secrets & SAST during PRs.",
+add_card_content(s9, 0.8, 1.75, 3.0, 3.2, "DevSecOps Gates (Exp 7)", [
+    "SAST Analysis: Early secret scanning in PRs.",
     "Trivy Scanner: Scans container image & OS.",
     "Blocking Gate: Rejects if Critical CVEs > 0.",
-    "Audited: Persistent CVE reports in PostgreSQL."
+    "Secrets: Encrypted Kubernetes Secrets."
 ], title_color=ACCENT_ROSE)
 
-add_card_content(s9, 3.95, 1.75, 3.0, 3.2, "Cloud Security & Zero-Trust", [
-    "IAM RBAC: Admin, DevOps, Auditor roles.",
-    "K8s Network: Default-deny ingress.",
-    "Container Hardening: Non-root user.",
-    "Secrets: Encrypted Kubernetes Secrets."
+add_card_content(s9, 3.95, 1.75, 3.0, 3.2, "IAM RBAC & MFA (Exp 2)", [
+    "IAM Groups: DevOpsEngineers & Auditors.",
+    "MFA Enforcement: DenyAllWithoutMFA policy.",
+    "Role Assumption: STS AssumeRole trust.",
+    "RBAC: Admin, DevOps, Auditor JWT roles."
 ], title_color=ACCENT_GREEN)
 
-add_card_content(s9, 7.10, 1.75, 3.0, 3.2, "Emerging Security Trends", [
+add_card_content(s9, 7.10, 1.75, 3.0, 3.2, "Supply Chain Security", [
     "SLSA Framework: Levels 1-4 provenance.",
     "SBOM: SPDX and CycloneDX inventory.",
     "Cosign / Sigstore: Keyless image signing.",
@@ -523,67 +523,67 @@ tb = s9.shapes.add_textbox(Inches(1.0), Inches(5.25), Inches(8.9), Inches(1.3))
 tf = tb.text_frame
 tf.word_wrap = True
 p = tf.paragraphs[0]
-p.text = "DevSecOps Shift-Left Principle in CloudOps Sentinel:"
+p.text = "DevSecOps & IAM Principle in CloudOps Sentinel:"
 p.font.size = Pt(11)
 p.font.bold = True
 p.font.color.rgb = ACCENT_INDIGO
 p2 = tf.add_paragraph()
-p2.text = "Traditional DevOps tests security post-deployment, causing costly launch delays. CloudOps Sentinel enforces automated Trivy CVE gates in Jenkins stage 7, stopping vulnerable images before they can be promoted to Kubernetes or AWS ECS."
+p2.text = "Experiment 2 enforces least-privilege IAM and Multi-Factor Authentication with STS role assumption. Experiment 7 embeds Aqua Trivy vulnerability scanning directly into Jenkins stage 7, stopping vulnerable images before promotion to Kubernetes or AWS ECS."
 p2.font.size = Pt(9.5)
 p2.font.color.rgb = TEXT_MUTED
 p2.space_before = Pt(4)
 
 set_speaker_notes(s9,
-    "Unit V covers DevSecOps and Cloud Security. "
-    "We embody the Shift-Left philosophy by running secret scanning and Aqua Trivy container vulnerability inspections during CI/CD. "
-    "Our automated security quality gate blocks deployment if any Critical CVEs are detected. "
-    "For runtime defense, we implement Role-Based Access Control, salted Bcrypt password hashing, non-root container users, and Kubernetes NetworkPolicies. "
-    "We also incorporate modern software supply chain security: the SLSA framework levels 1 through 4, automated SBOM software bill of materials generation, and Sigstore/Cosign image signing."
+    "Unit V covers DevSecOps and Cloud Security, directly addressing Lab Experiment 2 and Experiment 7. "
+    "For Experiment 2, we engineered IAM users, groups, custom least-privilege policies, MFA enforcement via conditional denies, and STS AssumeRole trust policies. "
+    "For Experiment 7, we embedded DevSecOps practices into our Jenkins pipeline: static code analysis, Aqua Trivy container image scanning with automated blocking gates on severe CVEs, secure Kubernetes secrets management, and automated security assessment reporting. "
+    "We also implemented SLSA Levels 1 through 4 and Sigstore cryptographic signing."
 )
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SLIDE 10: UNIT VI — 12-FACTOR APP & CLOUD-NATIVE ARCHITECTURE
+# SLIDE 10: UNIT VI — 12-FACTOR APP & SERVERLESS LAMBDA (Exp 10)
 # ─────────────────────────────────────────────────────────────────────────────
 s10 = prs.slides.add_slide(blank_layout)
-add_header(s10, "Unit VI — The 12-Factor App Methodology & Serverless Tradeoffs", 
-           "100% compliance verification (12/12 factors) and Serverless vs. Container analysis", "UNIT VI")
+add_header(s10, "Unit VI — 12-Factor App & AWS Lambda Serverless Architecture", 
+           "Syllabus Exp 10 (AWS Lambda Serverless, API Gateway & CloudWatch Telemetry)", "UNIT VI | EXP 10")
 
 if os.path.exists('docs/slides_assets/twelve_factor_bar.png'):
     s10.shapes.add_picture('docs/slides_assets/twelve_factor_bar.png', Inches(0.8), Inches(1.75), Inches(5.6), Inches(3.2))
 
-headers_serv = ["Dimension", "Serverless (Lambda / Fargate)", "Containerized (EKS / K8s)"]
+headers_serv = ["Dimension", "Serverless (Lambda / Fargate) - Exp 10", "Containerized (EKS / K8s)"]
 rows_serv = [
     ["Cold Start Latency", "100ms - 800ms during init", "Sub-millisecond (active replicas)"],
     ["Cost Scaling Curve", "$0 at idle; billed per ms", "Fixed baseline VM node overhead"],
     ["Maintenance", "Zero server/OS patching", "Requires managing node groups & K8s"],
-    ["Implementation", "ECS Fargate IaC templates", "Kubernetes manifests with HPA"]
+    ["Implementation", "serverless/lambda/ & SAM template", "Kubernetes manifests with HPA"]
 ]
 add_table(s10, 6.6, 1.75, 5.9, 3.2, headers_serv, rows_serv, col_widths=[1.5, 2.2, 2.2])
 
-add_card_content(s10, 0.8, 5.15, 11.73, 1.75, "The 12-Factor App Methodology — 12/12 Verified Compliant", [
-    "I. Codebase (Git)  |  II. Dependencies (go.mod, package-lock)  |  III. Config (Environment variables)  |  IV. Backing Services (Attached URLs)",
-    "V. Build/Release/Run (Docker multi-stage)  |  VI. Processes (Stateless Go API)  |  VII. Port Binding (:8080, :3000)  |  VIII. Concurrency (HPA Replicas)",
-    "IX. Disposability (<2s boot, SIGTERM)  |  X. Dev/Prod Parity (Docker containers)  |  XI. Logs (stdout stream)  |  XII. Admin Tasks (Auto-migrations)"
+add_card_content(s10, 0.8, 5.15, 11.73, 1.75, "The 12-Factor App Methodology & Lambda Serverless Integration", [
+    "Serverless Lambda (Exp 10): serverless/lambda/index.js integrated with API Gateway, logging to /aws/lambda/cloudops-serverless.",
+    "I. Codebase (Git)  |  II. Dependencies (go.mod, package-lock)  |  III. Config (Env vars)  |  IV. Backing Services (Attached URLs)",
+    "V. Build/Release/Run (Docker multi-stage)  |  VI. Processes (Stateless)  |  VII. Port Binding (:8080)  |  VIII. Concurrency (HPA Replicas)",
+    "IX. Disposability (<2s boot)  |  X. Dev/Prod Parity  |  XI. Logs (stdout stream & CloudWatch)  |  XII. Admin Tasks (Auto-migrations)"
 ], title_color=ACCENT_GREEN)
 
 set_speaker_notes(s10,
-    "Unit VI examines Cloud-Native Development. "
-    "I am pleased to report that CloudOps Sentinel is 100% compliant with all Twelve Factors of the 12-Factor App methodology. "
-    "Dependencies are declared explicitly in go.mod and package-lock.json; config is decoupled into environment variables; backing services are attached via URL endpoints; processes are stateless; and concurrency scales horizontally via Kubernetes HPA. "
-    "We also analyzed Serverless vs. Containerized microservices, comparing cold start latency, cost break-even curves, and operational overhead."
+    "Unit VI examines Cloud-Native Development and Serverless Architectures, satisfying Lab Experiment 10. "
+    "For Experiment 10, we developed an AWS Lambda serverless application in serverless/lambda/ with an API Gateway proxy event handler, CloudWatch structured JSON telemetry, and execution duration metrics. "
+    "Furthermore, CloudOps Sentinel is 100% compliant with all Twelve Factors of the 12-Factor App methodology. "
+    "We also evaluated Serverless versus Containerized microservices, comparing cold start latency, cost break-even curves, and operational overhead."
 )
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SLIDE 11: UNIT VI — FINOPS COST OPTIMIZATION & GOVERNANCE (With Side Banner)
+# SLIDE 11: UNIT VI — FINOPS, AWS COST EXPLORER & BUDGETS (Exp 11)
 # ─────────────────────────────────────────────────────────────────────────────
 s11 = prs.slides.add_slide(blank_layout)
-add_header(s11, "Unit VI — FinOps Cost Optimization & Policy-as-Code Governance", 
-           "Granular cloud workload billing, rightsizing recommendations, and compliance audit trails", "UNIT VI")
+add_header(s11, "Unit VI — FinOps Cost Optimization, AWS Budgets & Rightsizing", 
+           "Syllabus Exp 11 (AWS Cost Explorer, Billing Reports, AWS Budgets & Rightsizing)", "UNIT VI | EXP 11")
 
 if os.path.exists('docs/slides_assets/finops_breakdown.png'):
     s11.shapes.add_picture('docs/slides_assets/finops_breakdown.png', Inches(0.8), Inches(1.75), Inches(5.1), Inches(3.4))
 
-add_card_content(s11, 6.1, 1.75, 4.0, 4.9, "FinOps Engine & Policy Governance", [
+add_card_content(s11, 6.1, 1.75, 4.0, 4.9, "FinOps Engine & AWS Budgets (Exp 11)", [
     "FinOps Lifecycle: Inform (visibility) -> Optimize (rightsizing) -> Operate (budget alerts).",
     "Granular Workload Costing: Simulates EC2 compute, EKS, RDS, EBS, and CloudWatch spend.",
     "Rightsizing Engine: Detects idle resources & oversized memory, saving up to 35% monthly spend.",
@@ -612,18 +612,18 @@ p2.font.size = Pt(9)
 p2.font.color.rgb = TEXT_MUTED
 
 set_speaker_notes(s11,
-    "Continuing Unit VI, we explore FinOps and Cloud Cost Optimization. "
-    "Following the FinOps Foundation's Inform, Optimize, and Operate framework, our local billing engine calculates granular monthly spend across EC2, EKS, RDS, and EBS storage. "
-    "Our rightsizing algorithms detect idle volumes and over-provisioned RAM, recommending optimizations that yield up to 35% in savings. "
-    "We also enforce Policy-as-Code with automated compliance scoring and immutable audit trails, all while operating 100% offline with zero cloud expense."
+    "Continuing Unit VI, we delve into FinOps, satisfying Lab Experiment 11. "
+    "We model AWS Cost Explorer and billing reports across EC2 compute, EKS clusters, RDS databases, S3 storage, and CloudWatch metrics. "
+    "Our platform implements automated AWS Budget alarms configured at an 80% spending threshold, and identifies underutilized resources to recommend rightsizing measures yielding up to 35% in cost savings. "
+    "All FinOps economics execute locally in PostgreSQL with strict $0.00 cloud spend."
 )
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SLIDE 12: PLATFORM VERIFICATION & LIVE DEMONSTRATION (With Side Banner)
+# SLIDE 12: PLATFORM VERIFICATION & 11 EXPERIMENTS VALIDATION
 # ─────────────────────────────────────────────────────────────────────────────
 s12 = prs.slides.add_slide(blank_layout)
-add_header(s12, "Platform Verification, Empirical Test Results & Live Endpoints", 
-           "Verifying 100% build health, unit test coverage, and local demo readiness", "VERIFICATION")
+add_header(s12, "Platform Verification: 11 Practical Experiments Verified", 
+           "Empirical test results, endpoint health, and 100% syllabus experiment fulfillment", "VERIFICATION | 11/11 EXPS")
 
 add_card_content(s12, 0.8, 1.75, 4.55, 3.9, "Local Platform Endpoints", [
     "Frontend Dashboard: http://localhost:3000 (Next.js 14 Web UI)",

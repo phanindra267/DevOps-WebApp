@@ -1,0 +1,86 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  CloudOps Sentinel - Serverless Lambda & API Gateway Stack
+  INT 378 Academic Syllabus (Session 2026-27 - Experiment 10)
+  Candidate: Kakumani Phaneendra (Reg: 12418953, LPU)
+
+Globals:
+  Function:
+    Timeout: 10
+    MemorySize: 128
+    Runtime: nodejs18.x
+    Architectures:
+      - x86_64
+    Environment:
+      Variables:
+        STAGE: dev
+        APP_NAME: cloudops-serverless
+        COURSE: INT_378
+
+Resources:
+  # 1. CloudWatch Log Group with 7-Day Retention (FinOps Cost Optimization)
+  CloudOpsLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${CloudOpsServerlessFunction}"
+      RetentionInDays: 7
+
+  # 2. AWS Lambda Function
+  CloudOpsServerlessFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: cloudops-sentinel-lambda
+      CodeUri: ./lambda/
+      Handler: index.handler
+      Description: "Serverless microservice handling API Gateway events and emitting CloudWatch telemetry"
+      Events:
+        ApiHealthCheck:
+          Type: Api
+          Properties:
+            Path: /health
+            Method: get
+        ApiProcess:
+          Type: Api
+          Properties:
+            Path: /process
+            Method: post
+      Tags:
+        Course: INT378
+        Environment: dev
+        ManagedBy: SAM
+
+  # 3. Custom IAM Execution Role with Least-Privilege
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: CloudOpsLambdaExecutionRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: CloudWatchLogsLeastPrivilege
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: "arn:aws:logs:*:*:*"
+
+Outputs:
+  ServerlessApiUrl:
+    Description: "API Gateway HTTP Invocation Endpoint"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/health"
+  LambdaFunctionArn:
+    Description: "AWS Lambda Function ARN"
+    Value: !GetAtt CloudOpsServerlessFunction.Arn
+  LogGroupName:
+    Description: "CloudWatch LogGroup Name"
+    Value: !Ref CloudOpsLambdaLogGroup

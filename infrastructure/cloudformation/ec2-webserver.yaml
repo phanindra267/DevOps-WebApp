@@ -1,0 +1,104 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  CloudOps Sentinel - EC2 Nginx Web Server & Security Group CloudFormation Template
+  INT 378 Academic Syllabus (Session 2026-27 - Experiments 1 & 3)
+  Demonstrates Stack Provisioning, Configuration Updates, Drift Detection, and Automated Rollbacks.
+  Candidate: Kakumani Phaneendra (Reg: 12418953, LPU)
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues: [dev, staging, prod]
+    Description: Deployment environment
+
+  InstanceType:
+    Type: String
+    Default: t2.micro
+    AllowedValues: [t2.micro, t3.micro]
+    Description: Free-tier eligible EC2 instance type
+
+  KeyName:
+    Type: String
+    Default: cloudops-keypair
+    Description: SSH KeyPair name for remote SSH/RDP connectivity
+
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: Existing VPC ID
+
+  SubnetId:
+    Type: AWS::EC2::Subnet::Id
+    Description: Existing Public Subnet ID
+
+Resources:
+  # 1. Ingress Security Group (Ports 80, 443, 22)
+  WebServerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Allow HTTP, HTTPS, and SSH traffic for web server"
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+          Description: "Inbound HTTP"
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+          Description: "Inbound HTTPS"
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+          Description: "Inbound SSH Remote Access"
+      SecurityGroupEgress:
+        - IpProtocol: "-1"
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Sub "cloudops-web-sg-${Environment}"
+        - Key: Course
+          Value: INT378
+
+  # 2. EC2 Instance with Automated Nginx Web Server UserData Script
+  WebServerInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyName
+      SubnetId: !Ref SubnetId
+      SecurityGroupIds:
+        - !Ref WebServerSecurityGroup
+      ImageId: ami-0c55b159cbfafe1f0 # Amazon Linux 2
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          yum update -y
+          amazon-linux-extras install -y nginx1
+          systemctl enable nginx
+          systemctl start nginx
+          echo "<html><body style='background:#0b0f19;color:#fff;text-align:center;padding:50px;font-family:sans-serif;'><h1>CloudOps Sentinel Web App</h1><p style='color:#38bdf8;'>Provisioned via AWS CloudFormation (Stack: ${AWS::StackName})</p><p>Candidate: Kakumani Phaneendra (Reg: 12418953, LPU)</p></body></html>" > /usr/share/nginx/html/index.html
+      Tags:
+        - Key: Name
+          Value: !Sub "cloudops-webserver-${Environment}"
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: ManagedBy
+          Value: CloudFormation
+
+Outputs:
+  InstanceId:
+    Description: "EC2 Instance ID"
+    Value: !Ref WebServerInstance
+  PublicIp:
+    Description: "Public IP address of the web server for browser verification"
+    Value: !GetAtt WebServerInstance.PublicIp
+  PublicDns:
+    Description: "Public DNS name"
+    Value: !GetAtt WebServerInstance.PublicDnsName
+  SecurityGroupId:
+    Description: "Security Group ID"
+    Value: !Ref WebServerSecurityGroup

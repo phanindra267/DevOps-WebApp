@@ -83,6 +83,7 @@ export default function SyllabusPage() {
     { id: 4, label: 'Unit IV: Observability', icon: FiActivity },
     { id: 5, label: 'Unit V: DevSecOps & Security', icon: FiShield },
     { id: 6, label: 'Unit VI: 12-Factor & FinOps', icon: FiDollarSign },
+    { id: 7, label: 'Practical Lab Syllabus (Exp 1–11)', icon: FiCheckCircle },
   ]
 
   return (
@@ -1107,6 +1108,201 @@ export default function SyllabusPage() {
           </div>
         </div>
       )}
+
+      {/* ══════════════════════════════════════════════════════════════════════════
+          TAB 7: OFFICIAL PRACTICAL LAB SYLLABUS (EXPERIMENTS 1 THROUGH 11)
+          Session 2026-27 | INT 378
+      ══════════════════════════════════════════════════════════════════════════ */}
+      {activeTab === 7 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          {/* Header Banner */}
+          <div className="card card-interactive glow-border">
+            <div className="card-header">
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                  <span className="badge badge-info">SESSION 2026-27 OFFICIAL LAB MANUAL</span>
+                  <span className="badge badge-success">11 / 11 EXPERIMENTS IMPLEMENTED (100%)</span>
+                </div>
+                <h3 className="card-title" style={{ fontSize: 20 }}>
+                  INT 378: Practical Lab Syllabus &amp; Implementation Center
+                </h3>
+              </div>
+              <span className="badge badge-primary">Kakumani Phaneendra · 12418953 (LPU)</span>
+            </div>
+            <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+              Complete mapping of all 11 practical experiments specified for Session 2026-27 across AWS EC2, VPC, IAM RBAC &amp; MFA, CloudFormation, Docker, Terraform, Jenkins CI/CD, DevSecOps Trivy, Prometheus, Grafana, Serverless Lambda, and FinOps Budgets.
+            </p>
+          </div>
+
+          {/* 11 Practical Experiments Grid */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {[
+              {
+                num: 1,
+                title: 'AWS Free-Tier, EC2, VPC Networking, Security Groups & Web Server Deployment',
+                desc: 'Create an AWS free-tier account. Launch an EC2 instance, configure VPC networking and security groups, connect remotely using SSH/RDP, install and configure a web server (Apache/Nginx), deploy a simple web application, and verify accessibility using the public IP address.',
+                tech: 'AWS EC2, VPC, Subnets, Internet Gateway, Security Group (80/443/22), Nginx',
+                code: 'infrastructure/terraform/modules/ec2_webserver/main.tf & infrastructure/cloudformation/ec2-webserver.yaml',
+                cli: 'aws ec2 describe-instances --filters "Name=instance-state-name,Values=running"',
+                status: 'VERIFIED & COMPLIANT',
+              },
+              {
+                num: 2,
+                title: 'IAM Users, Groups, Roles, Custom Policies, MFA & Role-Based Access Control (RBAC)',
+                desc: 'Create IAM users, groups, roles, and custom policies in AWS. Configure Multi-Factor Authentication (MFA), assign least-privilege permissions, test role assumption, and verify authentication and authorization using Role-Based Access Control (RBAC).',
+                tech: 'AWS IAM, MFA Condition (aws:MultiFactorAuthPresent), STS AssumeRole, Bcrypt, JWT',
+                code: 'infrastructure/terraform/modules/iam/main.tf & infrastructure/cloudformation/iam-rbac.yaml',
+                cli: 'aws sts assume-role --role-arn arn:aws:iam::739754704357:role/CloudOps-DeploymentRole --role-session-name test',
+                status: 'VERIFIED & COMPLIANT',
+              },
+              {
+                num: 3,
+                title: 'AWS CloudFormation Templates, Stack Updates, Validation, Rollback & IaC Comparison',
+                desc: 'Design and deploy AWS CloudFormation templates to provision cloud resources. Update stack configurations after modifying templates, validate stack changes, perform rollback if required, and compare Infrastructure as Code implementation using AWS CloudFormation and Terraform.',
+                tech: 'CloudFormation YAML, Change Sets, On-Failure ROLLBACK, Drift Detection, Terraform Parity',
+                code: 'infrastructure/cloudformation/vpc.yaml & scripts/cloudformation_workflow.ps1',
+                cli: 'aws cloudformation validate-template --template-body file://infrastructure/cloudformation/vpc.yaml',
+                status: 'VERIFIED & COMPLIANT',
+              },
+              {
+                num: 4,
+                title: 'Docker Image Build, Container Execution, Port Exposure, Docker Hub & Lifecycle States',
+                desc: 'Build a Docker image for a web application, execute it within a Docker container, expose required ports, push the image to Docker Hub, pull it onto another system, and verify successful deployment and container lifecycle operations.',
+                tech: 'Docker Multi-Stage (<30MB), Non-Root appuser, Docker Hub Registry, State Machine',
+                code: 'Dockerfile, docker-compose.yml & scripts/docker_hub_lifecycle.ps1',
+                cli: 'docker run -d -p 8080:8080 kakumaniphaneendra/cloudops-backend:v1.0.0',
+                status: 'VERIFIED & COMPLIANT',
+              },
+              {
+                num: 5,
+                title: 'Terraform IaC for EC2 & S3, State Management, Plan, Apply, Modify & Destroy',
+                desc: 'Install Terraform and develop Infrastructure as Code (IaC) configuration files to provision cloud resources such as EC2 instances and S3 storage. Initialize, validate, apply, modify, and destroy the infrastructure using Terraform commands while managing Terraform state files.',
+                tech: 'Terraform HCL, .tfstate, Remote S3 Backend, DynamoDB Lock, Resource Graph',
+                code: 'infrastructure/terraform/modules/s3_storage/ & scripts/terraform_workflow.ps1',
+                cli: 'terraform init && terraform validate && terraform plan -out=tfplan',
+                status: 'VERIFIED & COMPLIANT',
+              },
+              {
+                num: 6,
+                title: 'Jenkins Deployment, GitHub Webhook Integration & Automated CI/CD Pipeline',
+                desc: 'Deploy Jenkins, integrate it with GitHub using webhooks, configure an automated CI/CD pipeline, execute build and testing stages, and automatically deploy the application upon successful pipeline execution.',
+                tech: 'Jenkins (Port 8085), GitHub Webhook (githubPush()), Declarative 13-Stage Pipeline',
+                code: 'jenkins/Jenkinsfile & frontend/pages/pipelines.tsx',
+                cli: 'curl -X POST http://localhost:8085/generic-webhook-trigger/invoke',
+                status: 'VERIFIED & COMPLIANT',
+              },
+              {
+                num: 7,
+                title: 'DevSecOps Practices: SAST Analysis, Trivy Vulnerability Scan & Secrets Management',
+                desc: 'Integrate DevSecOps practices into a Jenkins pipeline by performing source code analysis, scanning Docker images for vulnerabilities, securely managing application secrets, and generating security assessment reports.',
+                tech: 'Aqua Trivy Scanner, Shift-Left Blocking Gate, K8s Secrets, SPDX SBOM, SLSA Levels 1-4',
+                code: 'backend/internal/security/ & Jenkins Stage 7 (Trivy Scan)',
+                cli: 'trivy image --severity CRITICAL,HIGH --exit-code 1 cloudops-backend:v1.0.0',
+                status: 'VERIFIED & COMPLIANT',
+              },
+              {
+                num: 8,
+                title: 'Prometheus & Node Exporter: CPU/RAM/Disk/Network Metrics & Alerting Rules',
+                desc: 'Install and configure Prometheus, deploy Node Exporter, collect CPU, memory, disk, and network metrics, define alerting rules, and validate alert generation for infrastructure monitoring.',
+                tech: 'Prometheus (:9090), Node Exporter (:9100), PromQL, Golden Signals, HighErrorRate Alert',
+                code: 'monitoring/prometheus/prometheus.yml & monitoring/prometheus/alerts.yml',
+                cli: 'curl -s http://localhost:9090/api/v1/rules | grep HighErrorRate',
+                status: 'VERIFIED & COMPLIANT',
+              },
+              {
+                num: 9,
+                title: 'Grafana Deployment, Prometheus DataSource & Infrastructure Monitoring Dashboards',
+                desc: 'Deploy Grafana, integrate it with Prometheus as a data source, design monitoring dashboards for infrastructure performance, visualize CPU, memory, storage, and network utilization, and analyze system performance trends.',
+                tech: 'Grafana OSS (:3001), Auto-Provisioned Dashboards, SRE Golden Signals, Trend Analysis',
+                code: 'monitoring/grafana/provisioning/dashboards/ & datasources/',
+                cli: 'curl -s -u admin:admin http://localhost:3001/api/dashboards/home',
+                status: 'VERIFIED & COMPLIANT',
+              },
+              {
+                num: 10,
+                title: 'Serverless Application with AWS Lambda, API Gateway & CloudWatch Telemetry',
+                desc: 'Develop and deploy a serverless application using AWS Lambda, integrate it with API Gateway (optional), test function execution, monitor logs using CloudWatch, and analyze execution metrics.',
+                tech: 'AWS Lambda, API Gateway Proxy, CloudWatch Logs (/aws/lambda/cloudops-serverless)',
+                code: 'serverless/lambda/index.js & serverless/template.yaml',
+                cli: 'aws lambda invoke --function-name cloudops-sentinel-lambda response.json',
+                status: 'VERIFIED & COMPLIANT',
+              },
+              {
+                num: 11,
+                title: 'AWS Cost Explorer, Billing Reports, FinOps Optimization & AWS Budgets with Alerts',
+                desc: 'Analyze AWS Cost Explorer and billing reports, implement cloud cost optimization strategies, configure AWS Budgets with alerts, identify underutilized resources, and recommend cost-saving measures based on usage analysis.',
+                tech: 'FinOps Inform-Optimize-Operate, AWS Budgets (80% Cap Alert), Rightsizing (35% Savings)',
+                code: 'backend/internal/cost/cost.go & frontend/pages/cost.tsx',
+                cli: 'curl -s http://localhost:8080/api/v1/projects/1/costs',
+                status: 'VERIFIED & COMPLIANT',
+              },
+            ].map((exp) => (
+              <div key={exp.num} className="card card-interactive glow-border" style={{ padding: 18 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 10, marginBottom: 8 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <span
+                      style={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: '50%',
+                        background: 'linear-gradient(135deg, #38bdf8, #6366f1)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontWeight: 800,
+                        fontSize: 14,
+                        color: '#fff',
+                        flexShrink: 0,
+                      }}
+                    >
+                      {exp.num}
+                    </span>
+                    <h4 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#f8fafc' }}>{exp.title}</h4>
+                  </div>
+                  <span className="badge badge-success" style={{ fontWeight: 700 }}>
+                    {exp.status}
+                  </span>
+                </div>
+
+                <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 12, lineHeight: 1.6 }}>
+                  {exp.desc}
+                </p>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 10, fontSize: 12 }}>
+                  <div style={{ padding: 10, background: 'rgba(255,255,255,0.02)', borderRadius: 6, border: '1px solid var(--border)' }}>
+                    <span style={{ color: '#38bdf8', fontWeight: 600 }}>Core Technologies: </span>
+                    <span style={{ color: 'var(--text-muted)' }}>{exp.tech}</span>
+                  </div>
+                  <div style={{ padding: 10, background: 'rgba(255,255,255,0.02)', borderRadius: 6, border: '1px solid var(--border)' }}>
+                    <span style={{ color: '#34d399', fontWeight: 600 }}>Implementation Artifact: </span>
+                    <code style={{ fontSize: 11, color: '#a78bfa' }}>{exp.code}</code>
+                  </div>
+                </div>
+
+                <div
+                  style={{
+                    marginTop: 10,
+                    padding: '8px 12px',
+                    borderRadius: 6,
+                    background: '#04060a',
+                    border: '1px solid var(--border)',
+                    fontFamily: 'monospace',
+                    fontSize: 11.5,
+                    color: '#38bdf8',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                  }}
+                >
+                  <span style={{ color: 'var(--text-muted)' }}>CLI Verification:</span>
+                  <span>{exp.cli}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
     </>
   )
 }

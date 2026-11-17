@@ -1,0 +1,75 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  CloudOps Sentinel - IAM Users, Groups, Roles, Policies & MFA Enforcement
+  INT 378 Academic Syllabus (Session 2026-27 - Experiment 2)
+  Demonstrates Least-Privilege IAM, MFA enforcement, Role Assumption (STS), and RBAC.
+  Candidate: Kakumani Phaneendra (Reg: 12418953, LPU)
+
+Resources:
+  # 1. IAM Group for DevOps Engineers
+  DevOpsEngineersGroup:
+    Type: AWS::IAM::Group
+    Properties:
+      GroupName: CloudOps-DevOps-Group
+
+  # 2. Custom Least-Privilege Policy: ReadOnly & MFA Condition
+  MFARequiredPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: CloudOps-MFA-Required-Policy
+      Description: "Denies all access unless Multi-Factor Authentication is active"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - "iam:ListUsers"
+              - "iam:ListVirtualMFADevices"
+            Resource: "*"
+          - Effect: Deny
+            NotAction:
+              - "iam:CreateVirtualMFADevice"
+              - "iam:EnableMFADevice"
+              - "iam:ResyncMFADevice"
+            Resource: "*"
+            Condition:
+              BoolIfExists:
+                "aws:MultiFactorAuthPresent": "false"
+      Groups:
+        - !Ref DevOpsEngineersGroup
+
+  # 3. IAM Role for Pipeline Deployment (STS AssumeRole)
+  CloudOpsDeployerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: CloudOps-Pipeline-Deployer-Role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: ECSAndS3DeployPermissions
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "ecs:UpdateService"
+                  - "ecs:DescribeServices"
+                  - "s3:PutObject"
+                  - "s3:GetObject"
+                Resource: "*"
+
+Outputs:
+  GroupName:
+    Description: "DevOps IAM Group"
+    Value: !Ref DevOpsEngineersGroup
+  RoleArn:
+    Description: "Pipeline Deployer Role ARN for STS AssumeRole"
+    Value: !GetAtt CloudOpsDeployerRole.Arn
+  PolicyArn:
+    Description: "MFA Enforced Policy ARN"
+    Value: !Ref MFARequiredPolicy
