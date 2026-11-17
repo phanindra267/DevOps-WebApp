@@ -59,16 +59,20 @@ export default function Layout({ children }: { children: ReactNode }) {
   const initials = user?.username ? user.username.slice(0, 2).toUpperCase() : 'AD'
 
   return (
-    <div className="layout">
+    <div className="layout" style={{ position: 'relative' }}>
+      {/* ── Ambient Background Lighting & Cyber Grid ── */}
+      <div className="bg-ambient-layer" />
+      <div className="bg-grid-pattern" />
+
       {/* ── Sidebar ── */}
       <aside className="sidebar">
         <div className="sidebar-logo">
-          <div className="sidebar-logo-icon">
+          <div className="sidebar-logo-icon pulse-glow">
             <FiCloud size={20} color="#6366f1" />
           </div>
           <div>
             <div className="sidebar-logo-text">CloudOps</div>
-            <div className="sidebar-logo-sub">Sentinel</div>
+            <div className="sidebar-logo-sub">Sentinel · INT 378</div>
           </div>
         </div>
 
@@ -142,21 +146,44 @@ export default function Layout({ children }: { children: ReactNode }) {
       {/* ── Main ── */}
       <div className="main-content">
         <header className="topbar">
-          <div className="topbar-left">
-            <div className="status-pill">
-              <div className="status-dot" />
-              All Systems Operational
+          <div className="topbar-left" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div className="status-pill glow-border-green" style={{ padding: '6px 14px', borderRadius: 20 }}>
+              <span className="status-dot ping-dot" style={{ background: '#10b981' }} />
+              <span style={{ fontWeight: 600, fontSize: 12.5 }}>All Systems Operational</span>
+              <span style={{ color: 'var(--text-muted)', fontSize: 11 }}>· 14ms Latency</span>
+            </div>
+            <div
+              className="badge"
+              style={{
+                background: 'rgba(99, 102, 241, 0.12)',
+                border: '1px solid rgba(99, 102, 241, 0.3)',
+                color: '#a5b4fc',
+                fontSize: 11,
+                fontWeight: 600,
+                padding: '4px 10px',
+                borderRadius: 16,
+              }}
+            >
+              Kakumani Phaneendra · Reg: 12418953 (LPU)
             </div>
           </div>
           <div className="topbar-right">
+            <Link
+              href="/syllabus"
+              className="btn btn-sm btn-dynamic"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#38bdf8', borderColor: 'rgba(56, 189, 248, 0.3)' }}
+            >
+              <FiBookOpen size={13} />
+              <span>Curriculum Hub</span>
+            </Link>
             <a
               href="http://localhost:8085"
               target="_blank"
               rel="noreferrer"
               className="btn btn-sm"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#38bdf8', borderColor: 'rgba(56, 189, 248, 0.3)' }}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
             >
-              <span>Jenkins CI</span>
+              <span>Jenkins</span>
               <FiExternalLink size={12} />
             </a>
             <a

@@ -265,69 +265,84 @@ export default function SyllabusPage() {
       ══════════════════════════════════════════════════════════════════════════ */}
       {activeTab === 1 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-          {/* AWS vs Azure Services Comparison */}
-          <div className="card">
-            <div className="card-header">
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <FiCloud size={18} color="var(--accent)" />
-                <h3 className="card-title">AWS vs. Microsoft Azure Enterprise Services Mapping</h3>
+          {/* AWS vs Azure Services Comparison & Side Banner */}
+          <div className="unit-layout-split" style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 20 }}>
+            <div className="card card-interactive glow-border">
+              <div className="card-header">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <FiCloud size={18} color="var(--accent)" />
+                  <h3 className="card-title">AWS vs. Microsoft Azure Enterprise Services Mapping</h3>
+                </div>
+                <span className="badge badge-info">Multi-Cloud Parity</span>
               </div>
-              <span className="badge badge-info">Multi-Cloud Parity</span>
+              <div className="table-container">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Domain</th>
+                      <th>Amazon Web Services (AWS)</th>
+                      <th>Microsoft Azure</th>
+                      <th>CloudOps Sentinel Local / SDK Implementation</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td style={{ fontWeight: 600 }}>Virtual Compute</td>
+                      <td>Amazon EC2 / Auto Scaling Groups</td>
+                      <td>Azure Virtual Machines / Scale Sets</td>
+                      <td>Local Go multi-container runtime &amp; simulated EC2 cost modeling</td>
+                    </tr>
+                    <tr>
+                      <td style={{ fontWeight: 600 }}>Container Orchestration</td>
+                      <td>Amazon ECS (Fargate) &amp; Amazon EKS</td>
+                      <td>Azure Kubernetes Service (AKS) &amp; Container Apps</td>
+                      <td>Declarative Kubernetes manifests (HPA, NetworkPolicy) &amp; ECS modules</td>
+                    </tr>
+                    <tr>
+                      <td style={{ fontWeight: 600 }}>Object Storage</td>
+                      <td>Amazon S3 (Simple Storage Service)</td>
+                      <td>Azure Blob Storage</td>
+                      <td>Cost-free AWS SDK v2 client with safe in-memory fallback in <code>internal/cloud</code></td>
+                    </tr>
+                    <tr>
+                      <td style={{ fontWeight: 600 }}>Relational Database</td>
+                      <td>Amazon RDS PostgreSQL / Aurora</td>
+                      <td>Azure Database for PostgreSQL</td>
+                      <td>Self-hosted PostgreSQL 16 Alpine container with connection pool</td>
+                    </tr>
+                    <tr>
+                      <td style={{ fontWeight: 600 }}>Cloud Telemetry</td>
+                      <td>Amazon CloudWatch Metrics &amp; Alarms</td>
+                      <td>Azure Monitor &amp; Log Analytics</td>
+                      <td>Integrated Prometheus exporter (<code>/metrics</code>) &amp; CloudWatch metrics export</td>
+                    </tr>
+                    <tr>
+                      <td style={{ fontWeight: 600 }}>Identity &amp; Governance</td>
+                      <td>AWS IAM (Roles, Policies, STS)</td>
+                      <td>Microsoft Entra ID (Azure AD) &amp; Azure RBAC</td>
+                      <td>Role-Based Access Control (Admin, DevOps, Auditor) with JWT tokens</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
-            <div className="table-container">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Domain</th>
-                    <th>Amazon Web Services (AWS)</th>
-                    <th>Microsoft Azure</th>
-                    <th>CloudOps Sentinel Local / SDK Implementation</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td style={{ fontWeight: 600 }}>Virtual Compute</td>
-                    <td>Amazon EC2 / Auto Scaling Groups</td>
-                    <td>Azure Virtual Machines / Scale Sets</td>
-                    <td>Local Go multi-container runtime &amp; simulated EC2 cost modeling</td>
-                  </tr>
-                  <tr>
-                    <td style={{ fontWeight: 600 }}>Container Orchestration</td>
-                    <td>Amazon ECS (Fargate) &amp; Amazon EKS</td>
-                    <td>Azure Kubernetes Service (AKS) &amp; Container Apps</td>
-                    <td>Declarative Kubernetes manifests (HPA, NetworkPolicy) &amp; ECS modules</td>
-                  </tr>
-                  <tr>
-                    <td style={{ fontWeight: 600 }}>Object Storage</td>
-                    <td>Amazon S3 (Simple Storage Service)</td>
-                    <td>Azure Blob Storage</td>
-                    <td>Cost-free AWS SDK v2 client with safe in-memory fallback in <code>internal/cloud</code></td>
-                  </tr>
-                  <tr>
-                    <td style={{ fontWeight: 600 }}>Relational Database</td>
-                    <td>Amazon RDS PostgreSQL / Aurora</td>
-                    <td>Azure Database for PostgreSQL</td>
-                    <td>Self-hosted PostgreSQL 16 Alpine container with connection pool</td>
-                  </tr>
-                  <tr>
-                    <td style={{ fontWeight: 600 }}>Cloud Telemetry</td>
-                    <td>Amazon CloudWatch Metrics &amp; Alarms</td>
-                    <td>Azure Monitor &amp; Log Analytics</td>
-                    <td>Integrated Prometheus exporter (<code>/metrics</code>) &amp; CloudWatch metrics export</td>
-                  </tr>
-                  <tr>
-                    <td style={{ fontWeight: 600 }}>Identity &amp; Governance</td>
-                    <td>AWS IAM (Roles, Policies, STS)</td>
-                    <td>Microsoft Entra ID (Azure AD) &amp; Azure RBAC</td>
-                    <td>Role-Based Access Control (Admin, DevOps, Auditor) with JWT tokens</td>
-                  </tr>
-                </tbody>
-              </table>
+
+            {/* Side Illustration Banner */}
+            <div className="card card-interactive glow-border" style={{ padding: 12, textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#818cf8', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Multi-Cloud Architecture
+              </div>
+              <img
+                src="/side_banner_cloud_compare.png"
+                alt="Cloud & Container Parity"
+                className="side-banner-img"
+                style={{ width: '100%', height: 'auto', display: 'block', margin: '0 auto' }}
+              />
             </div>
           </div>
 
-          {/* Docker Architecture & Container Lifecycle */}
-          <div className="card">
+          {/* Docker Architecture & Container Lifecycle with Visual Diagram */}
+          <div className="card card-interactive glow-border">
             <div className="card-header">
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <FiBox size={18} color="var(--accent)" />
@@ -336,8 +351,18 @@ export default function SyllabusPage() {
               <span className="badge badge-success">Container Engine</span>
             </div>
             <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 14 }}>
-              Containers decouple application runtimes from host kernels. Below is the active state transition pipeline orchestrated in our platform:
+              Containers decouple application runtimes from host kernels. Below is the full Docker engine lifecycle diagram and state transition flow:
             </p>
+
+            {/* Docker Diagram Image */}
+            <div className="image-preview-card" style={{ marginBottom: 16 }}>
+              <img
+                src="/docker_lifecycle.png"
+                alt="Docker Engine Architecture and Container Lifecycle"
+                style={{ maxHeight: 340, objectFit: 'contain', margin: '0 auto' }}
+              />
+            </div>
+
             <div
               style={{
                 display: 'grid',
@@ -466,57 +491,72 @@ export default function SyllabusPage() {
       ══════════════════════════════════════════════════════════════════════════ */}
       {activeTab === 2 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-          {/* Significance & Comparative Matrix */}
-          <div className="card">
-            <div className="card-header">
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <FiServer size={18} color="var(--accent)" />
-                <h3 className="card-title">Significance of IaC &amp; Technology Comparison</h3>
+          {/* Significance & Comparative Matrix with Side Banner */}
+          <div className="unit-layout-split" style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 20 }}>
+            <div className="card card-interactive glow-border">
+              <div className="card-header">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <FiServer size={18} color="var(--accent)" />
+                  <h3 className="card-title">Significance of IaC &amp; Technology Comparison</h3>
+                </div>
+                <Link href="/infrastructure" className="btn btn-sm btn-primary">
+                  Launch Stacks UI →
+                </Link>
               </div>
-              <Link href="/infrastructure" className="btn btn-sm btn-primary">
-                Launch Stacks UI →
-              </Link>
+              <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 14 }}>
+                Infrastructure as Code enables teams to treat network, storage, and compute configurations identically to source code — versioned in Git, tested in CI/CD, and provisioned without manual configuration drift.
+              </p>
+              <div className="table-container">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Evaluation Criteria</th>
+                      <th>HashiCorp Terraform</th>
+                      <th>AWS CloudFormation</th>
+                      <th>Significance in CloudOps Sentinel</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td style={{ fontWeight: 600 }}>Syntax &amp; Paradigm</td>
+                      <td>Declarative HCL (HashiCorp Config Language)</td>
+                      <td>JSON or YAML template schemas</td>
+                      <td>Allows side-by-side template preview in our dashboard</td>
+                    </tr>
+                    <tr>
+                      <td style={{ fontWeight: 600 }}>Portability</td>
+                      <td>Multi-cloud (AWS, Azure, GCP, K8s)</td>
+                      <td>AWS-native managed engine</td>
+                      <td>Terraform provides vendor flexibility; CFN provides native AWS rollback</td>
+                    </tr>
+                    <tr>
+                      <td style={{ fontWeight: 600 }}>State Management</td>
+                      <td>State file (<code>.tfstate</code> in S3/Postgres backend)</td>
+                      <td>Automatically managed by AWS CloudFormation</td>
+                      <td>Our API runs dry-run plans before executing mutating applies</td>
+                    </tr>
+                    <tr>
+                      <td style={{ fontWeight: 600 }}>Modularity</td>
+                      <td>Composable modules (VPC, ECS cluster)</td>
+                      <td>Nested Stacks &amp; CloudFormation modules</td>
+                      <td>Reusable modules in <code>infrastructure/terraform/modules/</code></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
-            <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 14 }}>
-              Infrastructure as Code enables teams to treat network, storage, and compute configurations identically to source code — versioned in Git, tested in CI/CD, and provisioned without manual configuration drift.
-            </p>
-            <div className="table-container">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Evaluation Criteria</th>
-                    <th>HashiCorp Terraform</th>
-                    <th>AWS CloudFormation</th>
-                    <th>Significance in CloudOps Sentinel</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td style={{ fontWeight: 600 }}>Syntax &amp; Paradigm</td>
-                    <td>Declarative HCL (HashiCorp Config Language)</td>
-                    <td>JSON or YAML template schemas</td>
-                    <td>Allows side-by-side template preview in our dashboard</td>
-                  </tr>
-                  <tr>
-                    <td style={{ fontWeight: 600 }}>Portability</td>
-                    <td>Multi-cloud (AWS, Azure, GCP, K8s)</td>
-                    <td>AWS-native managed engine</td>
-                    <td>Terraform provides vendor flexibility; CFN provides native AWS rollback</td>
-                  </tr>
-                  <tr>
-                    <td style={{ fontWeight: 600 }}>State Management</td>
-                    <td>State file (<code>.tfstate</code> in S3/Postgres backend)</td>
-                    <td>Automatically managed by AWS CloudFormation</td>
-                    <td>Our API runs dry-run plans before executing mutating applies</td>
-                  </tr>
-                  <tr>
-                    <td style={{ fontWeight: 600 }}>Modularity</td>
-                    <td>Composable modules (VPC, ECS cluster)</td>
-                    <td>Nested Stacks &amp; CloudFormation modules</td>
-                    <td>Reusable modules in <code>infrastructure/terraform/modules/</code></td>
-                  </tr>
-                </tbody>
-              </table>
+
+            {/* Side Illustration Banner */}
+            <div className="card card-interactive glow-border" style={{ padding: 12, textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#38bdf8', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                IaC Engine Architecture
+              </div>
+              <img
+                src="/side_banner_iac.png"
+                alt="Infrastructure as Code Architecture"
+                className="side-banner-img"
+                style={{ width: '100%', height: 'auto', display: 'block', margin: '0 auto' }}
+              />
             </div>
           </div>
 
@@ -579,8 +619,29 @@ export default function SyllabusPage() {
       ══════════════════════════════════════════════════════════════════════════ */}
       {activeTab === 3 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          {/* Visual CI/CD DevSecOps Pipeline */}
+          <div className="card card-interactive glow-border">
+            <div className="card-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <FiZap size={18} color="var(--accent)" />
+                <h3 className="card-title">10-Stage Automated DevSecOps CI/CD Pipeline</h3>
+              </div>
+              <span className="badge badge-info">Jenkins &amp; Trivy Automation</span>
+            </div>
+            <div className="image-preview-card" style={{ marginBottom: 14 }}>
+              <img
+                src="/devsecops_pipeline.png"
+                alt="10-Stage DevSecOps Pipeline Flow"
+                style={{ maxHeight: 220, objectFit: 'contain', margin: '0 auto' }}
+              />
+            </div>
+            <p style={{ fontSize: 12.5, color: 'var(--text-muted)' }}>
+              Jenkins orchestrates our declarative 10-stage pipeline: unit tests, static code analysis, Trivy vulnerability scan gates, multi-stage Docker builds, Terraform dry-runs, and Kubernetes rolling updates.
+            </p>
+          </div>
+
           {/* Scaling Agile Frameworks */}
-          <div className="card">
+          <div className="card card-interactive">
             <div className="card-header">
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <FiGitBranch size={18} color="var(--accent)" />
@@ -615,71 +676,85 @@ export default function SyllabusPage() {
             </div>
           </div>
 
-          {/* Interactive A/B Testing & Canary Splitter */}
-          <div className="card">
-            <div className="card-header">
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <FiSliders size={18} color="var(--accent)" />
-                <h3 className="card-title">Interactive Canary &amp; A/B Testing Traffic Splitter</h3>
+          {/* Interactive A/B Testing & Canary Splitter with Pie Graphic */}
+          <div className="unit-layout-split" style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 20 }}>
+            <div className="card card-interactive glow-border">
+              <div className="card-header">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <FiSliders size={18} color="var(--accent)" />
+                  <h3 className="card-title">Interactive Canary &amp; A/B Testing Traffic Splitter</h3>
+                </div>
+                <span className="badge badge-success">Live Controller</span>
               </div>
-              <span className="badge badge-success">Live Controller</span>
+              <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 16 }}>
+                A/B testing and Canary releases distribute production requests between the baseline version and newly released feature variants to validate performance before 100% rollout.
+              </p>
+
+              <div
+                style={{
+                  padding: 16,
+                  borderRadius: 8,
+                  background: '#04060a',
+                  border: '1px solid var(--border)',
+                  marginBottom: 16,
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10, fontSize: 13 }}>
+                  <div>
+                    <span style={{ fontWeight: 700, color: '#38bdf8' }}>Variant A (Stable): </span>
+                    <span>{100 - splitRatioB}%</span>
+                  </div>
+                  <div>
+                    <span style={{ fontWeight: 700, color: '#34d399' }}>Variant B (Canary Candidate): </span>
+                    <span>{splitRatioB}%</span>
+                  </div>
+                </div>
+
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={splitRatioB}
+                  onChange={(e) => handleUpdateSplit(Number(e.target.value))}
+                  style={{ width: '100%', cursor: 'pointer', accentColor: 'var(--accent)' }}
+                />
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 12, fontSize: 12, color: 'var(--text-muted)' }}>
+                  <span>0% Canary (Full Stable)</span>
+                  <span>50% Equal Split (True A/B Test)</span>
+                  <span>100% Canary (Full Rollout)</span>
+                </div>
+              </div>
+
+              {abTest && (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12 }}>
+                  <div style={{ padding: 12, background: 'rgba(255,255,255,0.02)', borderRadius: 8, border: '1px solid var(--border)' }}>
+                    <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Total Traffic Sampled</div>
+                    <div style={{ fontSize: 18, fontWeight: 700 }}>{abTest.total_traffic?.toLocaleString()} reqs</div>
+                  </div>
+                  <div style={{ padding: 12, background: 'rgba(255,255,255,0.02)', borderRadius: 8, border: '1px solid var(--border)' }}>
+                    <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Variant A Conversion</div>
+                    <div style={{ fontSize: 18, fontWeight: 700, color: '#38bdf8' }}>{abTest.conv_rate_a}%</div>
+                  </div>
+                  <div style={{ padding: 12, background: 'rgba(255,255,255,0.02)', borderRadius: 8, border: '1px solid var(--border)' }}>
+                    <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Variant B Conversion</div>
+                    <div style={{ fontSize: 18, fontWeight: 700, color: '#34d399' }}>{abTest.conv_rate_b}%</div>
+                  </div>
+                </div>
+              )}
             </div>
-            <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 16 }}>
-              A/B testing and Canary releases distribute production requests between the baseline version and newly released feature variants to validate performance before 100% rollout.
-            </p>
 
-            <div
-              style={{
-                padding: 16,
-                borderRadius: 8,
-                background: '#04060a',
-                border: '1px solid var(--border)',
-                marginBottom: 16,
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10, fontSize: 13 }}>
-                <div>
-                  <span style={{ fontWeight: 700, color: '#38bdf8' }}>Variant A (Stable): </span>
-                  <span>{100 - splitRatioB}%</span>
-                </div>
-                <div>
-                  <span style={{ fontWeight: 700, color: '#34d399' }}>Variant B (Canary Candidate): </span>
-                  <span>{splitRatioB}%</span>
-                </div>
+            {/* A/B Testing Distribution Visual */}
+            <div className="card card-interactive glow-border" style={{ padding: 12, textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#34d399', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Canary Distribution
               </div>
-
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={splitRatioB}
-                onChange={(e) => handleUpdateSplit(Number(e.target.value))}
-                style={{ width: '100%', cursor: 'pointer', accentColor: 'var(--accent)' }}
+              <img
+                src="/ab_testing_pie.png"
+                alt="A/B Testing Traffic Distribution"
+                style={{ width: '100%', height: 'auto', display: 'block', margin: '0 auto', borderRadius: 8 }}
               />
-
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 12, fontSize: 12, color: 'var(--text-muted)' }}>
-                <span>0% Canary (Full Stable)</span>
-                <span>50% Equal Split (True A/B Test)</span>
-                <span>100% Canary (Full Rollout)</span>
-              </div>
             </div>
-
-            {abTest && (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12 }}>
-                <div style={{ padding: 12, background: 'rgba(255,255,255,0.02)', borderRadius: 8, border: '1px solid var(--border)' }}>
-                  <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Total Traffic Sampled</div>
-                  <div style={{ fontSize: 18, fontWeight: 700 }}>{abTest.total_traffic?.toLocaleString()} reqs</div>
-                </div>
-                <div style={{ padding: 12, background: 'rgba(255,255,255,0.02)', borderRadius: 8, border: '1px solid var(--border)' }}>
-                  <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Variant A Conversion</div>
-                  <div style={{ fontSize: 18, fontWeight: 700, color: '#38bdf8' }}>{abTest.conv_rate_a}%</div>
-                </div>
-                <div style={{ padding: 12, background: 'rgba(255,255,255,0.02)', borderRadius: 8, border: '1px solid var(--border)' }}>
-                  <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Variant B Conversion</div>
-                  <div style={{ fontSize: 18, fontWeight: 700, color: '#34d399' }}>{abTest.conv_rate_b}%</div>
-                </div>
-              </div>
-            )}
           </div>
 
           {/* TDD vs BDD with Gherkin Specification Tester */}
@@ -754,7 +829,7 @@ export default function SyllabusPage() {
       ══════════════════════════════════════════════════════════════════════════ */}
       {activeTab === 4 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-          <div className="card">
+          <div className="card card-interactive glow-border">
             <div className="card-header">
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <FiActivity size={18} color="var(--accent)" />
@@ -767,6 +842,15 @@ export default function SyllabusPage() {
             <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 14 }}>
               CloudOps Sentinel exposes high-cardinality Prometheus metrics from our Go backend, scraped every 15 seconds, and visualizes them on Grafana with automated alert manager triggers.
             </p>
+
+            {/* Visual SRE Golden Signals Infographic */}
+            <div className="image-preview-card" style={{ marginBottom: 16 }}>
+              <img
+                src="/golden_signals.png"
+                alt="SRE Four Golden Signals Telemetry Visualization"
+                style={{ maxHeight: 260, objectFit: 'contain', margin: '0 auto' }}
+              />
+            </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12, marginBottom: 16 }}>
               <div style={{ padding: 14, background: 'rgba(255,255,255,0.02)', borderRadius: 8, border: '1px solid var(--border)' }}>
@@ -808,48 +892,63 @@ export default function SyllabusPage() {
       ══════════════════════════════════════════════════════════════════════════ */}
       {activeTab === 5 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-          <div className="card">
-            <div className="card-header">
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <FiShield size={18} color="var(--accent)" />
-                <h3 className="card-title">DevSecOps Shift-Left Gates &amp; Emerging Security Trends</h3>
+          <div className="unit-layout-split" style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 20 }}>
+            <div className="card card-interactive glow-border">
+              <div className="card-header">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <FiShield size={18} color="var(--accent)" />
+                  <h3 className="card-title">DevSecOps Shift-Left Gates &amp; Emerging Security Trends</h3>
+                </div>
+                <Link href="/security" className="btn btn-sm btn-primary">
+                  Open Security Gates →
+                </Link>
               </div>
-              <Link href="/security" className="btn btn-sm btn-primary">
-                Open Security Gates →
-              </Link>
+              <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 16 }}>
+                Security is shifted left into developer workflows rather than tested only in production. Every build passes through secret detection, dependency audits, container scanning, and least-privilege network policies.
+              </p>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 14, marginBottom: 16 }}>
+                <div style={{ padding: 14, background: 'rgba(255,255,255,0.02)', borderRadius: 8, border: '1px solid var(--border)' }}>
+                  <div style={{ fontWeight: 700, color: '#38bdf8', marginBottom: 4 }}>SLSA Framework (Levels 1-4)</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+                    Supply-chain Levels for Software Artifacts. Guarantees build provenance, isolated hermetic environments, and protection against supply-chain tampering.
+                  </div>
+                </div>
+
+                <div style={{ padding: 14, background: 'rgba(255,255,255,0.02)', borderRadius: 8, border: '1px solid var(--border)' }}>
+                  <div style={{ fontWeight: 700, color: '#818cf8', marginBottom: 4 }}>SBOM Generation (SPDX / CycloneDX)</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+                    Software Bill of Materials generated during CI/CD to document nested dependencies and open-source licenses for compliance audits.
+                  </div>
+                </div>
+
+                <div style={{ padding: 14, background: 'rgba(255,255,255,0.02)', borderRadius: 8, border: '1px solid var(--border)' }}>
+                  <div style={{ fontWeight: 700, color: '#34d399', marginBottom: 4 }}>Cosign / Sigstore Signing</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+                    Cryptographically signing container images with OIDC keyless signatures so Kubernetes admission controllers reject unsigned container images.
+                  </div>
+                </div>
+
+                <div style={{ padding: 14, background: 'rgba(255,255,255,0.02)', borderRadius: 8, border: '1px solid var(--border)' }}>
+                  <div style={{ fontWeight: 700, color: '#fb923c', marginBottom: 4 }}>Kubernetes Zero-Trust Network Policies</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+                    Default-deny ingress/egress rules in <code>kubernetes/networkpolicy.yaml</code> enforcing that only verified frontend pods can talk to the backend.
+                  </div>
+                </div>
+              </div>
             </div>
-            <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 16 }}>
-              Security is shifted left into developer workflows rather than tested only in production. Every build passes through secret detection, dependency audits, container scanning, and least-privilege network policies.
-            </p>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 14, marginBottom: 16 }}>
-              <div style={{ padding: 14, background: 'rgba(255,255,255,0.02)', borderRadius: 8, border: '1px solid var(--border)' }}>
-                <div style={{ fontWeight: 700, color: '#38bdf8', marginBottom: 4 }}>SLSA Framework (Levels 1-4)</div>
-                <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                  Supply-chain Levels for Software Artifacts. Guarantees build provenance, isolated hermetic environments, and protection against supply-chain tampering.
-                </div>
+            {/* DevSecOps Side Illustration Banner */}
+            <div className="card card-interactive glow-border" style={{ padding: 12, textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#f43f5e', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Shift-Left Quality Gates
               </div>
-
-              <div style={{ padding: 14, background: 'rgba(255,255,255,0.02)', borderRadius: 8, border: '1px solid var(--border)' }}>
-                <div style={{ fontWeight: 700, color: '#818cf8', marginBottom: 4 }}>SBOM Generation (SPDX / CycloneDX)</div>
-                <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                  Software Bill of Materials generated during CI/CD to document nested dependencies and open-source licenses for compliance audits.
-                </div>
-              </div>
-
-              <div style={{ padding: 14, background: 'rgba(255,255,255,0.02)', borderRadius: 8, border: '1px solid var(--border)' }}>
-                <div style={{ fontWeight: 700, color: '#34d399', marginBottom: 4 }}>Cosign / Sigstore Signing</div>
-                <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                  Cryptographically signing container images with OIDC keyless signatures so Kubernetes admission controllers reject unsigned container images.
-                </div>
-              </div>
-
-              <div style={{ padding: 14, background: 'rgba(255,255,255,0.02)', borderRadius: 8, border: '1px solid var(--border)' }}>
-                <div style={{ fontWeight: 700, color: '#fb923c', marginBottom: 4 }}>Kubernetes Zero-Trust Network Policies</div>
-                <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                  Default-deny ingress/egress rules in <code>kubernetes/networkpolicy.yaml</code> enforcing that only verified frontend pods can talk to the backend.
-                </div>
-              </div>
+              <img
+                src="/side_banner_security.png"
+                alt="DevSecOps Shift-Left Security Defense"
+                className="side-banner-img"
+                style={{ width: '100%', height: 'auto', display: 'block', margin: '0 auto' }}
+              />
             </div>
           </div>
         </div>
@@ -860,8 +959,8 @@ export default function SyllabusPage() {
       ══════════════════════════════════════════════════════════════════════════ */}
       {activeTab === 6 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-          {/* 12-Factor App Compliance Scorecard */}
-          <div className="card">
+          {/* 12-Factor App Compliance Scorecard with Visual Bar Chart */}
+          <div className="card card-interactive glow-border">
             <div className="card-header">
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <FiCheckCircle size={18} color="var(--green)" />
@@ -872,6 +971,15 @@ export default function SyllabusPage() {
             <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 14 }}>
               CloudOps Sentinel adheres strictly to the cloud-native Twelve-Factor App methodology established for modern software-as-a-service architectures:
             </p>
+
+            {/* 12-Factor Bar Chart */}
+            <div className="image-preview-card" style={{ marginBottom: 16 }}>
+              <img
+                src="/twelve_factor_bar.png"
+                alt="12-Factor App Compliance Bar Chart"
+                style={{ maxHeight: 280, objectFit: 'contain', margin: '0 auto' }}
+              />
+            </div>
 
             <div className="table-container">
               <table>
@@ -899,8 +1007,63 @@ export default function SyllabusPage() {
             </div>
           </div>
 
+          {/* FinOps Cost Optimization & Policy Governance Split */}
+          <div className="unit-layout-split" style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 20 }}>
+            <div className="card card-interactive glow-border-green">
+              <div className="card-header">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <FiDollarSign size={18} color="var(--green)" />
+                  <h3 className="card-title">FinOps Cost Optimization &amp; Workload Economics</h3>
+                </div>
+                <Link href="/cost" className="btn btn-sm btn-primary">
+                  Open FinOps Engine →
+                </Link>
+              </div>
+              <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 14 }}>
+                In accordance with the FinOps Foundation lifecycle (Inform -&gt; Optimize -&gt; Operate), CloudOps Sentinel models cloud workload economics with rightsizing algorithms:
+              </p>
+
+              {/* FinOps Breakdown Image */}
+              <div className="image-preview-card" style={{ marginBottom: 14 }}>
+                <img
+                  src="/finops_breakdown.png"
+                  alt="FinOps Monthly Workload Spend Breakdown"
+                  style={{ maxHeight: 260, objectFit: 'contain', margin: '0 auto' }}
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 10, fontSize: 12 }}>
+                <div style={{ padding: 10, background: 'rgba(255,255,255,0.02)', borderRadius: 6, border: '1px solid var(--border)' }}>
+                  <div style={{ color: 'var(--text-muted)' }}>Baseline Simulated Spend</div>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: '#38bdf8' }}>$348.00 / mo</div>
+                </div>
+                <div style={{ padding: 10, background: 'rgba(255,255,255,0.02)', borderRadius: 6, border: '1px solid var(--border)' }}>
+                  <div style={{ color: 'var(--text-muted)' }}>Rightsizing Savings</div>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: '#10b981' }}>$122.50 / mo (35%)</div>
+                </div>
+                <div style={{ padding: 10, background: 'rgba(255,255,255,0.02)', borderRadius: 6, border: '1px solid var(--border)' }}>
+                  <div style={{ color: 'var(--text-muted)' }}>Actual Cloud Incurred</div>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: '#a78bfa' }}>$0.00 (Local-First)</div>
+                </div>
+              </div>
+            </div>
+
+            {/* FinOps Side Illustration Banner */}
+            <div className="card card-interactive glow-border-green" style={{ padding: 12, textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#10b981', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                FinOps Control Plane
+              </div>
+              <img
+                src="/side_banner_finops.png"
+                alt="FinOps Governance & Economics"
+                className="side-banner-img"
+                style={{ width: '100%', height: 'auto', display: 'block', margin: '0 auto' }}
+              />
+            </div>
+          </div>
+
           {/* Serverless vs. Container Microservices Comparison */}
-          <div className="card">
+          <div className="card card-interactive">
             <div className="card-header">
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <FiZap size={18} color="var(--accent)" />
