@@ -78,7 +78,7 @@ func InitAWS() *AWSManager {
 
 		region := os.Getenv("AWS_REGION")
 		if region == "" {
-			region = "us-east-1"
+			region = "ap-south-1"
 		}
 		endpoint := os.Getenv("AWS_ENDPOINT_URL")
 

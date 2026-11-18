@@ -17,7 +17,7 @@ variable "environment" {
 }
 
 variable "aws_region" {
-  description = "AWS region, e.g. us-east-1"
+  description = "AWS region, e.g. ap-south-1"
   type        = string
   default     = "XX"
 }
@@ -54,7 +54,7 @@ variable "vpc_cidr" {
 }
 
 variable "availability_zones" {
-  description = "List of Availability Zones, e.g. [\"us-east-1a\", \"us-east-1b\"]"
+  description = "List of Availability Zones, e.g. [\"ap-south-1a\", \"ap-south-1b\"]"
   type        = list(string)
   default     = ["XX", "XX"]
 }
@@ -97,7 +97,7 @@ variable "peer_vpc_cidr" {
 }
 
 variable "peer_vpc_region" {
-  description = "Region of the peer VPC (same region for this stack)"
+  description = "Region of the peer VPC (same region for this stack), e.g. ap-south-1"
   type        = string
   default     = "XX"
 }

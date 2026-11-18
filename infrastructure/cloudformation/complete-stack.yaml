@@ -16,7 +16,7 @@ Parameters:
   AwsRegion:
     Type: String
     Default: XX
-    Description: AWS region, e.g. us-east-1
+    Description: AWS region, e.g. ap-south-1
   VpcCIDR:
     Type: String
     Default: XX
