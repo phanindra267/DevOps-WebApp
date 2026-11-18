@@ -1,0 +1,514 @@
+
+Report Summary
+
+┌─────────────────────────────────────────┬────────────────────────┬───────────────────┐
+│                 Target                  │          Type          │ Misconfigurations │
+├─────────────────────────────────────────┼────────────────────────┼───────────────────┤
+│ .                                       │ terraformplan-snapshot │         0         │
+├─────────────────────────────────────────┼────────────────────────┼───────────────────┤
+│ cloudformation/ec2-webserver.yaml       │     cloudformation     │         5         │
+├─────────────────────────────────────────┼────────────────────────┼───────────────────┤
+│ cloudformation/ecs-cluster.yaml         │     cloudformation     │         1         │
+├─────────────────────────────────────────┼────────────────────────┼───────────────────┤
+│ cloudformation/iam-rbac.yaml            │     cloudformation     │         1         │
+├─────────────────────────────────────────┼────────────────────────┼───────────────────┤
+│ cloudformation/vpc.yaml                 │     cloudformation     │         2         │
+├─────────────────────────────────────────┼────────────────────────┼───────────────────┤
+│ terraform                               │       terraform        │         0         │
+├─────────────────────────────────────────┼────────────────────────┼───────────────────┤
+│ terraform-aws-modules/vpc/aws/main.tf   │       terraform        │         3         │
+├─────────────────────────────────────────┼────────────────────────┼───────────────────┤
+│ terraform/envs/dev                      │       terraform        │         0         │
+├─────────────────────────────────────────┼────────────────────────┼───────────────────┤
+│ terraform/envs/prod                     │       terraform        │         0         │
+├─────────────────────────────────────────┼────────────────────────┼───────────────────┤
+│ terraform/local                         │       terraform        │         0         │
+├─────────────────────────────────────────┼────────────────────────┼───────────────────┤
+│ terraform/local/web/Dockerfile          │       dockerfile       │         2         │
+├─────────────────────────────────────────┼────────────────────────┼───────────────────┤
+│ terraform/modules/ec2_webserver         │       terraform        │         0         │
+├─────────────────────────────────────────┼────────────────────────┼───────────────────┤
+│ terraform/modules/ec2_webserver/main.tf │       terraform        │         4         │
+├─────────────────────────────────────────┼────────────────────────┼───────────────────┤
+│ terraform/modules/iam                   │       terraform        │         0         │
+├─────────────────────────────────────────┼────────────────────────┼───────────────────┤
+│ terraform/modules/iam/main.tf           │       terraform        │         1         │
+├─────────────────────────────────────────┼────────────────────────┼───────────────────┤
+│ terraform/modules/s3_storage            │       terraform        │         0         │
+├─────────────────────────────────────────┼────────────────────────┼───────────────────┤
+│ terraform/modules/s3_storage/main.tf    │       terraform        │         2         │
+└─────────────────────────────────────────┴────────────────────────┴───────────────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+
+cloudformation/ec2-webserver.yaml (cloudformation)
+==================================================
+Tests: 44 (SUCCESSES: 39, FAILURES: 5)
+Failures: 5 (UNKNOWN: 0, LOW: 1, MEDIUM: 0, HIGH: 3, CRITICAL: 1)
+
+AWS-0028 (HIGH): Instance does not require IMDS access to require a token.
+════════════════════════════════════════
+IMDS v2 (Instance Metadata Service) introduced session authentication tokens which improve security when talking to IMDS.
+
+By default <code>aws_instance</code> resource sets IMDS session auth tokens to be optional.
+
+To fully protect IMDS you need to enable session tokens by using <code>metadata_options</code> block and its <code>http_tokens</code> variable set to <code>required</code>.
+
+
+See https://avd.aquasec.com/misconfig/aws-0028
+────────────────────────────────────────
+ cloudformation/ec2-webserver.yaml:67-90
+────────────────────────────────────────
+  67 ┌   WebServerInstance:
+  68 │     Type: AWS::EC2::Instance
+  69 │     Properties:
+  70 │       InstanceType: !Ref InstanceType
+  71 │       KeyName: !Ref KeyName
+  72 │       SubnetId: !Ref SubnetId
+  73 │       SecurityGroupIds:
+  74 │         - !Ref WebServerSecurityGroup
+  75 └       ImageId: ami-0c55b159cbfafe1f0 # Amazon Linux 2
+  ..   
+────────────────────────────────────────
+
+
+AWS-0104 (CRITICAL): Security group rule allows unrestricted egress to any IP address.
+════════════════════════════════════════
+Opening up ports to connect out to the public internet is generally to be avoided. You should restrict access to IP addresses or ranges that are explicitly required where possible.
+
+
+See https://avd.aquasec.com/misconfig/aws-0104
+────────────────────────────────────────
+ cloudformation/ec2-webserver.yaml:59
+   via cloudformation/ec2-webserver.yaml:58-59 (WebServerSecurityGroup)
+────────────────────────────────────────
+  58           - IpProtocol: "-1"
+  59 [           CidrIp: 0.0.0.0/0
+────────────────────────────────────────
+
+
+AWS-0107 (HIGH): Security group rule allows unrestricted ingress from any IP address.
+════════════════════════════════════════
+Security groups provide stateful filtering of ingress and egress network traffic to AWS
+resources. It is recommended that no security group allows unrestricted ingress access to
+remote server administration ports, such as SSH to port 22 and RDP to port 3389.
+
+
+See https://avd.aquasec.com/misconfig/aws-0107
+────────────────────────────────────────
+ cloudformation/ec2-webserver.yaml:55
+   via cloudformation/ec2-webserver.yaml:52-56 (WebServerSecurityGroup)
+────────────────────────────────────────
+  52           - IpProtocol: tcp
+  53             FromPort: 22
+  54             ToPort: 22
+  55 [           CidrIp: 0.0.0.0/0
+  56             Description: "Inbound SSH Remote Access"
+────────────────────────────────────────
+
+
+AWS-0124 (LOW): Security group rule does not have a description.
+════════════════════════════════════════
+Security group rules should include a description for auditing purposes.
+
+Simplifies auditing, debugging, and managing security groups.
+
+
+See https://avd.aquasec.com/misconfig/aws-0124
+────────────────────────────────────────
+ cloudformation/ec2-webserver.yaml:58-59
+   via cloudformation/ec2-webserver.yaml:58-59 (WebServerSecurityGroup)
+────────────────────────────────────────
+  58 ┌         - IpProtocol: "-1"
+  59 └           CidrIp: 0.0.0.0/0
+────────────────────────────────────────
+
+
+AWS-0131 (HIGH): Root block device is not encrypted.
+════════════════════════════════════════
+Block devices should be encrypted to ensure sensitive data is held securely at rest.
+
+
+See https://avd.aquasec.com/misconfig/aws-0131
+────────────────────────────────────────
+ cloudformation/ec2-webserver.yaml:67-90
+────────────────────────────────────────
+  67 ┌   WebServerInstance:
+  68 │     Type: AWS::EC2::Instance
+  69 │     Properties:
+  70 │       InstanceType: !Ref InstanceType
+  71 │       KeyName: !Ref KeyName
+  72 │       SubnetId: !Ref SubnetId
+  73 │       SecurityGroupIds:
+  74 │         - !Ref WebServerSecurityGroup
+  75 └       ImageId: ami-0c55b159cbfafe1f0 # Amazon Linux 2
+  ..   
+────────────────────────────────────────
+
+
+
+cloudformation/ecs-cluster.yaml (cloudformation)
+================================================
+Tests: 27 (SUCCESSES: 26, FAILURES: 1)
+Failures: 1 (UNKNOWN: 0, LOW: 1, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
+
+AWS-0034 (LOW): Cluster does not have container insights enabled.
+════════════════════════════════════════
+Cloudwatch Container Insights provide more metrics and logs for container based applications and micro services.
+
+
+See https://avd.aquasec.com/misconfig/aws-0034
+────────────────────────────────────────
+ cloudformation/ecs-cluster.yaml:16-27
+────────────────────────────────────────
+  16 ┌   ECSCluster:
+  17 │     Type: AWS::ECS::Cluster
+  18 │     Properties:
+  19 │       ClusterName: !Sub '${EnvironmentName}-cloudops-cluster'
+  20 │       CapacityProviders:
+  21 │         - FARGATE
+  22 │         - FARGATE_SPOT
+  23 │       Tags:
+  24 └         - Key: Environment
+  ..   
+────────────────────────────────────────
+
+
+
+cloudformation/iam-rbac.yaml (cloudformation)
+=============================================
+Tests: 24 (SUCCESSES: 23, FAILURES: 1)
+Failures: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
+
+AWS-0123 (MEDIUM): Multi-Factor authentication is not enforced for group
+════════════════════════════════════════
+IAM groups should be protected with multi factor authentication to add safe guards to password compromise.
+
+
+See https://avd.aquasec.com/misconfig/aws-0123
+────────────────────────────────────────
+ cloudformation/iam-rbac.yaml:10-13
+────────────────────────────────────────
+  10 ┌   DevOpsEngineersGroup:
+  11 │     Type: AWS::IAM::Group
+  12 │     Properties:
+  13 └       GroupName: CloudOps-DevOps-Group
+────────────────────────────────────────
+
+
+
+cloudformation/vpc.yaml (cloudformation)
+========================================
+Tests: 44 (SUCCESSES: 42, FAILURES: 2)
+Failures: 2 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 1, CRITICAL: 0)
+
+AWS-0164 (HIGH): Subnet associates public IP address.
+════════════════════════════════════════
+You should limit the provision of public IP addresses for resources. Resources should not be exposed on the public internet, but should have access limited to consumers required for the function of your application.
+
+
+See https://avd.aquasec.com/misconfig/aws-0164
+────────────────────────────────────────
+ cloudformation/vpc.yaml:56
+   via cloudformation/vpc.yaml:51-59 (PublicSubnet1)
+────────────────────────────────────────
+  51     PublicSubnet1:
+  52       Type: AWS::EC2::Subnet
+  53       Properties:
+  54         VpcId: !Ref VPC
+  55         CidrBlock: !Ref PublicSubnet1CIDR
+  56 [       MapPublicIpOnLaunch: true
+  57         Tags:
+  58           - Key: Name
+  59             Value: !Sub '${EnvironmentName}-public-1'
+────────────────────────────────────────
+
+
+AWS-0178 (MEDIUM): VPC does not have VPC Flow Logs enabled.
+════════════════════════════════════════
+VPC Flow Logs provide visibility into network traffic that traverses the VPC and can be used to detect anomalous traffic or insight during security workflows.
+
+
+See https://avd.aquasec.com/misconfig/aws-0178
+────────────────────────────────────────
+ cloudformation/vpc.yaml:26-36
+────────────────────────────────────────
+  26 ┌   VPC:
+  27 │     Type: AWS::EC2::VPC
+  28 │     Properties:
+  29 │       CidrBlock: !Ref VpcCIDR
+  30 │       EnableDnsSupport: true
+  31 │       EnableDnsHostnames: true
+  32 │       Tags:
+  33 │         - Key: Name
+  34 └           Value: !Sub '${EnvironmentName}-cloudops-vpc'
+  ..   
+────────────────────────────────────────
+
+
+
+terraform-aws-modules/vpc/aws/main.tf (terraform)
+=================================================
+Tests: 3 (SUCCESSES: 0, FAILURES: 3)
+Failures: 3 (UNKNOWN: 0, LOW: 0, MEDIUM: 3, HIGH: 0, CRITICAL: 0)
+
+AWS-0178 (MEDIUM): VPC does not have VPC Flow Logs enabled.
+════════════════════════════════════════
+VPC Flow Logs provide visibility into network traffic that traverses the VPC and can be used to detect anomalous traffic or insight during security workflows.
+
+
+See https://avd.aquasec.com/misconfig/aws-0178
+────────────────────────────────────────
+ terraform-aws-modules/vpc/aws/main.tf:29-52
+   via terraform/modules/vpc/main.tf:1-14 (module.vpc)
+    via terraform/main.tf:5-7 (module.vpc)
+────────────────────────────────────────
+  29 ┌ resource "aws_vpc" "this" {
+  30 │   count = local.create_vpc ? 1 : 0
+  31 │ 
+  32 │   cidr_block          = var.use_ipam_pool ? null : var.cidr
+  33 │   ipv4_ipam_pool_id   = var.ipv4_ipam_pool_id
+  34 │   ipv4_netmask_length = var.ipv4_netmask_length
+  35 │ 
+  36 │   assign_generated_ipv6_cidr_block     = var.enable_ipv6 && !var.use_ipam_pool ? true : null
+  37 └   ipv6_cidr_block                      = var.ipv6_cidr
+  ..   
+────────────────────────────────────────
+
+
+AWS-0178 (MEDIUM): VPC does not have VPC Flow Logs enabled.
+════════════════════════════════════════
+VPC Flow Logs provide visibility into network traffic that traverses the VPC and can be used to detect anomalous traffic or insight during security workflows.
+
+
+See https://avd.aquasec.com/misconfig/aws-0178
+────────────────────────────────────────
+ terraform-aws-modules/vpc/aws/main.tf:29-52
+   via terraform/modules/vpc/main.tf:1-14 (module.vpc)
+    via terraform/envs/dev/main.tf:22-29 (module.vpc)
+────────────────────────────────────────
+  29 ┌ resource "aws_vpc" "this" {
+  30 │   count = local.create_vpc ? 1 : 0
+  31 │ 
+  32 │   cidr_block          = var.use_ipam_pool ? null : var.cidr
+  33 │   ipv4_ipam_pool_id   = var.ipv4_ipam_pool_id
+  34 │   ipv4_netmask_length = var.ipv4_netmask_length
+  35 │ 
+  36 │   assign_generated_ipv6_cidr_block     = var.enable_ipv6 && !var.use_ipam_pool ? true : null
+  37 └   ipv6_cidr_block                      = var.ipv6_cidr
+  ..   
+────────────────────────────────────────
+
+
+AWS-0178 (MEDIUM): VPC does not have VPC Flow Logs enabled.
+════════════════════════════════════════
+VPC Flow Logs provide visibility into network traffic that traverses the VPC and can be used to detect anomalous traffic or insight during security workflows.
+
+
+See https://avd.aquasec.com/misconfig/aws-0178
+────────────────────────────────────────
+ terraform-aws-modules/vpc/aws/main.tf:29-52
+   via terraform/modules/vpc/main.tf:1-14 (module.vpc)
+    via terraform/envs/prod/main.tf:22-29 (module.vpc)
+────────────────────────────────────────
+  29 ┌ resource "aws_vpc" "this" {
+  30 │   count = local.create_vpc ? 1 : 0
+  31 │ 
+  32 │   cidr_block          = var.use_ipam_pool ? null : var.cidr
+  33 │   ipv4_ipam_pool_id   = var.ipv4_ipam_pool_id
+  34 │   ipv4_netmask_length = var.ipv4_netmask_length
+  35 │ 
+  36 │   assign_generated_ipv6_cidr_block     = var.enable_ipv6 && !var.use_ipam_pool ? true : null
+  37 └   ipv6_cidr_block                      = var.ipv6_cidr
+  ..   
+────────────────────────────────────────
+
+
+
+terraform/local/web/Dockerfile (dockerfile)
+===========================================
+Tests: 27 (SUCCESSES: 25, FAILURES: 2)
+Failures: 2 (UNKNOWN: 0, LOW: 1, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
+
+DS-0002 (HIGH): Specify at least 1 USER command in Dockerfile with non-root user as argument
+════════════════════════════════════════
+Running containers with 'root' user can lead to a container escape situation. It is a best practice to run containers as non-root users, which can be done by adding a 'USER' statement to the Dockerfile.
+
+See https://avd.aquasec.com/misconfig/ds-0002
+────────────────────────────────────────
+
+
+DS-0026 (LOW): Add HEALTHCHECK instruction in your Dockerfile
+════════════════════════════════════════
+You should add HEALTHCHECK instruction in your docker container images to perform the health check on running containers.
+
+See https://avd.aquasec.com/misconfig/ds-0026
+────────────────────────────────────────
+
+
+
+terraform/modules/ec2_webserver/main.tf (terraform)
+===================================================
+Tests: 4 (SUCCESSES: 0, FAILURES: 4)
+Failures: 4 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 3, CRITICAL: 1)
+
+AWS-0028 (HIGH): Instance does not require IMDS access to require a token.
+════════════════════════════════════════
+IMDS v2 (Instance Metadata Service) introduced session authentication tokens which improve security when talking to IMDS.
+
+By default <code>aws_instance</code> resource sets IMDS session auth tokens to be optional.
+
+To fully protect IMDS you need to enable session tokens by using <code>metadata_options</code> block and its <code>http_tokens</code> variable set to <code>required</code>.
+
+
+See https://avd.aquasec.com/misconfig/aws-0028
+────────────────────────────────────────
+ terraform/modules/ec2_webserver/main.tf:96-142
+────────────────────────────────────────
+  96 ┌ resource "aws_instance" "web_server" {
+  97 │   ami                         = var.ami_id
+  98 │   instance_type               = var.instance_type
+  99 │   subnet_id                   = var.subnet_id
+ 100 │   vpc_security_group_ids      = [aws_security_group.web_sg.id]
+ 101 │   associate_public_ip_address = true
+ 102 │   key_name                    = var.key_name
+ 103 │ 
+ 104 └   user_data = <<-EOF
+ ...   
+────────────────────────────────────────
+
+
+AWS-0104 (CRITICAL): Security group rule allows unrestricted egress to any IP address.
+════════════════════════════════════════
+Opening up ports to connect out to the public internet is generally to be avoided. You should restrict access to IP addresses or ranges that are explicitly required where possible.
+
+
+See https://avd.aquasec.com/misconfig/aws-0104
+────────────────────────────────────────
+ terraform/modules/ec2_webserver/main.tf:85
+   via terraform/modules/ec2_webserver/main.tf:80-86 (egress)
+    via terraform/modules/ec2_webserver/main.tf:51-93 (aws_security_group.web_sg)
+────────────────────────────────────────
+  51   resource "aws_security_group" "web_sg" {
+  ..   
+  85 [     cidr_blocks = ["0.0.0.0/0"]
+  ..   
+  93   }
+────────────────────────────────────────
+
+
+AWS-0107 (HIGH): Security group rule allows unrestricted ingress from any IP address.
+════════════════════════════════════════
+Security groups provide stateful filtering of ingress and egress network traffic to AWS
+resources. It is recommended that no security group allows unrestricted ingress access to
+remote server administration ports, such as SSH to port 22 and RDP to port 3389.
+
+
+See https://avd.aquasec.com/misconfig/aws-0107
+────────────────────────────────────────
+ terraform/modules/ec2_webserver/main.tf:77
+   via terraform/modules/ec2_webserver/main.tf:72-78 (ingress)
+    via terraform/modules/ec2_webserver/main.tf:51-93 (aws_security_group.web_sg)
+────────────────────────────────────────
+  51   resource "aws_security_group" "web_sg" {
+  ..   
+  77 [     cidr_blocks = ["0.0.0.0/0"] # In production, restrict to administrator VPN / IP
+  ..   
+  93   }
+────────────────────────────────────────
+
+
+AWS-0131 (HIGH): Root block device is not encrypted.
+════════════════════════════════════════
+Block devices should be encrypted to ensure sensitive data is held securely at rest.
+
+
+See https://avd.aquasec.com/misconfig/aws-0131
+────────────────────────────────────────
+ terraform/modules/ec2_webserver/main.tf:96-142
+────────────────────────────────────────
+  96 ┌ resource "aws_instance" "web_server" {
+  97 │   ami                         = var.ami_id
+  98 │   instance_type               = var.instance_type
+  99 │   subnet_id                   = var.subnet_id
+ 100 │   vpc_security_group_ids      = [aws_security_group.web_sg.id]
+ 101 │   associate_public_ip_address = true
+ 102 │   key_name                    = var.key_name
+ 103 │ 
+ 104 └   user_data = <<-EOF
+ ...   
+────────────────────────────────────────
+
+
+
+terraform/modules/iam/main.tf (terraform)
+=========================================
+Tests: 1 (SUCCESSES: 0, FAILURES: 1)
+Failures: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
+
+AWS-0123 (MEDIUM): Multi-Factor authentication is not enforced for group
+════════════════════════════════════════
+IAM groups should be protected with multi factor authentication to add safe guards to password compromise.
+
+
+See https://avd.aquasec.com/misconfig/aws-0123
+────────────────────────────────────────
+ terraform/modules/iam/main.tf:19-21
+────────────────────────────────────────
+  19 ┌ resource "aws_iam_group" "security_auditors" {
+  20 │   name = "CloudOps-SecurityAuditors"
+  21 └ }
+────────────────────────────────────────
+
+
+
+terraform/modules/s3_storage/main.tf (terraform)
+================================================
+Tests: 2 (SUCCESSES: 0, FAILURES: 2)
+Failures: 2 (UNKNOWN: 0, LOW: 1, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
+
+AWS-0089 (LOW): Bucket has logging disabled
+════════════════════════════════════════
+Ensures S3 bucket logging is enabled for S3 buckets
+
+See https://avd.aquasec.com/misconfig/aws-0089
+────────────────────────────────────────
+ terraform/modules/s3_storage/main.tf:21-31
+────────────────────────────────────────
+  21 ┌ resource "aws_s3_bucket" "artifacts" {
+  22 │   bucket        = "${var.bucket_name}-${var.environment}"
+  23 │   force_destroy = false
+  24 │ 
+  25 │   tags = {
+  26 │     Name        = "CloudOps Sentinel Storage"
+  27 │     Environment = var.environment
+  28 │     Course      = "INT 378"
+  29 └     ManagedBy   = "Terraform"
+  ..   
+────────────────────────────────────────
+
+
+AWS-0132 (HIGH): Bucket does not encrypt data with a customer managed key.
+════════════════════════════════════════
+Encryption using AWS keys provides protection for your S3 buckets. To gain greater control over encryption, such as key rotation, access policies, and auditability, use customer managed keys (CMKs) with SSE-KMS.
+Note that SSE-KMS is not supported for S3 server access logging destination buckets; in such cases, use SSE-S3 instead.
+
+
+See https://avd.aquasec.com/misconfig/aws-0132
+────────────────────────────────────────
+ terraform/modules/s3_storage/main.tf:43-51
+────────────────────────────────────────
+  43 ┌ resource "aws_s3_bucket_server_side_encryption_configuration" "encryption" {
+  44 │   bucket = aws_s3_bucket.artifacts.id
+  45 │ 
+  46 │   rule {
+  47 │     apply_server_side_encryption_by_default {
+  48 │       sse_algorithm = "AES256"
+  49 │     }
+  50 │   }
+  51 └ }
+────────────────────────────────────────
+
+

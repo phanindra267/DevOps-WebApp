@@ -182,3 +182,22 @@ Access the live interactive **Curriculum Hub** directly at **`/syllabus`** in th
 - **External Billing / Payment Gateway Hooks**: The real external API calls (e.g. AWS Cost Explorer API `GetCostAndUsage` and Stripe Payment Invoicing `invoice.Pay`) are provided as detailed commented code blocks in `backend/internal/cost/cost.go` so evaluators can inspect the cloud-provider implementation without incurring real cloud or credit card charges during local demonstration.
 - **Pull Request Automation**: Kept manual/local-first without requiring external git webhooks.
 - **Local-First Execution**: The platform is self-contained and demonstratable locally.
+
+---
+
+## 🧱 Complete AWS IaC with `XX` Placeholders (NEW)
+
+A full, self-contained AWS stack was added so every key value can be replaced by the evaluator:
+
+| Path | Contents |
+|---|---|
+| `infrastructure/terraform/aws-complete/` | Complete Terraform stack — VPC (public/private subnets, NAT, Site-to-Site VPN), security groups/NACLs, IAM (RBAC, MFA, roles), EC2 Nginx servers, S3, EKS, RDS, Lambda + API Gateway, CloudWatch and AWS Budgets. All key values are `XX`; see `terraform.tfvars.example`. |
+| `infrastructure/cloudformation/complete-stack.yaml` | CloudFormation equivalent of the full stack (HCL vs YAML comparison), including Site-to-Site VPN and VPC Peering. |
+| `infrastructure/cloudformation/eks-cluster.yaml` | CloudFormation EKS control plane + managed node group + OIDC. |
+| `kubernetes/eks/` | Declarative manifests to host the application on the EKS cluster (Ingress, HPA, NetworkPolicy, IRSA ServiceAccount). |
+
+> Replace every `XX` before applying. The Terraform stack is already validated with
+> `terraform validate`; the CloudFormation and Kubernetes YAML files are syntax-checked.
+
+📐 **Complete architecture diagram:** [`docs/architecture-complete.png`](docs/architecture-complete.png)
+(full explanation + Mermaid source in [`docs/ARCHITECTURE_AWS_COMPLETE.md`](docs/ARCHITECTURE_AWS_COMPLETE.md))

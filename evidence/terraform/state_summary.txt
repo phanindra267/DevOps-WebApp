@@ -1,0 +1,21 @@
+﻿Terraform state summary - local Docker infrastructure
+
+===== terraform state list =====
+docker_container.private_app
+docker_container.webserver
+docker_image.alpine
+docker_image.nginx
+docker_image.webserver
+docker_network.private
+docker_network.public
+docker_volume.webdata
+EXITCODE=0
+
+===== terraform output =====
+private_app_container_id = "41af7ae015574aced6b732dc50ddc4a8098896ab302a60cfcc6afb82d7e85818"
+private_network_id = "03458ae08d105c3add5ab8d08a35f88b00e7650159db9dc0b53602f5a9772a52"
+public_network_id = "240e0a901e75e76c54d28345985580ff9ac285d58f59ab4ec059a6040df2082d"
+web_url = "http://localhost:8088"
+web_volume_name = "tf-local-webdata"
+webserver_container_id = "7e42b3186c29dd0889115e824f41fce9a759f958018c4d8a5518f200caf39432"
+EXITCODE=0

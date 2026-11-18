@@ -43,3 +43,11 @@ Thumbs.db
 # Temporary data
 register_payload.json
 tmp/
+
+# Terraform (provider binaries, local plans and filled-in secrets)
+**/.terraform/
+infrastructure/terraform/aws-complete/terraform.tfvars
+infrastructure/terraform/aws-complete/*.tfplan
+infrastructure/terraform/local/terraform.tfstate
+infrastructure/terraform/local/*.tfplan
+

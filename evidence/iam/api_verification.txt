@@ -1,0 +1,92 @@
+================================================================
+ PRACTICAL 02 - LOCAL API VERIFICATION (JWT_SECRET + RBAC)
+ Date      : 2026-11-17T14:08:52
+ Target    : http://localhost:8080/api/v1 (Docker Compose backend)
+ Stack     : rebuilt with docker compose build backend + force-recreate
+================================================================
+
+[1] Public health endpoint (no token)
+COMMAND: Invoke-WebRequest -Method GET -Uri 'http://localhost:8080/api/v1/health'
+HTTP 200
+BODY: {"database":true,"status":"healthy","timestamp":"2026-11-17T08:38:52Z","version":"0.1.0"}
+
+
+[2] Public login with documented admin credentials (admin/admin123)
+COMMAND: Invoke-WebRequest -Method POST -Uri 'http://localhost:8080/api/v1/login' -Body '{"username":"admin","password":"admin123"}'
+HTTP 200
+BODY: {"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJhZG1pbiIsImV4cCI6MTc5NDk5MTEzMywiaWF0IjoxNzk0OTA0NzMzfQ.KId9xlKj8EhdLF3JYxmO_p0yXXDgcTK2ZTYtY7MoUHk"}
+
+ADMIN_TOKEN: eyJhbGciOiJIUzI1NiIs...tY7MoUHk (length 167)
+
+[3] JWT signature uses JWT_SECRET from docker-compose.yml (local env)
+COMPOSE_JWT_SECRET: localDevSecretKeyForCloudOpsPlatform2026
+SIGNATURE_MATCHES_ENV_SECRET: True
+SIGNATURE_MATCHES_OLD_HARDCODED_SECRET: False
+
+[4] Protected GET with admin token
+COMMAND: Invoke-WebRequest -Method GET -Uri 'http://localhost:8080/api/v1/me' -Headers @{ Authorization = 'Bearer <TOKEN>' }
+HTTP 200
+BODY: {"role":"admin","username":"admin"}
+
+COMMAND: Invoke-WebRequest -Method GET -Uri 'http://localhost:8080/api/v1/projects' -Headers @{ Authorization = 'Bearer <TOKEN>' }
+HTTP 200
+BODY: [{"id":2,"name":"CloudOps Demo","description":"","owner_id":3,"created_at":"2026-11-16T15:31:23.436238Z","updated_at":"2026-11-16T15:31:23.436238Z"},{"id":1,"name":"CloudOps Demo Project","description":"A sample project demonstrating the CloudOps Sentinel platform capabilities.","owner_id":1,"created_at":"2026-11-03T11:00:47.852921Z","updated_at":"2026-11-03T11:00:47.852921Z"}]
+
+[5] Mutating POST with admin token (must be allowed)
+COMMAND: Invoke-WebRequest -Method POST -Uri 'http://localhost:8080/api/v1/projects' -Headers @{ Authorization = 'Bearer <TOKEN>' } -Body '{"name":"IAM-RBAC-Verify-14c42c42","description":"Created by local RBAC verification"}'
+HTTP 201
+BODY: {"id":3,"name":"IAM-RBAC-Verify-14c42c42"}
+
+CREATED_PROJECT_ID: 3
+
+[6] Public self-registration creates a least-privilege viewer (role field ignored)
+COMMAND: Invoke-WebRequest -Method POST -Uri 'http://localhost:8080/api/v1/register' -Body '{"username":"iamviewer_14c42c42","email":"iamviewer_14c42c42@local.test","password":"viewer123","role":"admin"}'
+HTTP 201
+BODY: {"message":"user created"}
+
+NOTE: request asked for role=admin; registration forced role=viewer.
+
+[7] Login as the viewer
+COMMAND: Invoke-WebRequest -Method POST -Uri 'http://localhost:8080/api/v1/login' -Body '{"username":"iamviewer_14c42c42","password":"viewer123"}'
+HTTP 200
+BODY: {"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJpYW12aWV3ZXJfMTRjNDJjNDIiLCJyb2xlIjoidmlld2VyIiwiZXhwIjoxNzk0OTkxMTM4LCJpYXQiOjE3OTQ5MDQ3Mzh9.t2grnAkqldC_V-lGEKnX_dZbs_TRSca_4zxKk65L9fU"}
+
+VIEWER_TOKEN: eyJhbGciOiJIUzI1NiIs... (length 185)
+
+[8] Protected GET with viewer token (must be allowed - viewer is read-only, not denied reads)
+COMMAND: Invoke-WebRequest -Method GET -Uri 'http://localhost:8080/api/v1/me' -Headers @{ Authorization = 'Bearer <TOKEN>' }
+HTTP 200
+BODY: {"role":"viewer","username":"iamviewer_14c42c42"}
+
+COMMAND: Invoke-WebRequest -Method GET -Uri 'http://localhost:8080/api/v1/projects' -Headers @{ Authorization = 'Bearer <TOKEN>' }
+HTTP 200
+BODY: [{"id":3,"name":"IAM-RBAC-Verify-14c42c42","description":"Created by local RBAC verification","owner_id":1,"created_at":"2026-11-17T08:38:56.765352Z","updated_at":"2026-11-17T08:38:56.765352Z"},{"id":2,"name":"CloudOps Demo","description":"","owner_id":3,"created_at":"2026-11-16T15:31:23.436238Z","updated_at":"2026-11-16T15:31:23.436238Z"},{"id":1,"name":"CloudOps Demo Project","description":"A sample project demonstrating the CloudOps Sentinel platform capabilities.","owner_id":1,"created_at":"2026-11-03T11:00:47.852921Z","updated_at":"2026-11-03T11:00:47.852921Z"}]
+
+[9] Mutating POST with viewer token (must be DENIED by RBAC)
+COMMAND: Invoke-WebRequest -Method POST -Uri 'http://localhost:8080/api/v1/projects' -Headers @{ Authorization = 'Bearer <TOKEN>' } -Body '{"name":"Viewer-Should-Not-Create-14c42c42","description":"Must be blocked"}'
+HTTP 403
+BODY: forbidden: role viewer is not permitted for this action
+
+[10] Mutating PUT with viewer token (must be DENIED by RBAC)
+COMMAND: Invoke-WebRequest -Method PUT -Uri 'http://localhost:8080/api/v1/projects/3' -Headers @{ Authorization = 'Bearer <TOKEN>' } -Body '{"name":"Viewer-Should-Not-Update-14c42c42","description":"Must be blocked"}'
+HTTP 403
+BODY: forbidden: role viewer is not permitted for this action
+
+[11] Mutating POST with NO token (must be 401 Unauthorized)
+COMMAND: Invoke-WebRequest -Method POST -Uri 'http://localhost:8080/api/v1/projects' -Body '{"name":"IAM-RBAC-Verify-14c42c42","description":"Created by local RBAC verification"}'
+HTTP 401
+BODY: missing auth token
+
+================================================================
+ RESULT SUMMARY
+ health_200            : True
+ admin_login_200       : True
+ jwt_secret_env_used   : True
+ admin_protected_get   : 200 (see step 4)
+ admin_mutation_201    : True
+ viewer_registration   : True
+ viewer_protected_get  : 200 (see step 8)
+ viewer_post_denied_403: True
+ viewer_put_denied_403 : True
+ no_token_post_401     : True
+================================================================

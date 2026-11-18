@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	_ "github.com/lib/pq"
 )
@@ -21,9 +22,19 @@ func Init() error {
 	password := os.Getenv("DB_PASSWORD")
 	dbname := os.Getenv("DB_NAME")
 
+	// sslmode is configurable so RDS deployments can require TLS. Local
+	// development keeps the permissive default.
+	sslMode := os.Getenv("DB_SSLMODE")
+	if sslMode == "" {
+		sslMode = "disable"
+	}
+	if strings.EqualFold(os.Getenv("APP_ENV"), "prod") && sslMode == "disable" {
+		log.Printf("WARNING: DB_SSLMODE=disable in production; set DB_SSLMODE=require for RDS")
+	}
+
 	connStr := fmt.Sprintf(
-		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname,
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
+		host, port, user, password, dbname, sslMode,
 	)
 
 	var err error

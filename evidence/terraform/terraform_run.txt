@@ -1,0 +1,280 @@
+Terraform real console output capture - Practical 5 / Practical 1 local Docker simulation
+
+===== terraform init =====
+Initializing the backend...
+
+Initializing provider plugins...
+- Finding kreuzwerker/docker versions matching "~> 3.0"...
+- Installing kreuzwerker/docker v3.9.0...
+- Installed kreuzwerker/docker v3.9.0 (self-signed, key ID 0DCE698927DAF8EC)
+Partner and community providers are signed by their developers.
+If you'd like to know more about provider signing, you can read about it here:
+https://developer.hashicorp.com/terraform/cli/plugins/signing
+
+Terraform has created a lock file .terraform.lock.hcl to record the provider
+selections it made above. Include this file in your version control repository
+so that Terraform can guarantee to make the same selections by default when
+you run "terraform init" in the future.
+
+Terraform has been successfully initialized!
+
+You may now begin working with Terraform. Try running "terraform plan" to see
+any changes that are required for your infrastructure. All Terraform commands
+should now work.
+
+If you ever set or change modules or backend configuration for Terraform,
+rerun this command to reinitialize your working directory. If you forget, other
+commands will detect it and remind you to do so if necessary.
+EXITCODE=0
+
+===== terraform validate =====
+Success! The configuration is valid.
+
+EXITCODE=0
+
+===== terraform plan -out=tfplan =====
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # docker_container.private_app will be created
+  + resource "docker_container" "private_app" {
+      + attach                                      = false
+      + bridge                                      = (known after apply)
+      + command                                     = [
+          + "sleep",
+          + "infinity",
+        ]
+      + container_logs                              = (known after apply)
+      + container_read_refresh_timeout_milliseconds = 15000
+      + entrypoint                                  = (known after apply)
+      + env                                         = (known after apply)
+      + exit_code                                   = (known after apply)
+      + hostname                                    = (known after apply)
+      + id                                          = (known after apply)
+      + image                                       = (known after apply)
+      + init                                        = (known after apply)
+      + ipc_mode                                    = (known after apply)
+      + log_driver                                  = (known after apply)
+      + logs                                        = false
+      + memory_reservation                          = 0
+      + must_run                                    = true
+      + name                                        = "tf-local-private-app"
+      + network_data                                = (known after apply)
+      + network_mode                                = "bridge"
+      + read_only                                   = false
+      + remove_volumes                              = true
+      + restart                                     = "no"
+      + rm                                          = false
+      + runtime                                     = (known after apply)
+      + security_opts                               = (known after apply)
+      + shm_size                                    = (known after apply)
+      + start                                       = true
+      + stdin_open                                  = false
+      + stop_signal                                 = (known after apply)
+      + stop_timeout                                = (known after apply)
+      + tty                                         = false
+      + wait                                        = false
+      + wait_timeout                                = 60
+
+      + healthcheck (known after apply)
+
+      + labels (known after apply)
+
+      + networks_advanced {
+          + aliases      = []
+          + name         = (known after apply)
+            # (3 unchanged attributes hidden)
+        }
+    }
+
+  # docker_container.webserver will be created
+  + resource "docker_container" "webserver" {
+      + attach                                      = false
+      + bridge                                      = (known after apply)
+      + command                                     = (known after apply)
+      + container_logs                              = (known after apply)
+      + container_read_refresh_timeout_milliseconds = 15000
+      + entrypoint                                  = (known after apply)
+      + env                                         = (known after apply)
+      + exit_code                                   = (known after apply)
+      + hostname                                    = (known after apply)
+      + id                                          = (known after apply)
+      + image                                       = (known after apply)
+      + init                                        = (known after apply)
+      + ipc_mode                                    = (known after apply)
+      + log_driver                                  = (known after apply)
+      + logs                                        = false
+      + memory_reservation                          = 0
+      + must_run                                    = true
+      + name                                        = "tf-local-webserver"
+      + network_data                                = (known after apply)
+      + network_mode                                = "bridge"
+      + read_only                                   = false
+      + remove_volumes                              = true
+      + restart                                     = "no"
+      + rm                                          = false
+      + runtime                                     = (known after apply)
+      + security_opts                               = (known after apply)
+      + shm_size                                    = (known after apply)
+      + start                                       = true
+      + stdin_open                                  = false
+      + stop_signal                                 = (known after apply)
+      + stop_timeout                                = (known after apply)
+      + tty                                         = false
+      + wait                                        = false
+      + wait_timeout                                = 60
+
+      + healthcheck (known after apply)
+
+      + labels (known after apply)
+
+      + networks_advanced {
+          + aliases      = []
+          + name         = (known after apply)
+            # (3 unchanged attributes hidden)
+        }
+
+      + ports {
+          + external = 8088
+          + internal = 80
+          + ip       = "0.0.0.0"
+          + protocol = "tcp"
+        }
+
+      + volumes {
+          + container_path = "/usr/share/nginx/html/data"
+          + volume_name    = "tf-local-webdata"
+            # (2 unchanged attributes hidden)
+        }
+    }
+
+  # docker_image.alpine will be created
+  + resource "docker_image" "alpine" {
+      + id           = (known after apply)
+      + image_id     = (known after apply)
+      + keep_locally = true
+      + name         = "alpine:latest"
+      + repo_digest  = (known after apply)
+    }
+
+  # docker_image.nginx will be created
+  + resource "docker_image" "nginx" {
+      + id           = (known after apply)
+      + image_id     = (known after apply)
+      + keep_locally = true
+      + name         = "nginx:alpine"
+      + repo_digest  = (known after apply)
+    }
+
+  # docker_image.webserver will be created
+  + resource "docker_image" "webserver" {
+      + id           = (known after apply)
+      + image_id     = (known after apply)
+      + keep_locally = true
+      + name         = "tf-local-webserver:latest"
+      + repo_digest  = (known after apply)
+
+      + build {
+          + additional_contexts = []
+          + cache_from          = []
+          + cache_to            = []
+          + context             = "./web"
+          + dockerfile          = "Dockerfile"
+          + extra_hosts         = []
+          + remove              = true
+          + security_opt        = []
+          + tag                 = []
+            # (13 unchanged attributes hidden)
+        }
+    }
+
+  # docker_network.private will be created
+  + resource "docker_network" "private" {
+      + driver      = "bridge"
+      + id          = (known after apply)
+      + internal    = (known after apply)
+      + ipam_driver = "default"
+      + name        = "tf-local-private"
+      + options     = (known after apply)
+      + scope       = (known after apply)
+
+      + ipam_config (known after apply)
+    }
+
+  # docker_network.public will be created
+  + resource "docker_network" "public" {
+      + driver      = "bridge"
+      + id          = (known after apply)
+      + internal    = (known after apply)
+      + ipam_driver = "default"
+      + name        = "tf-local-public"
+      + options     = (known after apply)
+      + scope       = (known after apply)
+
+      + ipam_config (known after apply)
+    }
+
+  # docker_volume.webdata will be created
+  + resource "docker_volume" "webdata" {
+      + driver     = (known after apply)
+      + id         = (known after apply)
+      + mountpoint = (known after apply)
+      + name       = "tf-local-webdata"
+    }
+
+Plan: 8 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + private_app_container_id = (known after apply)
+  + private_network_id       = (known after apply)
+  + public_network_id        = (known after apply)
+  + web_url                  = "http://localhost:8088"
+  + web_volume_name          = "tf-local-webdata"
+  + webserver_container_id   = (known after apply)
+
+ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+Saved the plan to: tfplan
+
+To perform exactly these actions, run the following command to apply:
+    terraform apply "tfplan"
+EXITCODE=0
+
+===== terraform apply -auto-approve tfplan =====
+docker_network.private: Creating...
+docker_volume.webdata: Creating...
+docker_image.alpine: Creating...
+docker_network.public: Creating...
+docker_image.nginx: Creating...
+docker_image.webserver: Creating...
+docker_volume.webdata: Creation complete after 0s [id=tf-local-webdata]
+docker_network.private: Creation complete after 5s [id=03458ae08d105c3add5ab8d08a35f88b00e7650159db9dc0b53602f5a9772a52]
+docker_network.public: Creation complete after 7s [id=240e0a901e75e76c54d28345985580ff9ac285d58f59ab4ec059a6040df2082d]
+docker_image.nginx: Still creating... [00m10s elapsed]
+docker_image.alpine: Still creating... [00m10s elapsed]
+docker_image.webserver: Still creating... [00m10s elapsed]
+docker_image.alpine: Creation complete after 16s [id=sha256:f59abe656b692d901e184be3445e084786602108599d2a51d229c0f5a48c71bfalpine:latest]
+docker_container.private_app: Creating...
+docker_image.nginx: Still creating... [00m20s elapsed]
+docker_image.webserver: Still creating... [00m20s elapsed]
+docker_image.nginx: Creation complete after 21s [id=sha256:fed7e14be83cbd2661a75cdc5b872d936cf155d46c327084d30b8df19ae88d72nginx:alpine]
+docker_container.private_app: Creation complete after 8s [id=41af7ae015574aced6b732dc50ddc4a8098896ab302a60cfcc6afb82d7e85818]
+docker_image.webserver: Creation complete after 27s [id=sha256:b82369fe426ed7a8f44e378abd1c672a67b375fc21d81eae83dd5e4a53c8b68dtf-local-webserver:latest]
+docker_container.webserver: Creating...
+docker_container.webserver: Creation complete after 1s [id=7e42b3186c29dd0889115e824f41fce9a759f958018c4d8a5518f200caf39432]
+
+Apply complete! Resources: 8 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+private_app_container_id = "41af7ae015574aced6b732dc50ddc4a8098896ab302a60cfcc6afb82d7e85818"
+private_network_id = "03458ae08d105c3add5ab8d08a35f88b00e7650159db9dc0b53602f5a9772a52"
+public_network_id = "240e0a901e75e76c54d28345985580ff9ac285d58f59ab4ec059a6040df2082d"
+web_url = "http://localhost:8088"
+web_volume_name = "tf-local-webdata"
+webserver_container_id = "7e42b3186c29dd0889115e824f41fce9a759f958018c4d8a5518f200caf39432"
+EXITCODE=0

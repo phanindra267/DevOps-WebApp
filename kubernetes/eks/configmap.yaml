@@ -1,0 +1,14 @@
+# Replace every XX with your own non-sensitive configuration.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cloudops-sentinel-config
+  namespace: cloudops-sentinel
+data:
+  DB_HOST: "XX"          # RDS endpoint from Terraform output `rds_endpoint`
+  DB_PORT: "5432"
+  DB_NAME: "XX"
+  DB_SSLMODE: "require"
+  API_PORT: "8080"
+  AWS_REGION: "XX"
+  ENVIRONMENT: "XX"

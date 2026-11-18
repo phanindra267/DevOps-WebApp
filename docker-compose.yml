@@ -78,8 +78,33 @@ services:
       - ./monitoring/grafana-dashboard.json:/var/lib/grafana/dashboards/cloudops-dashboard.json
     restart: unless-stopped
 
+  # Practical 8 - Infrastructure monitoring: host/node-level metrics.
+  # Runs inside the local Docker VM (no AWS, no credentials required).
+  node-exporter:
+    image: prom/node-exporter:v1.8.2
+    container_name: cloudops-node-exporter
+    ports:
+      - "9100:9100"
+    restart: unless-stopped
+
+  # Practical 8 / 9 - Container-level metrics for Grafana dashboards.
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.49.2
+    container_name: cloudops-cadvisor
+    privileged: true
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    ports:
+      - "8087:8080"
+    restart: unless-stopped
+
   jenkins:
-    image: jenkins/jenkins:lts-alpine
+    build:
+      context: ./ci
+    image: cloudops-jenkins-local:1.0
     container_name: cloudops-jenkins
     user: root
     environment:
@@ -91,6 +116,9 @@ services:
       - jenkins_home:/var/jenkins_home
       - ./ci/init.groovy.d:/usr/share/jenkins/ref/init.groovy.d
       - ./ci/Jenkinsfile:/var/jenkins_home/Jenkinsfile
+      # Practical 6: local source checkout + access to the host Docker daemon
+      - ./:/workspace:ro
+      - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
 
 volumes:

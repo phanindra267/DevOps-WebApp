@@ -1,0 +1,219 @@
+{
+  "audit": [
+    {
+      "action": "iam:seed",
+      "assumed_role": null,
+      "decision": "ALLOWED",
+      "detail": "seeded local users/groups/roles",
+      "mfa_verified": false,
+      "principal": "system",
+      "timestamp": "2026-11-17T08:39:25+00:00"
+    },
+    {
+      "action": "iam:createuser",
+      "assumed_role": null,
+      "decision": "ALLOWED",
+      "detail": "created dave role=viewer groups=['developers']",
+      "mfa_verified": false,
+      "principal": "system",
+      "timestamp": "2026-11-17T08:39:25+00:00"
+    },
+    {
+      "action": "iam:addusertogroup",
+      "assumed_role": null,
+      "decision": "ALLOWED",
+      "detail": "dave -> ops",
+      "mfa_verified": false,
+      "principal": "system",
+      "timestamp": "2026-11-17T08:39:25+00:00"
+    },
+    {
+      "action": "iam:assignrole",
+      "assumed_role": null,
+      "decision": "ALLOWED",
+      "detail": "dave -> viewer",
+      "mfa_verified": false,
+      "principal": "system",
+      "timestamp": "2026-11-17T08:39:25+00:00"
+    },
+    {
+      "action": "iam:enrollmfa",
+      "assumed_role": null,
+      "decision": "ALLOWED",
+      "detail": "enrolled TOTP secret for alice",
+      "mfa_verified": true,
+      "principal": "alice",
+      "timestamp": "2026-11-17T08:39:25+00:00"
+    },
+    {
+      "action": "deploy:prod",
+      "assumed_role": null,
+      "decision": "DENIED",
+      "detail": "role=viewer permissions=['read:*']",
+      "mfa_verified": false,
+      "principal": "alice",
+      "timestamp": "2026-11-17T08:39:25+00:00"
+    },
+    {
+      "action": "read:project",
+      "assumed_role": null,
+      "decision": "ALLOWED",
+      "detail": "role=viewer permissions=['read:*']",
+      "mfa_verified": false,
+      "principal": "alice",
+      "timestamp": "2026-11-17T08:39:25+00:00"
+    },
+    {
+      "action": "deploy:prod",
+      "assumed_role": null,
+      "decision": "ALLOWED",
+      "detail": "role=deployer permissions=['read:*', 'deploy:*', 'pipeline:trigger']",
+      "mfa_verified": false,
+      "principal": "bob",
+      "timestamp": "2026-11-17T08:39:25+00:00"
+    },
+    {
+      "action": "iam:createuser",
+      "assumed_role": null,
+      "decision": "DENIED",
+      "detail": "role=deployer permissions=['read:*', 'deploy:*', 'pipeline:trigger']",
+      "mfa_verified": false,
+      "principal": "bob",
+      "timestamp": "2026-11-17T08:39:25+00:00"
+    },
+    {
+      "action": "deploy:prod",
+      "assumed_role": null,
+      "decision": "ALLOWED",
+      "detail": "role=admin permissions=['*']",
+      "mfa_verified": false,
+      "principal": "carol",
+      "timestamp": "2026-11-17T08:39:25+00:00"
+    },
+    {
+      "action": "iam:createuser",
+      "assumed_role": null,
+      "decision": "ALLOWED",
+      "detail": "role=admin permissions=['*']",
+      "mfa_verified": false,
+      "principal": "carol",
+      "timestamp": "2026-11-17T08:39:25+00:00"
+    },
+    {
+      "action": "sts:assumerole",
+      "assumed_role": "deployer",
+      "decision": "ALLOWED",
+      "detail": "assumed deployer (TOTP step delta=0)",
+      "mfa_verified": true,
+      "principal": "alice",
+      "timestamp": "2026-11-17T08:39:25+00:00"
+    },
+    {
+      "action": "deploy:prod",
+      "assumed_role": "deployer",
+      "decision": "ALLOWED",
+      "detail": "role=deployer permissions=['read:*', 'deploy:*', 'pipeline:trigger']",
+      "mfa_verified": false,
+      "principal": "alice",
+      "timestamp": "2026-11-17T08:39:25+00:00"
+    },
+    {
+      "action": "sts:assumerole",
+      "assumed_role": null,
+      "decision": "DENIED",
+      "detail": "role admin not assumable via groups ['developers', 'ops']",
+      "mfa_verified": false,
+      "principal": "alice",
+      "timestamp": "2026-11-17T08:39:25+00:00"
+    },
+    {
+      "action": "sts:assumerole",
+      "assumed_role": null,
+      "decision": "DENIED",
+      "detail": "invalid MFA code 000000",
+      "mfa_verified": false,
+      "principal": "alice",
+      "timestamp": "2026-11-17T08:39:25+00:00"
+    }
+  ],
+  "created_at": "2026-11-17T08:39:25+00:00",
+  "groups": {
+    "developers": {
+      "roles": [
+        "viewer"
+      ]
+    },
+    "ops": {
+      "roles": [
+        "deployer"
+      ]
+    },
+    "platform-admins": {
+      "roles": [
+        "admin"
+      ]
+    }
+  },
+  "roles": {
+    "admin": [
+      "*"
+    ],
+    "deployer": [
+      "read:*",
+      "deploy:*",
+      "pipeline:trigger"
+    ],
+    "viewer": [
+      "read:*"
+    ]
+  },
+  "users": {
+    "alice": {
+      "assumed_role": "deployer",
+      "groups": [
+        "developers",
+        "ops"
+      ],
+      "mfa": {
+        "enrolled": true,
+        "secret": "WPULJCYUGCZI6K5WYKZA63KNSLTGD2KZ"
+      },
+      "role": "viewer"
+    },
+    "bob": {
+      "assumed_role": null,
+      "groups": [
+        "ops"
+      ],
+      "mfa": {
+        "enrolled": false,
+        "secret": null
+      },
+      "role": "deployer"
+    },
+    "carol": {
+      "assumed_role": null,
+      "groups": [
+        "platform-admins"
+      ],
+      "mfa": {
+        "enrolled": false,
+        "secret": null
+      },
+      "role": "admin"
+    },
+    "dave": {
+      "assumed_role": null,
+      "groups": [
+        "developers",
+        "ops"
+      ],
+      "mfa": {
+        "enrolled": false,
+        "secret": null
+      },
+      "role": "viewer"
+    }
+  },
+  "version": 1
+}

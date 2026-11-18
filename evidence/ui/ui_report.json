@@ -1,0 +1,102 @@
+{
+  "generated": "2026-11-17T09:41:40.993Z",
+  "captured": [
+    {
+      "name": "desktop_dashboard",
+      "url": "http://localhost:3000/",
+      "title": "Dashboard | CloudOps Sentinel",
+      "text": "CloudOps\nSENTINEL · INT 378\nPLATFORM\nDashboard\nProjects\nInfrastructure"
+    },
+    {
+      "name": "desktop_projects",
+      "url": "http://localhost:3000/projects",
+      "title": "Projects | CloudOps Sentinel",
+      "text": "CloudOps\nSENTINEL · INT 378\nPLATFORM\nDashboard\nProjects\nInfrastructure"
+    },
+    {
+      "name": "desktop_infrastructure",
+      "url": "http://localhost:3000/infrastructure",
+      "title": "Infrastructure | CloudOps Sentinel",
+      "text": "CloudOps\nSENTINEL · INT 378\nPLATFORM\nDashboard\nProjects\nInfrastructure"
+    },
+    {
+      "name": "desktop_deployments",
+      "url": "http://localhost:3000/deployments",
+      "title": "Deployments | CloudOps Sentinel",
+      "text": "CloudOps\nSENTINEL · INT 378\nPLATFORM\nDashboard\nProjects\nInfrastructure"
+    },
+    {
+      "name": "desktop_pipelines",
+      "url": "http://localhost:3000/pipelines",
+      "title": "Pipelines & Jenkins CI/CD | CloudOps Sentinel",
+      "text": "CloudOps\nSENTINEL · INT 378\nPLATFORM\nDashboard\nProjects\nInfrastructure"
+    },
+    {
+      "name": "desktop_security",
+      "url": "http://localhost:3000/security",
+      "title": "Security | CloudOps Sentinel",
+      "text": "CloudOps\nSENTINEL · INT 378\nPLATFORM\nDashboard\nProjects\nInfrastructure"
+    },
+    {
+      "name": "desktop_monitoring",
+      "url": "http://localhost:3000/monitoring",
+      "title": "Monitoring | CloudOps Sentinel",
+      "text": "CloudOps\nSENTINEL · INT 378\nPLATFORM\nDashboard\nProjects\nInfrastructure"
+    },
+    {
+      "name": "desktop_cost",
+      "url": "http://localhost:3000/cost",
+      "title": "Cost & FinOps | CloudOps Sentinel",
+      "text": "CloudOps\nSENTINEL · INT 378\nPLATFORM\nDashboard\nProjects\nInfrastructure"
+    },
+    {
+      "name": "desktop_governance",
+      "url": "http://localhost:3000/governance",
+      "title": "Governance | CloudOps Sentinel",
+      "text": "CloudOps\nSENTINEL · INT 378\nPLATFORM\nDashboard\nProjects\nInfrastructure"
+    },
+    {
+      "name": "desktop_reliability",
+      "url": "http://localhost:3000/reliability",
+      "title": "Reliability | CloudOps Sentinel",
+      "text": "CloudOps\nSENTINEL · INT 378\nPLATFORM\nDashboard\nProjects\nInfrastructure"
+    },
+    {
+      "name": "desktop_syllabus",
+      "url": "http://localhost:3000/syllabus",
+      "title": "Curriculum Hub (INT 378) | CloudOps Sentinel",
+      "text": "CloudOps\nSENTINEL · INT 378\nPLATFORM\nDashboard\nProjects\nInfrastructure"
+    },
+    {
+      "name": "mobile_dashboard",
+      "url": "http://localhost:3000/",
+      "title": "Dashboard | CloudOps Sentinel",
+      "text": "CloudOps\nSENTINEL · INT 378\nPLATFORM\nDashboard\nProjects\nInfrastructure"
+    },
+    {
+      "name": "mobile_drawer",
+      "url": "http://localhost:3000/",
+      "title": "Dashboard | CloudOps Sentinel",
+      "text": "CloudOps\nSENTINEL · INT 378\nPLATFORM\nDashboard\nProjects\nInfrastructure"
+    },
+    {
+      "name": "mobile_cost",
+      "url": "http://localhost:3000/cost",
+      "title": "Cost & FinOps | CloudOps Sentinel",
+      "text": "CloudOps\nSENTINEL · INT 378\nPLATFORM\nDashboard\nProjects\nInfrastructure"
+    },
+    {
+      "name": "mobile_syllabus",
+      "url": "http://localhost:3000/syllabus",
+      "title": "Curriculum Hub (INT 378) | CloudOps Sentinel",
+      "text": "CloudOps\nSENTINEL · INT 378\nPLATFORM\nDashboard\nProjects\nInfrastructure"
+    },
+    {
+      "name": "login",
+      "url": "http://localhost:3000/login",
+      "title": "Sign In | CloudOps Sentinel",
+      "text": "CloudOps Sentinel\nDevSecOps Control Plane · Session 2026–27\nIAM + MFA\n"
+    }
+  ],
+  "errors": []
+}

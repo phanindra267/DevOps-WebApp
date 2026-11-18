@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudops-sentinel-backend
+  namespace: cloudops-sentinel
+  labels:
+    app: cloudops-sentinel-backend
+    app.kubernetes.io/part-of: cloudops-sentinel
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cloudops-sentinel-backend
+  template:
+    metadata:
+      labels:
+        app: cloudops-sentinel-backend
+    spec:
+      serviceAccountName: cloudops-sentinel
+      containers:
+        - name: backend
+          image: XX/cloudops-sentinel-backend:XX   # ECR repository / tag
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: cloudops-sentinel-config
+          env:
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: cloudops-sentinel-secret
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: cloudops-sentinel-secret
+                  key: DB_PASSWORD
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+      imagePullSecrets:
+        - name: XX   # ECR docker registry secret (or remove for public images)

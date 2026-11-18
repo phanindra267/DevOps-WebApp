@@ -1,0 +1,10 @@
+============================================================
+INT 378 Practical 10 - LOCAL Cost Simulator
+LOCAL ESTIMATE - NOT ACTUAL AWS BILLING (offline, illustrative rates).
+============================================================
+Simulated monthly cost (current):   $204.87
+Simulated monthly cost (optimized): $113.12
+Simulated savings:                  $91.76 (44.8%)
+Report written to: C:\Users\phani\Downloads\INT 378\evidence\serverless\cost_report.md
+Report lines: 97
+No network calls, no AWS APIs, no credentials were used.

@@ -1,0 +1,76 @@
+# ==============================================================================
+# COPY THIS FILE TO terraform.tfvars AND REPLACE EVERY "XX" WITH YOUR OWN VALUE.
+# NEVER COMMIT THE FILLED-IN terraform.tfvars (it may contain passwords/keys).
+# ==============================================================================
+
+# Identity / naming
+project_name      = "XX"
+environment       = "XX"          # dev | staging | prod
+aws_region        = "XX"          # e.g. us-east-1
+aws_account_id    = "XX"          # 12-digit account ID
+owner             = "XX"
+student_name      = "XX"
+student_regno     = "XX"
+
+# Networking
+vpc_cidr                 = "XX"          # e.g. 10.0.0.0/16
+availability_zones       = ["XX", "XX"]  # e.g. ["us-east-1a", "us-east-1b"]
+public_subnet_cidrs      = ["XX", "XX"]  # e.g. ["10.0.1.0/24", "10.0.2.0/24"]
+private_subnet_cidrs     = ["XX", "XX"]  # e.g. ["10.0.11.0/24", "10.0.12.0/24"]
+vpn_customer_gateway_ip  = "XX"          # public IP of your on-prem VPN device
+vpn_bgp_asn              = 65000         # XX - replace
+ssh_allowed_cidr         = "XX"          # your public IP /32, e.g. 203.0.113.5/32
+
+# VPC Peering
+peer_vpc_id              = "XX"          # leave XX to auto-create a demo peer VPC
+peer_vpc_cidr            = "XX"          # e.g. 192.168.0.0/16 (must not overlap vpc_cidr)
+peer_vpc_region          = "XX"          # e.g. us-east-1
+
+# EC2
+ami_id            = "XX"          # AMI valid in aws_region
+instance_type     = "XX"          # t2.micro / t3.micro (free tier)
+web_instance_count = 1            # XX - replace
+key_pair_name     = "XX"
+ssh_private_key_output_path = "XX" # e.g. C:/Users/you/.ssh/cloudops-key.pem
+
+# S3
+artifacts_bucket_name = "XX"
+state_bucket_name     = "XX"
+logs_bucket_name      = "XX"
+
+# IAM
+devops_group_name   = "XX"
+auditor_group_name  = "XX"
+developer_user_name = "XX"
+deployer_role_name  = "XX"
+mfa_device_name     = "XX"
+
+# EKS
+eks_cluster_name       = "XX"
+eks_cluster_version    = "XX"      # e.g. 1.29
+eks_node_instance_type = "XX"      # e.g. t3.medium
+eks_node_desired_size  = 1         # XX - replace
+eks_node_min_size      = 1         # XX - replace
+eks_node_max_size      = 3         # XX - replace
+eks_node_disk_size     = 20        # XX - replace
+
+# RDS
+db_name            = "XX"
+db_username        = "XX"
+db_password        = "XX"          # sensitive - never commit
+db_instance_class  = "XX"          # e.g. db.t3.micro
+db_allocated_storage = 20          # XX - replace
+
+# Lambda / API Gateway
+lambda_function_name = "XX"
+lambda_runtime       = "XX"        # e.g. nodejs20.x
+lambda_handler       = "XX"        # e.g. index.handler
+lambda_zip_path      = "XX"        # path to your function.zip
+
+# Monitoring / cost / ingress
+alert_email           = "XX"
+dashboard_name        = "XX"
+monthly_budget_amount = 100         # XX - replace (USD)
+cpu_alarm_threshold   = 80          # XX - replace (percent)
+app_domain            = "XX"        # e.g. app.example.com
+acm_certificate_arn   = "XX"        # ACM cert in aws_region

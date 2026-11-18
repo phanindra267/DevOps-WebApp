@@ -47,19 +47,17 @@ pipeline {
             }
         }
 
-        // ── 4. Dependency Scan ───────────────────────────────────
+        // ── 4. Dependency / Filesystem Scan ──────────────────────
         stage('Dependency Scan') {
             steps {
-                echo 'Scanning dependencies...'
-                // e.g. sh 'trivy fs --scanners vuln ./backend'
+                sh 'trivy fs --scanners vuln --severity CRITICAL,HIGH --exit-code 0 --format json --output trivy-fs.json ./backend'
             }
         }
 
         // ── 5. Secret Detection ──────────────────────────────────
         stage('Secret Detection') {
             steps {
-                echo 'Scanning for secrets...'
-                // e.g. sh 'gitleaks detect --source . --report-format json'
+                sh 'trivy fs --scanners secret --severity CRITICAL,HIGH --exit-code 0 --format json --output trivy-secrets.json .'
             }
         }
 
@@ -74,27 +72,52 @@ pipeline {
         // ── 7. Container Scan ────────────────────────────────────
         stage('Container Scan') {
             steps {
-                echo 'Scanning container image...'
-                // e.g. sh "trivy image ${DOCKER_IMAGE}:${env.BUILD_NUMBER}"
+                sh "trivy image --scanners vuln --severity CRITICAL,HIGH --exit-code 0 --format json --output trivy-image.json ${DOCKER_IMAGE}:${env.BUILD_NUMBER}"
             }
         }
 
         // ── 8. IaC Validation ────────────────────────────────────
         stage('IaC Validation') {
             steps {
-                echo 'Validating Terraform configs...'
-                // e.g. sh 'cd infrastructure/terraform && terraform validate'
+                sh 'terraform -chdir=infrastructure/terraform/aws-complete fmt -check'
+                sh 'terraform -chdir=infrastructure/terraform/aws-complete init -backend=false -input=false'
+                sh 'terraform -chdir=infrastructure/terraform/aws-complete validate'
             }
         }
 
         // ── 9. Security Gate ─────────────────────────────────────
+        // Reads the Trivy JSON reports and FAILS the build when any CRITICAL
+        // vulnerability is present (the project's own security-policy.yaml).
         stage('Security Gate') {
             steps {
                 script {
-                    def securityPassed = true // Replace with real check
-                    echo 'Evaluating security gate...'
-                    if (!securityPassed) {
-                        error 'Security gate FAILED — critical vulnerabilities detected.'
+                    echo 'Evaluating security gate (zero CRITICAL CVEs / secrets)...'
+                    def finding = sh(
+                        script: '''
+                            python3 - <<'PY'
+import json, sys
+failed = False
+for path in ("trivy-image.json", "trivy-fs.json", "trivy-secrets.json"):
+    try:
+        with open(path, encoding="utf-8") as f:
+            doc = json.load(f)
+    except FileNotFoundError:
+        continue
+    for result in doc.get("Results", []):
+        for vuln in result.get("Vulnerabilities", []) or []:
+            if vuln.get("Severity") == "CRITICAL":
+                print("CRITICAL: %s in %s (%s)" % (vuln.get("VulnerabilityID"), result.get("Target"), path))
+                failed = True
+        for secret in result.get("Secrets", []) or []:
+            print("SECRET: %s in %s" % (secret.get("RuleID"), result.get("Target")))
+            failed = True
+sys.exit(1 if failed else 0)
+PY
+                        ''',
+                        returnStatus: true,
+                    )
+                    if (finding != 0) {
+                        error 'Security gate FAILED — CRITICAL CVEs or secrets detected.'
                     }
                     echo 'Security gate PASSED.'
                 }
@@ -137,6 +160,7 @@ pipeline {
     post {
         always {
             echo 'Pipeline execution finished.'
+            archiveArtifacts artifacts: 'trivy-*.json', allowEmptyArchive: true
             cleanWs()
         }
         success {

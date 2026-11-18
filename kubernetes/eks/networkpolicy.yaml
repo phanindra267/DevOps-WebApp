@@ -1,0 +1,57 @@
+# Zero-trust policy for the backend pods.
+# ALB (target-type: ip) sends traffic from outside the cluster, so ingress must
+# allow the VPC CIDR (internet-facing ALB nodes) in addition to in-cluster pods.
+# Replace XX with your VPC CIDR before applying.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: cloudops-sentinel-backend-netpol
+  namespace: cloudops-sentinel
+spec:
+  podSelector:
+    matchLabels:
+      app: cloudops-sentinel-backend
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Traffic from the internet-facing ALB / VPC (replace XX with VPC CIDR).
+    - from:
+        - ipBlock:
+            cidr: XX   # e.g. 10.0.0.0/16
+      ports:
+        - protocol: TCP
+          port: 8080
+    # In-cluster frontend pods.
+    - from:
+        - podSelector:
+            matchLabels:
+              app: cloudops-sentinel-frontend
+      ports:
+        - protocol: TCP
+          port: 8080
+  egress:
+    # Cluster DNS (kube-system).
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # RDS PostgreSQL (replace XX with the RDS endpoint CIDR /32).
+    - to:
+        - ipBlock:
+            cidr: XX   # e.g. 10.0.11.5/32
+      ports:
+        - protocol: TCP
+          port: 5432
+    # HTTPS egress (ACM / AWS APIs / package registries).
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+      ports:
+        - protocol: TCP
+          port: 443

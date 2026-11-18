@@ -1,0 +1,82 @@
+============================================================
+INT 378 Practical 10 - LOCAL Lambda / API Gateway Simulator
+100% LOCAL: no AWS, no credentials, no network calls.
+============================================================
+
+--- Invocation #1: GET /health (first invocation -> COLD start) ---
+RequestId: local-req-0001
+Status code: 200
+Body:
+{
+  "status": "SUCCESS",
+  "service": "CloudOps Sentinel Serverless Engine",
+  "course": "INT 378",
+  "session": "2026-27",
+  "candidate": "Kakumani Phaneendra (Reg: 12418953, LPU)",
+  "metrics": {
+    "requestId": "local-req-0001",
+    "durationMs": 2,
+    "memoryAllocatedMB": 128,
+    "coldStart": true,
+    "logStream": "2026/11/17/[$LATEST]local-sim-stream"
+  },
+  "payload": {
+    "message": "Serverless microservice executed successfully via AWS Lambda & API Gateway",
+    "cloudwatchIntegration": "Verified (Structured JSON logs emitted to /aws/lambda/cloudops-serverless)"
+  }
+}
+Duration: 2.06 ms | Start type: COLD
+
+--- Invocation #2: POST /process (reused environment -> WARM start) ---
+RequestId: local-req-0002
+Status code: 200
+Body:
+{
+  "status": "SUCCESS",
+  "service": "CloudOps Sentinel Serverless Engine",
+  "course": "INT 378",
+  "session": "2026-27",
+  "candidate": "Kakumani Phaneendra (Reg: 12418953, LPU)",
+  "metrics": {
+    "requestId": "local-req-0002",
+    "durationMs": 0,
+    "memoryAllocatedMB": 128,
+    "coldStart": false,
+    "logStream": "2026/11/17/[$LATEST]local-sim-stream"
+  },
+  "payload": {
+    "message": "Serverless microservice executed successfully via AWS Lambda & API Gateway",
+    "cloudwatchIntegration": "Verified (Structured JSON logs emitted to /aws/lambda/cloudops-serverless)"
+  }
+}
+Duration: 0.05 ms | Start type: WARM
+
+--- Invocation #3: GET /health (reused environment -> WARM start) ---
+RequestId: local-req-0003
+Status code: 200
+Body:
+{
+  "status": "SUCCESS",
+  "service": "CloudOps Sentinel Serverless Engine",
+  "course": "INT 378",
+  "session": "2026-27",
+  "candidate": "Kakumani Phaneendra (Reg: 12418953, LPU)",
+  "metrics": {
+    "requestId": "local-req-0003",
+    "durationMs": 0,
+    "memoryAllocatedMB": 128,
+    "coldStart": false,
+    "logStream": "2026/11/17/[$LATEST]local-sim-stream"
+  },
+  "payload": {
+    "message": "Serverless microservice executed successfully via AWS Lambda & API Gateway",
+    "cloudwatchIntegration": "Verified (Structured JSON logs emitted to /aws/lambda/cloudops-serverless)"
+  }
+}
+Duration: 0.03 ms | Start type: WARM
+
+============================================================
+Summary: 3/3 invocations returned HTTP 200 (PASS)
+CloudWatch-style logs written to: C:\Users\phani\Downloads\INT 378\evidence\serverless\cloudwatch_logs.txt
+NOTE: These are simulated logs, not real AWS CloudWatch events.
+============================================================

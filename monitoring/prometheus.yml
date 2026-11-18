@@ -14,3 +14,13 @@ scrape_configs:
     metrics_path: "/metrics"
     static_configs:
       - targets: ["backend:8080"]
+
+  # Practical 8 - Node (host/VM) level CPU, memory, disk and network metrics
+  - job_name: "node-exporter"
+    static_configs:
+      - targets: ["node-exporter:9100"]
+
+  # Practical 8/9 - Per-container resource metrics
+  - job_name: "cadvisor"
+    static_configs:
+      - targets: ["cadvisor:8080"]

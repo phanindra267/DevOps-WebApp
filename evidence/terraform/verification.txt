@@ -1,0 +1,40 @@
+﻿Verification of locally provisioned Terraform infrastructure
+Timestamp: 2026-11-17T13:06:24.3890933+05:30
+
+===== HTTP GET http://localhost:8088 =====
+StatusCode: 200
+StatusDescription: OK
+ContentType: 
+----- Body -----
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>TF-LOCAL-WEBSERVER - Practical 5 / Practical 1</title>
+</head>
+<body>
+  <h1>TF-LOCAL-WEBSERVER</h1>
+  <p>MARKER: TF-LOCAL-WEBSERVER-OK</p>
+  <p>This page was provisioned by Terraform using the kreuzwerker/docker provider.</p>
+  <p>AWS mapping: EC2 = container, VPC = docker network, Nginx = web server.</p>
+</body>
+</html>
+
+----- End Body -----
+MARKER CHECK: PASS (custom Terraform-provisioned page served)
+
+===== Container status (docker ps) =====
+tf-local-webserver	b82369fe426e	Up 14 seconds	0.0.0.0:8088->80/tcp
+tf-local-private-app	f59abe656b69	Up 23 seconds	
+
+===== Network membership =====
+
+Error response from daemon: network tf-local-public,tf-local-private not found
+
+===== Network membership (retry with separate network args) =====
+NETWORK: tf-local-public :: tf-local-public => tf-local-webserver 
+NETWORK: tf-local-private :: tf-local-private => tf-local-private-app 
+webserver networks: tf-local-public
+private-app networks: tf-local-private
+
+VERIFICATION RESULT: HTTP 200, custom Terraform page served, both containers RUNNING, isolated networks confirmed.

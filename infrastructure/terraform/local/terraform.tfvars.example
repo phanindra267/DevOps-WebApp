@@ -1,0 +1,5 @@
+# Copy to terraform.tfvars to override defaults.
+resource_prefix    = "tf-local-"
+web_host_port      = 8088
+web_container_port = 80
+web_image_tag      = "tf-local-webserver:latest"

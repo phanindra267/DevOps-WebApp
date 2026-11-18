@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudops-sentinel-frontend
+  namespace: cloudops-sentinel
+  labels:
+    app: cloudops-sentinel-frontend
+    app.kubernetes.io/part-of: cloudops-sentinel
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cloudops-sentinel-frontend
+  template:
+    metadata:
+      labels:
+        app: cloudops-sentinel-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: XX/cloudops-sentinel-frontend:XX   # ECR repository / tag
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NEXT_PUBLIC_API_URL
+              value: "XX"   # public HTTPS URL of the backend ingress
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 15
+      imagePullSecrets:
+        - name: XX   # ECR docker registry secret

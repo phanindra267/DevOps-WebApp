@@ -1,0 +1,190 @@
+# ==============================================================================
+# CloudOps Sentinel - EKS (Kubernetes hosting) CloudFormation Template
+# INT 378 | Session 2026-27
+# Replace EVERY "XX" with your own values before creating the stack.
+# ==============================================================================
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'CloudOps Sentinel - Amazon EKS control plane, managed node group and OIDC provider'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: XX
+  ClusterName:
+    Type: String
+    Default: XX
+  KubernetesVersion:
+    Type: String
+    Default: XX
+    Description: e.g. 1.29
+  VpcId:
+    Type: String
+    Default: XX
+  Subnet1Id:
+    Type: String
+    Default: XX
+  Subnet2Id:
+    Type: String
+    Default: XX
+  NodeInstanceType:
+    Type: String
+    Default: XX
+    Description: e.g. t3.medium
+  NodeDesiredSize:
+    Type: Number
+    Default: 1 # XX - replace
+  NodeMinSize:
+    Type: Number
+    Default: 1 # XX - replace
+  NodeMaxSize:
+    Type: Number
+    Default: 3 # XX - replace
+  NodeDiskSize:
+    Type: Number
+    Default: 20 # XX - replace
+  NodeSshKeyName:
+    Type: String
+    Default: XX
+  OidcThumbprint:
+    Type: String
+    Default: XX
+    Description: SHA1 thumbprint of the OIDC certificate (see Terraform data.tls_certificate)
+
+Resources:
+  # ---------- IAM roles ----------
+  EksClusterRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${ClusterName}-cluster-role'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: eks.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonEKSClusterPolicy
+
+  EksNodeRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${ClusterName}-node-role'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
+        - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+
+  # ---------- Control plane security group ----------
+  EksClusterSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: EKS control plane communication
+      VpcId: !Ref VpcId
+      SecurityGroupEgress:
+        - IpProtocol: '-1'
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Sub '${ClusterName}-cluster-sg'
+
+  # ---------- EKS control plane ----------
+  EksCluster:
+    Type: AWS::EKS::Cluster
+    Properties:
+      Name: !Ref ClusterName
+      Version: !Ref KubernetesVersion
+      RoleArn: !GetAtt EksClusterRole.Arn
+      ResourcesVpcConfig:
+        SubnetIds:
+          - !Ref Subnet1Id
+          - !Ref Subnet2Id
+        SecurityGroupIds:
+          - !Ref EksClusterSecurityGroup
+        EndpointPublicAccess: true
+        EndpointPrivateAccess: true
+      Logging:
+        ClusterLogging:
+          EnabledTypes:
+            - Type: api
+            - Type: audit
+            - Type: authenticator
+            - Type: controllerManager
+            - Type: scheduler
+
+  # ---------- Managed worker nodes ----------
+  EksNodeGroup:
+    Type: AWS::EKS::Nodegroup
+    Properties:
+      ClusterName: !Ref EksCluster
+      NodegroupName: !Sub '${ClusterName}-nodes'
+      NodeRole: !GetAtt EksNodeRole.Arn
+      Subnets:
+        - !Ref Subnet1Id
+        - !Ref Subnet2Id
+      InstanceTypes:
+        - !Ref NodeInstanceType
+      AmiType: AL2_x86_64
+      CapacityType: ON_DEMAND
+      DiskSize: !Ref NodeDiskSize
+      ScalingConfig:
+        DesiredSize: !Ref NodeDesiredSize
+        MinSize: !Ref NodeMinSize
+        MaxSize: !Ref NodeMaxSize
+      RemoteAccess:
+        Ec2SshKey: !Ref NodeSshKeyName
+      UpdateConfig:
+        MaxUnavailable: 1
+
+  # ---------- OIDC provider for IRSA ----------
+  EksOidcProvider:
+    Type: AWS::IAM::OIDCProvider
+    Properties:
+      Url: !GetAtt EksCluster.Identity.Oidc.Issuer
+      ClientIdList:
+        - sts.amazonaws.com
+      ThumbprintList:
+        - !Ref OidcThumbprint
+
+  # ---------- Default add-ons ----------
+  VpcCniAddon:
+    Type: AWS::EKS::Addon
+    Properties:
+      ClusterName: !Ref EksCluster
+      AddonName: vpc-cni
+      ResolveConflicts: OVERWRITE
+
+  CoreDnsAddon:
+    Type: AWS::EKS::Addon
+    Properties:
+      ClusterName: !Ref EksCluster
+      AddonName: coredns
+      ResolveConflicts: OVERWRITE
+
+  KubeProxyAddon:
+    Type: AWS::EKS::Addon
+    Properties:
+      ClusterName: !Ref EksCluster
+      AddonName: kube-proxy
+      ResolveConflicts: OVERWRITE
+
+Outputs:
+  ClusterName:
+    Value: !Ref EksCluster
+  ClusterEndpoint:
+    Description: Use with `aws eks update-kubeconfig`
+    Value: !GetAtt EksCluster.Endpoint
+  ClusterCertificateAuthority:
+    Value: !GetAtt EksCluster.CertificateAuthorityData
+  OidcIssuerUrl:
+    Value: !GetAtt EksCluster.Identity.Oidc.Issuer
+  ConfigureKubectl:
+    Description: Command to configure kubectl
+    Value: !Sub 'aws eks update-kubeconfig --name ${ClusterName}'

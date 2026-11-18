@@ -1,9 +1,14 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import Card from '../src/components/Card'
 import StatusBadge from '../src/components/StatusBadge'
-import { getProjects, getHealth, getAlerts, getAuditLogs, getPolicies } from '../src/lib/api'
+import { TrendArea, Donut } from '../src/components/Charts'
+import { useToast } from '../src/context/ToastContext'
+import {
+  getProjects, getHealth, getAlerts, getAuditLogs, getPolicies, getMetrics,
+} from '../src/lib/api'
 import {
   FiActivity,
   FiFolder,
@@ -29,30 +34,23 @@ export default function DashboardPage() {
   const [alerts, setAlerts]       = useState<any[]>([])
   const [auditLogs, setAuditLogs] = useState<any[]>([])
   const [policies, setPolicies]   = useState<any[]>([])
+  const [metrics, setMetrics]     = useState<any[]>([])
   const [loading, setLoading]     = useState(true)
-  const [simFeedback, setSimFeedback] = useState<string | null>(null)
-  const [simRunning, setSimRunning]   = useState<boolean>(false)
-
-  const runSimulation = (msg: string) => {
-    setSimRunning(true)
-    setSimFeedback("Executing command through Go Control Plane...")
-    setTimeout(() => {
-      setSimFeedback(msg)
-      setSimRunning(false)
-    }, 600)
-  }
+  const router = useRouter()
+  const toast = useToast()
 
   useEffect(() => {
     async function load() {
       try {
-        const [h, p, a, l, pol] = await Promise.allSettled([
-          getHealth(), getProjects(), getAlerts(), getAuditLogs(), getPolicies(),
+        const [h, p, a, l, pol, m] = await Promise.allSettled([
+          getHealth(), getProjects(), getAlerts(), getAuditLogs(), getPolicies(), getMetrics(),
         ])
         if (h.status   === 'fulfilled') setHealth(h.value.data)
         if (p.status   === 'fulfilled') setProjects(p.value.data || [])
         if (a.status   === 'fulfilled') setAlerts(a.value.data || [])
         if (l.status   === 'fulfilled') setAuditLogs(l.value.data || [])
         if (pol.status === 'fulfilled') setPolicies(pol.value.data || [])
+        if (m.status   === 'fulfilled') setMetrics(m.value.data || [])
       } finally {
         setLoading(false)
       }
@@ -61,6 +59,20 @@ export default function DashboardPage() {
   }, [])
 
   const firingAlerts = alerts.filter((a) => a.status === 'firing')
+  const metricSeries = useMemo(() => metrics.slice(0, 12).reverse().map((m, i) => ({
+    label: (m.name || `m${i}`).slice(0, 18),
+    value: Number(m.value) || 0,
+  })), [metrics])
+  const severityData = useMemo(() => {
+    const counts: Record<string, number> = {}
+    alerts.forEach((a) => { const k = a.severity || 'unknown'; counts[k] = (counts[k] || 0) + 1 })
+    return Object.entries(counts).map(([label, value]) => ({ label, value }))
+  }, [alerts])
+
+  const jump = (href: string, label: string) => {
+    toast.info(`Opening ${label}…`)
+    router.push(href)
+  }
 
   return (
     <>
@@ -192,6 +204,34 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      {/* ── Live Telemetry (real data from /api/v1/metrics-data) ── */}
+      <div className="ui-split reveal" style={{ marginBottom: 20 }}>
+        <div className="ui-panel">
+          <div className="card-header" style={{ padding: '18px 20px 0' }}>
+            <div>
+              <div className="card-title">Telemetry Timeline</div>
+              <div className="card-subtitle">Metric records collected by the local control plane</div>
+            </div>
+            <span className="badge badge-cyan">{metrics.length} samples</span>
+          </div>
+          <div style={{ padding: '0 14px 12px' }}>
+            <TrendArea data={metricSeries} color="#38bdf8" name="Metric value" height={230} />
+          </div>
+        </div>
+        <div className="ui-panel">
+          <div className="card-header" style={{ padding: '18px 20px 0' }}>
+            <div>
+              <div className="card-title">Alert Severity Mix</div>
+              <div className="card-subtitle">{firingAlerts.length} currently firing</div>
+            </div>
+            <span className="badge badge-purple">Live</span>
+          </div>
+          <div style={{ padding: '0 14px 12px' }}>
+            <Donut data={severityData} height={230} centreLabel="alerts" />
+          </div>
+        </div>
+      </div>
+
       {/* ── Main Grid ── */}
       <div className="dashboard-main-grid" style={{ display: 'grid', gridTemplateColumns: '1.25fr 0.75fr', gap: 20 }}>
         {/* Left Column: Projects & Interactive Workbench */}
@@ -245,77 +285,36 @@ export default function DashboardPage() {
             )}
           </div>
 
-          {/* Interactive DevSecOps Quick-Action Workbench */}
+          {/* Real navigation shortcuts — no fabricated results */}
           <div className="card card-interactive glow-border">
             <div className="card-header">
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <FiTerminal size={18} color="#38bdf8" />
-                <div className="card-title">Interactive DevSecOps Quick Actions</div>
+                <div className="card-title">Operations Quick Access</div>
               </div>
-              <span className="badge badge-info">Zero-Cost Simulator</span>
+              <span className="badge badge-info">Live Modules</span>
             </div>
             <p style={{ fontSize: 12.5, color: 'var(--text-muted)', marginBottom: 14 }}>
-              Execute live platform actions across Trivy security scanning, Terraform drift detection, Canary routing, and FinOps analysis:
+              Jump directly to the live locally-running module. Each action opens real data from the control plane.
             </p>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 10, marginBottom: 14 }}>
-              <button
-                onClick={() => runSimulation("✓ Trivy Scan Completed: 0 Critical, 0 High CVEs in cloudops-backend:v1.0.0. Quality gate PASSED.")}
-                className="btn btn-sm btn-dynamic"
-                disabled={simRunning}
-                style={{ display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center', borderColor: 'rgba(244, 63, 94, 0.4)', color: '#f43f5e' }}
-              >
-                <FiShield size={14} />
-                <span>Run Trivy Scan</span>
-              </button>
-              <button
-                onClick={() => runSimulation("✓ Terraform Plan: 14 resources to add, 0 to destroy. Remote state verified in sync.")}
-                className="btn btn-sm btn-dynamic"
-                disabled={simRunning}
-                style={{ display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center', borderColor: 'rgba(56, 189, 248, 0.4)', color: '#38bdf8' }}
-              >
-                <FiServer size={14} />
-                <span>Terraform Plan</span>
-              </button>
-              <button
-                onClick={() => runSimulation("✓ Canary Traffic Shift: 85% to Stable (v1.4.2), 15% to Canary (v2.0.0). SLA p95 latency: 14ms.")}
-                className="btn btn-sm btn-dynamic"
-                disabled={simRunning}
-                style={{ display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center', borderColor: 'rgba(16, 185, 129, 0.4)', color: '#10b981' }}
-              >
-                <FiZap size={14} />
-                <span>Canary Split</span>
-              </button>
-              <button
-                onClick={() => runSimulation("✓ FinOps Analysis: Scaled 2 idle staging pods. Projected monthly savings: $118.00 (34%).")}
-                className="btn btn-sm btn-dynamic"
-                disabled={simRunning}
-                style={{ display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center', borderColor: 'rgba(245, 158, 11, 0.4)', color: '#f59e0b' }}
-              >
-                <FiDollarSign size={14} />
-                <span>FinOps Analyze</span>
-              </button>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 10 }}>
+              {[
+                { label: 'Security Scans', href: '/security', icon: FiShield, color: '#f43f5e', tip: 'Open real Trivy results' },
+                { label: 'Infrastructure', href: '/infrastructure', icon: FiServer, color: '#38bdf8', tip: 'Open IaC stacks' },
+                { label: 'Pipelines', href: '/pipelines', icon: FiZap, color: '#10b981', tip: 'Open Jenkins pipeline view' },
+                { label: 'Cost & FinOps', href: '/cost', icon: FiDollarSign, color: '#f59e0b', tip: 'Open local cost model' },
+              ].map((a) => {
+                const Icon = a.icon
+                return (
+                  <button key={a.href} onClick={() => jump(a.href, a.label)} data-tip={a.tip}
+                    className="btn btn-sm btn-dynamic hover-lift"
+                    style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center', borderColor: `${a.color}66`, color: a.color, padding: '12px 8px' }}>
+                    <Icon size={15} /><span>{a.label}</span>
+                  </button>
+                )
+              })}
             </div>
-
-            {simFeedback && (
-              <div
-                style={{
-                  padding: '10px 14px',
-                  borderRadius: 8,
-                  background: '#04060a',
-                  border: '1px solid var(--border-bright)',
-                  fontFamily: 'monospace',
-                  fontSize: 12,
-                  color: simRunning ? 'var(--accent)' : '#34d399',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                }}
-              >
-                <span className="ping-dot" style={{ width: 8, height: 8, borderRadius: '50%', background: simRunning ? '#38bdf8' : '#10b981' }} />
-                <span>{simFeedback}</span>
-              </div>
-            )}
           </div>
         </div>
 

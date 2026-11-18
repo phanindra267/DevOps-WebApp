@@ -1,0 +1,192 @@
+Started by user admin
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in /var/jenkins_home/workspace/cloudops-local-pipeline
+[Pipeline] {
+[Pipeline] echo
+LOCAL PIPELINE START - CloudOps Sentinel INT 378 (no cloud resources)
+[Pipeline] stage
+[Pipeline] { (1. Checkout (local Git))
+[Pipeline] sh
++ rm -rf /var/jenkins_home/workspace/cloudops-local-pipeline/src
++ git clone --quiet /workspace /var/jenkins_home/workspace/cloudops-local-pipeline/src
++ echo CHECKOUT_OK
+CHECKOUT_OK
++ ls /var/jenkins_home/workspace/cloudops-local-pipeline/src
+CloudOps_Sentinel_INT378_Presentation.pptx
+README.md
+backend
+ci
+docker-compose.yml
+docs
+frontend
+infrastructure
+kubernetes
+monitoring
+scripts
+security
+serverless
+tests
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (2. Unit Tests (Go in local container))
+[Pipeline] sh
++ docker run --rm -v 'C:/Users/phani/Downloads/INT 378/backend:/src' -v /run/desktop/mnt/host/c/Users/phani/go/pkg/mod:/go/pkg/mod -w /src -e 'GOPROXY=off' golang:1.24-alpine go test ./...
+?   	cloudops-sentinel/cmd/server	[no test files]
+ok  	cloudops-sentinel/internal/auth	0.016s
+ok  	cloudops-sentinel/internal/cloud	0.022s
+ok  	cloudops-sentinel/internal/cost	0.016s
+?   	cloudops-sentinel/internal/db	[no test files]
+?   	cloudops-sentinel/internal/deployment	[no test files]
+?   	cloudops-sentinel/internal/environment	[no test files]
+?   	cloudops-sentinel/internal/governance	[no test files]
+?   	cloudops-sentinel/internal/infra	[no test files]
+?   	cloudops-sentinel/internal/middleware	[no test files]
+?   	cloudops-sentinel/internal/models	[no test files]
+?   	cloudops-sentinel/internal/monitor	[no test files]
+?   	cloudops-sentinel/internal/pipeline	[no test files]
+ok  	cloudops-sentinel/internal/project	0.017s
+?   	cloudops-sentinel/internal/reliability	[no test files]
+?   	cloudops-sentinel/internal/security	[no test files]
+ok  	cloudops-sentinel/internal/syllabus	0.015s
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (3. DevSecOps Scan (Trivy, local))
+[Pipeline] sh
++ docker run --rm -v 'C:/Users/phani/Downloads/INT 378/backend:/src' -v cloudops_trivy_cache:/root/.cache/trivy aquasec/trivy:latest fs --skip-db-update --scanners vuln --exit-code 0 --format table /src
++ head -40
+2026-11-17T08:52:38Z	INFO	[vuln] Vulnerability scanning is enabled
+2026-11-17T08:52:39Z	INFO	Number of language-specific files	num=1
+2026-11-17T08:52:39Z	INFO	[gomod] Detecting vulnerabilities...
+2026-11-17T08:52:39Z	WARN	Using severities from other vendors for some vulnerabilities. Read https://trivy.dev/docs/v0.76/guide/scanner/vulnerability#severity-selection for details.
+
+Report Summary
+
+┌────────┬───────┬─────────────────┐
+│ Target │ Type  │ Vulnerabilities │
+├────────┼───────┼─────────────────┤
+│ go.mod │ gomod │       24        │
+└────────┴───────┴─────────────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+
+go.mod (gomod)
+==============
+Total: 24 (UNKNOWN: 2, LOW: 0, MEDIUM: 8, HIGH: 14, CRITICAL: 0)
+
+┌──────────────────────────────┬────────────────┬──────────┬────────┬───────────────────┬──────────────────────────────────────┬──────────────────────────────────────────────────────────────┐
+│           Library            │ Vulnerability  │ Severity │ Status │ Installed Version │            Fixed Version             │                            Title                             │
+├──────────────────────────────┼────────────────┼──────────┼────────┼───────────────────┼──────────────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ github.com/golang-jwt/jwt/v5 │ CVE-2025-30204 │ HIGH     │ fixed  │ v5.2.0            │ 5.2.2                                │ golang-jwt/jwt: jwt-go allows excessive memory allocation    │
+│                              │                │          │        │                   │                                      │ during header parsing                                        │
+│                              │                │          │        │                   │                                      │ https://avd.aquasec.com/nvd/cve-2025-30204                   │
+├──────────────────────────────┼────────────────┤          │        ├───────────────────┼──────────────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ golang.org/x/crypto          │ CVE-2024-45337 │          │        │ v0.22.0           │ 0.31.0                               │ golang.org/x/crypto/ssh: Misuse of                           │
+│                              │                │          │        │                   │                                      │ ServerConfig.PublicKeyCallback may cause authorization       │
+│                              │                │          │        │                   │                                      │ bypass in golang.org/x/crypto                                │
+│                              │                │          │        │                   │                                      │ https://avd.aquasec.com/nvd/cve-2024-45337                   │
+│                              ├────────────────┤          │        │                   ├──────────────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                              │ CVE-2025-22869 │          │        │                   │ 0.35.0                               │ golang.org/x/crypto/ssh: Denial of Service in the Key        │
+│                              │                │          │        │                   │                                      │ Exchange of golang.org/x/crypto/ssh                          │
+│                              │                │          │        │                   │                                      │ https://avd.aquasec.com/nvd/cve-2025-22869                   │
+│                              ├────────────────┤          │        │                   ├──────────────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                              │ CVE-2025-47913 │          │        │                   │ 0.43.0                               │ golang.org/x/crypto/ssh/agent:                               │
+│                              │                │          │        │                   │                                      │ golang.org/x/crypto/ssh/agent: SSH client panic due to       │
+│                              │                │          │        │                   │                                      │ unexpected SSH_AGENT_SUCCESS                                 │
+│                              │                │          │        │                   │                                      │ https://avd.aquasec.com/nvd/cve-2025-47913                   │
+│                              ├────────────────┤          │        │                   ├──────────────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                              │ CVE-2026-39828 │          │        │                   │ 0.52.0                               │ golang.org/x/crypto/ssh: golang.org/x/crypto/ssh:            │
+│                              │                │          │        │                   │                                      │ Unauthorized command execution via discarded SSH permissions │
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (4. Docker Build (local image))
+[Pipeline] sh
++ docker build -t int378-backend-jenkins:local /workspace/backend
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  166.9kB
+Step 1/11 : FROM golang:1.24-alpine AS builder
+ ---> 8bee1901f1e5
+Step 2/11 : WORKDIR /app
+ ---> Using cache
+ ---> 2f30fdacfd2a
+Step 3/11 : COPY go.mod go.sum ./
+ ---> Using cache
+ ---> 746b9e676242
+Step 4/11 : RUN go mod download
+ ---> Using cache
+ ---> c2fd502319c5
+Step 5/11 : COPY . .
+ ---> Using cache
+ ---> 07b5333c5e4b
+Step 6/11 : RUN CGO_ENABLED=0 GOOS=linux go build -o /cloudops-backend ./cmd/server/main.go
+ ---> Using cache
+ ---> 35647127f3a8
+Step 7/11 : FROM alpine:latest
+ ---> f59abe656b69
+Step 8/11 : WORKDIR /app
+ ---> Using cache
+ ---> 26c2ed8143aa
+Step 9/11 : COPY --from=builder /cloudops-backend .
+ ---> Using cache
+ ---> 1d67127a8b2d
+Step 10/11 : EXPOSE 8080
+ ---> Using cache
+ ---> 35f34632e388
+Step 11/11 : CMD ["./cloudops-backend"]
+ ---> Using cache
+ ---> 49d8bca32d56
+Successfully built 49d8bca32d56
+Successfully tagged int378-backend-jenkins:local
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (5. Local Deploy Health Check)
+[Pipeline] sh
++ curl -fsS http://backend:8080/api/v1/health
+{"database":true,"status":"healthy","timestamp":"2026-11-17T08:52:45Z","version":"0.1.0"}
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (6. IaC Validate (Terraform, local))
+[Pipeline] sh
++ docker run --rm --entrypoint sh -v 'C:/Users/phani/Downloads/INT 378/infrastructure/terraform/local:/src' -w /tmp hashicorp/terraform:1.16.1 -c 'cp -r /src /tmp/tf && cd /tmp/tf && rm -rf .terraform .terraform.lock.hcl tfplan terraform.tfstate && terraform init -input=false -backend=false && terraform validate -no-color'
+[0m[1mInitializing provider plugins...[0m
+- Finding kreuzwerker/docker versions matching "~> 3.0"...
+- Installing kreuzwerker/docker v3.9.0...
+- Installed kreuzwerker/docker v3.9.0 (self-signed, key ID [0m[1m0DCE698927DAF8EC[0m)[0m
+Partner and community providers are signed by their developers.
+If you'd like to know more about provider signing, you can read about it here:
+https://developer.hashicorp.com/terraform/cli/plugins/signing
+
+Terraform has created a lock file [1m.terraform.lock.hcl[0m to record the provider
+selections it made above. Include this file in your version control repository
+so that Terraform can guarantee to make the same selections by default when
+you run "terraform init" in the future.[0m
+
+[0m[1m[32mTerraform has been successfully initialized![0m[32m[0m
+[0m[32m
+You may now begin working with Terraform. Try running "terraform plan" to see
+any changes that are required for your infrastructure. All Terraform commands
+should now work.
+
+If you ever set or change modules or backend configuration for Terraform,
+rerun this command to reinitialize your working directory. If you forget, other
+commands will detect it and remind you to do so if necessary.[0m
+Success! The configuration is valid.
+
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] echo
+LOCAL PIPELINE COMPLETE
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS

@@ -1,0 +1,743 @@
+# ==============================================================================
+# CloudOps Sentinel - COMPLETE AWS CloudFormation Stack (IaC comparison to Terraform)
+# INT 378 | Session 2026-27
+# ------------------------------------------------------------------------------
+# Replace EVERY "XX" parameter default / literal with your own value before
+# creating the stack. Numeric values have a `# XX - replace` comment.
+# ==============================================================================
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'CloudOps Sentinel - VPC, subnets, VPN, security, IAM, EC2, S3, Lambda, monitoring and budgets'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: XX
+    Description: Environment name (dev / staging / prod)
+  AwsRegion:
+    Type: String
+    Default: XX
+    Description: AWS region, e.g. us-east-1
+  VpcCIDR:
+    Type: String
+    Default: XX
+    Description: VPC CIDR, e.g. 10.0.0.0/16
+  PublicSubnet1CIDR:
+    Type: String
+    Default: XX
+  PublicSubnet2CIDR:
+    Type: String
+    Default: XX
+  PrivateSubnet1CIDR:
+    Type: String
+    Default: XX
+  PrivateSubnet2CIDR:
+    Type: String
+    Default: XX
+  AvailabilityZone1:
+    Type: String
+    Default: XX
+  AvailabilityZone2:
+    Type: String
+    Default: XX
+  VpnCustomerGatewayIp:
+    Type: String
+    Default: XX
+    Description: Public IP of the on-premises VPN device
+  VpnBgpAsn:
+    Type: Number
+    Default: 65000 # XX - replace
+  PeerVpcId:
+    Type: String
+    Default: XX
+    Description: Existing VPC ID to peer with (leave XX to auto-create a demo peer VPC)
+  PeerVpcCidr:
+    Type: String
+    Default: XX
+    Description: CIDR of the peer VPC, e.g. 192.168.0.0/16 (must not overlap VpcCIDR)
+  SshAllowedCidr:
+    Type: String
+    Default: XX
+    Description: CIDR allowed to SSH, e.g. 203.0.113.5/32
+  AmiId:
+    Type: String
+    Default: XX
+    Description: Amazon Linux 2 / Ubuntu AMI ID valid in AwsRegion
+  InstanceType:
+    Type: String
+    Default: XX
+    Description: Free-tier EC2 type, e.g. t2.micro
+  KeyName:
+    Type: String
+    Default: XX
+    Description: Existing EC2 key pair name for SSH
+  ArtifactsBucketName:
+    Type: String
+    Default: XX
+  StateBucketName:
+    Type: String
+    Default: XX
+  LogsBucketName:
+    Type: String
+    Default: XX
+  DevopsGroupName:
+    Type: String
+    Default: XX
+  DeveloperUserName:
+    Type: String
+    Default: XX
+  DeployerRoleName:
+    Type: String
+    Default: XX
+  LambdaFunctionName:
+    Type: String
+    Default: XX
+  LambdaRuntime:
+    Type: String
+    Default: XX
+  LambdaHandler:
+    Type: String
+    Default: XX
+  LambdaS3Bucket:
+    Type: String
+    Default: XX
+    Description: S3 bucket containing the Lambda deployment package
+  LambdaS3Key:
+    Type: String
+    Default: XX
+  AlertEmail:
+    Type: String
+    Default: XX
+  MonthlyBudgetAmount:
+    Type: Number
+    Default: 100 # XX - replace
+  CpuAlarmThreshold:
+    Type: Number
+    Default: 80 # XX - replace
+
+Conditions:
+  HasTwoAzs: !Not [!Equals [!Ref AvailabilityZone2, '']]
+  CreatePeerVpc: !Equals [!Ref PeerVpcId, 'XX']
+  UsePeerCidrParam: !Not [!Equals [!Ref PeerVpcCidr, 'XX']]
+
+Resources:
+  # ---------------------------------------------------------------- NETWORK
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCIDR
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Sub '${Environment}-cloudops-vpc'
+        - Key: ManagedBy
+          Value: CloudFormation
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub '${Environment}-igw'
+
+  AttachInternetGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref InternetGateway
+
+  PublicSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Ref PublicSubnet1CIDR
+      AvailabilityZone: !Ref AvailabilityZone1
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub '${Environment}-public-1'
+
+  PublicSubnet2:
+    Type: AWS::EC2::Subnet
+    Condition: HasTwoAzs
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Ref PublicSubnet2CIDR
+      AvailabilityZone: !Ref AvailabilityZone2
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub '${Environment}-public-2'
+
+  PrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Ref PrivateSubnet1CIDR
+      AvailabilityZone: !Ref AvailabilityZone1
+      Tags:
+        - Key: Name
+          Value: !Sub '${Environment}-private-1'
+
+  PrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    Condition: HasTwoAzs
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Ref PrivateSubnet2CIDR
+      AvailabilityZone: !Ref AvailabilityZone2
+      Tags:
+        - Key: Name
+          Value: !Sub '${Environment}-private-2'
+
+  NatEip:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+
+  NatGateway:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt NatEip.AllocationId
+      SubnetId: !Ref PublicSubnet1
+      Tags:
+        - Key: Name
+          Value: !Sub '${Environment}-nat'
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub '${Environment}-public-rt'
+
+  PublicDefaultRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+    DependsOn: AttachInternetGateway
+
+  PublicSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet1
+      RouteTableId: !Ref PublicRouteTable
+
+  PublicSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Condition: HasTwoAzs
+    Properties:
+      SubnetId: !Ref PublicSubnet2
+      RouteTableId: !Ref PublicRouteTable
+
+  PrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub '${Environment}-private-rt'
+
+  PrivateDefaultRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NatGateway
+
+  PrivateSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet1
+      RouteTableId: !Ref PrivateRouteTable
+
+  PrivateSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Condition: HasTwoAzs
+    Properties:
+      SubnetId: !Ref PrivateSubnet2
+      RouteTableId: !Ref PrivateRouteTable
+
+  S3VpcEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      VpcId: !Ref VPC
+      ServiceName: !Sub 'com.amazonaws.${AwsRegion}.s3'
+      RouteTableIds:
+        - !Ref PublicRouteTable
+        - !Ref PrivateRouteTable
+      VpcEndpointType: Gateway
+
+  # ---------------------------------------------------------------- SITE-TO-SITE VPN
+  CustomerGateway:
+    Type: AWS::EC2::CustomerGateway
+    Properties:
+      BgpAsn: !Ref VpnBgpAsn
+      IpAddress: !Ref VpnCustomerGatewayIp
+      Type: ipsec.1
+      Tags:
+        - Key: Name
+          Value: !Sub '${Environment}-cgw'
+
+  VpnGateway:
+    Type: AWS::EC2::VPNGateway
+    Properties:
+      Type: ipsec.1
+      Tags:
+        - Key: Name
+          Value: !Sub '${Environment}-vgw'
+
+  AttachVpnGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPC
+      VpnGatewayId: !Ref VpnGateway
+
+  VpnConnection:
+    Type: AWS::EC2::VPNConnection
+    Properties:
+      CustomerGatewayId: !Ref CustomerGateway
+      VpnGatewayId: !Ref VpnGateway
+      Type: ipsec.1
+      StaticRoutesOnly: false
+      Tags:
+        - Key: Name
+          Value: !Sub '${Environment}-vpn'
+    DependsOn: AttachVpnGateway
+
+  VpnRoutePropagation:
+    Type: AWS::EC2::VPNGatewayRoutePropagation
+    Properties:
+      RouteTableIds:
+        - !Ref PrivateRouteTable
+      VpnGatewayId: !Ref VpnGateway
+    DependsOn: AttachVpnGateway
+
+  # ---------------------------------------------------------------- VPC PEERING
+  # Demo peer VPC, created only when PeerVpcId is left as "XX".
+  PeerVpc:
+    Type: AWS::EC2::VPC
+    Condition: CreatePeerVpc
+    Properties:
+      CidrBlock: !If [UsePeerCidrParam, !Ref PeerVpcCidr, '192.168.0.0/16']
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Sub '${Environment}-peer-vpc'
+
+  PeerSubnet:
+    Type: AWS::EC2::Subnet
+    Condition: CreatePeerVpc
+    Properties:
+      VpcId: !Ref PeerVpc
+      CidrBlock: 192.168.1.0/24
+      AvailabilityZone: !Ref AvailabilityZone1
+      Tags:
+        - Key: Name
+          Value: !Sub '${Environment}-peer-subnet'
+
+  PeerRouteTable:
+    Type: AWS::EC2::RouteTable
+    Condition: CreatePeerVpc
+    Properties:
+      VpcId: !Ref PeerVpc
+      Tags:
+        - Key: Name
+          Value: !Sub '${Environment}-peer-rt'
+
+  PeerSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Condition: CreatePeerVpc
+    Properties:
+      SubnetId: !Ref PeerSubnet
+      RouteTableId: !Ref PeerRouteTable
+
+  # Peering connection: uses the demo VPC when PeerVpcId == 'XX' (auto-accepted),
+  # otherwise peers with the existing VPC supplied as a parameter.
+  VpcPeeringConnection:
+    Type: AWS::EC2::VPCPeeringConnection
+    Properties:
+      VpcId: !Ref VPC
+      PeerVpcId: !If [CreatePeerVpc, !Ref PeerVpc, !Ref PeerVpcId]
+      PeerRegion: !Ref AwsRegion
+      Tags:
+        - Key: Name
+          Value: !Sub '${Environment}-peering'
+
+  # Route from main VPC -> peer CIDR (private route table)
+  PrivateRouteToPeer:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      DestinationCidrBlock: !If [UsePeerCidrParam, !Ref PeerVpcCidr, '192.168.0.0/16']
+      VpcPeeringConnectionId: !Ref VpcPeeringConnection
+
+  # Route from main VPC -> peer CIDR (public route table)
+  PublicRouteToPeer:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: !If [UsePeerCidrParam, !Ref PeerVpcCidr, '192.168.0.0/16']
+      VpcPeeringConnectionId: !Ref VpcPeeringConnection
+
+  # Route from peer VPC -> main VPC CIDR (only for the auto-created demo VPC)
+  PeerRouteToMain:
+    Type: AWS::EC2::Route
+    Condition: CreatePeerVpc
+    Properties:
+      RouteTableId: !Ref PeerRouteTable
+      DestinationCidrBlock: !Ref VpcCIDR
+      VpcPeeringConnectionId: !Ref VpcPeeringConnection
+
+  # ---------------------------------------------------------------- SECURITY GROUPS
+  WebSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Web tier - HTTP, HTTPS and restricted SSH
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: !Ref SshAllowedCidr
+      SecurityGroupEgress:
+        - IpProtocol: '-1'
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Sub '${Environment}-web-sg'
+
+  AppSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: App tier - accepts traffic only from web tier
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          SourceSecurityGroupId: !Ref WebSecurityGroup
+      SecurityGroupEgress:
+        - IpProtocol: '-1'
+          CidrIp: 0.0.0.0/0
+
+  DbSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: DB tier - PostgreSQL only from app tier
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          SourceSecurityGroupId: !Ref AppSecurityGroup
+      SecurityGroupEgress:
+        - IpProtocol: '-1'
+          CidrIp: 0.0.0.0/0
+
+  # ---------------------------------------------------------------- IAM (RBAC / MFA)
+  DevopsGroup:
+    Type: AWS::IAM::Group
+    Properties:
+      GroupName: !Ref DevopsGroupName
+
+  DeveloperUser:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: !Ref DeveloperUserName
+      Groups:
+        - !Ref DevopsGroup
+
+  MfaEnforcedPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub '${Environment}-MFAEnforcedPolicy'
+      Groups:
+        - !Ref DevopsGroup
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: DenyAllWithoutMFA
+            Effect: Deny
+            NotAction:
+              - iam:CreateVirtualMFADevice
+              - iam:EnableMFADevice
+              - iam:ResyncMFADevice
+              - iam:ListUsers
+            Resource: '*'
+            Condition:
+              BoolIfExists:
+                aws:MultiFactorAuthPresent: 'false'
+
+  DeployerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Ref DeployerRoleName
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+          - Effect: Allow
+            Principal:
+              AWS: !GetAtt DeveloperUser.Arn
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: !Sub '${Environment}-DeployerLeastPrivilege'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:ListBucket
+                Resource:
+                  - !GetAtt ArtifactsBucket.Arn
+                  - !Sub '${ArtifactsBucket.Arn}/*'
+              - Effect: Allow
+                Action: cloudwatch:PutMetricData
+                Resource: '*'
+
+  WebInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref DeployerRole
+
+  # ---------------------------------------------------------------- S3
+  ArtifactsBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: !Sub '${ArtifactsBucketName}-${Environment}'
+      VersioningConfiguration:
+        Status: Enabled
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LifecycleConfiguration:
+        Rules:
+          - Id: ExpireOldArtifacts
+            Status: Enabled
+            NoncurrentVersionExpirationInDays: 90 # XX - replace
+
+  StateBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: !Sub '${StateBucketName}-${Environment}'
+      VersioningConfiguration:
+        Status: Enabled
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  LogsBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: !Sub '${LogsBucketName}-${Environment}'
+      VersioningConfiguration:
+        Status: Enabled
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  # ---------------------------------------------------------------- EC2 WEB SERVER
+  WebInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref AmiId
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyName
+      SubnetId: !Ref PublicSubnet1
+      SecurityGroupIds:
+        - !Ref WebSecurityGroup
+      IamInstanceProfile: !Ref WebInstanceProfile
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          yum update -y
+          amazon-linux-extras install -y nginx1 || yum install -y nginx
+          systemctl enable nginx
+          systemctl start nginx
+          echo "<html><body style='background:#0b0f19;color:#fff;text-align:center;padding:50px;font-family:sans-serif;'><h1 style='color:#38bdf8;'>CloudOps Sentinel Web App</h1><p>Provisioned via AWS CloudFormation - Stack: ${AWS::StackName}</p></body></html>" > /usr/share/nginx/html/index.html
+      Tags:
+        - Key: Name
+          Value: !Sub '${Environment}-webserver'
+        - Key: ManagedBy
+          Value: CloudFormation
+
+  WebEip:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      InstanceId: !Ref WebInstance
+
+  # ---------------------------------------------------------------- LAMBDA / SERVERLESS
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+  LambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Ref LambdaFunctionName
+      Runtime: !Ref LambdaRuntime
+      Handler: !Ref LambdaHandler
+      Role: !GetAtt LambdaRole.Arn
+      Code:
+        S3Bucket: !Ref LambdaS3Bucket
+        S3Key: !Ref LambdaS3Key
+      Timeout: 30 # XX - replace
+      MemorySize: 256 # XX - replace
+
+  LambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${LambdaFunctionName}'
+      RetentionInDays: 14 # XX - replace
+
+  # ---------------------------------------------------------------- MONITORING
+  AlertsTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub '${Environment}-alerts'
+      Subscription:
+        - Protocol: email
+          Endpoint: !Ref AlertEmail
+
+  HighCpuAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub '${Environment}-ec2-high-cpu'
+      Namespace: AWS/EC2
+      MetricName: CPUUtilization
+      Dimensions:
+        - Name: InstanceId
+          Value: !Ref WebInstance
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      ComparisonOperator: GreaterThanThreshold
+      Threshold: !Ref CpuAlarmThreshold
+      AlarmActions:
+        - !Ref AlertsTopic
+
+  SentinelDashboard:
+    Type: AWS::CloudWatch::Dashboard
+    Properties:
+      DashboardName: !Sub '${Environment}-cloudops-dashboard'
+      DashboardBody: !Sub |
+        {
+          "widgets": [{
+            "type": "metric",
+            "x": 0, "y": 0, "width": 24, "height": 6,
+            "properties": {
+              "title": "EC2 CPU Utilization",
+              "metrics": [["AWS/EC2", "CPUUtilization", "InstanceId", "${WebInstance}"]],
+              "region": "${AwsRegion}",
+              "view": "timeSeries"
+            }
+          }]
+        }
+
+  # ---------------------------------------------------------------- FINOPS / BUDGET
+  MonthlyBudget:
+    Type: AWS::Budgets::Budget
+    Properties:
+      Budget:
+        BudgetName: !Sub '${Environment}-monthly-budget'
+        BudgetType: COST
+        TimeUnit: MONTHLY
+        BudgetLimit:
+          Amount: !Ref MonthlyBudgetAmount
+          Unit: USD
+      NotificationsWithSubscribers:
+        - Notification:
+            NotificationType: ACTUAL
+            ComparisonOperator: GREATER_THAN
+            Threshold: 80 # XX - replace
+            ThresholdType: PERCENTAGE
+          Subscribers:
+            - SubscriptionType: EMAIL
+              Address: !Ref AlertEmail
+
+Outputs:
+  VpcId:
+    Description: VPC ID
+    Value: !Ref VPC
+    Export:
+      Name: !Sub '${Environment}-VpcId'
+  PublicSubnet1Id:
+    Value: !Ref PublicSubnet1
+  PrivateSubnet1Id:
+    Value: !Ref PrivateSubnet1
+  VpnConnectionId:
+    Description: Site-to-Site VPN connection ID (use for tunnel configuration)
+    Value: !Ref VpnConnection
+  VpcPeeringConnectionId:
+    Description: VPC peering connection ID
+    Value: !Ref VpcPeeringConnection
+  PeerVpcId:
+    Description: ID of the peer VPC (demo or existing)
+    Value: !If [CreatePeerVpc, !Ref PeerVpc, !Ref PeerVpcId]
+  WebInstanceId:
+    Value: !Ref WebInstance
+  WebPublicIp:
+    Description: Public IP of the Nginx web server
+    Value: !GetAtt WebInstance.PublicIp
+  WebElasticIp:
+    Value: !Ref WebEip
+  ArtifactsBucketName:
+    Value: !Ref ArtifactsBucket
+  StateBucketName:
+    Value: !Ref StateBucket
+  DeployerRoleArn:
+    Value: !GetAtt DeployerRole.Arn
+  LambdaFunctionName:
+    Value: !Ref LambdaFunctionName
+  AlertsTopicArn:
+    Value: !Ref AlertsTopic

@@ -5,14 +5,16 @@ interface AuthContextType {
   token: string | null
   user: { username: string; role: string } | null
   isAuthenticated: boolean
+  ready: boolean
   login: (username: string, password: string) => Promise<void>
   logout: () => void
 }
 
-const AuthContext = createContext<AuthContextType>({
+export const AuthContext = createContext<AuthContextType>({
   token: null,
   user: null,
   isAuthenticated: false,
+  ready: false,
   login: async () => {},
   logout: () => {},
 })
@@ -20,11 +22,19 @@ const AuthContext = createContext<AuthContextType>({
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null)
   const [user, setUser] = useState<{ username: string; role: string } | null>(null)
+  const [ready, setReady] = useState(false)
 
+  // Restore the saved session only AFTER mount. Server and client therefore
+  // render the same initial HTML (no hydration mismatch), and route guards
+  // wait for `ready` before deciding to redirect to /login.
   useEffect(() => {
     const saved = localStorage.getItem('token')
-    if (saved) {
-      setToken(saved)
+    if (saved) setToken(saved)
+    setReady(true)
+  }, [])
+
+  useEffect(() => {
+    if (token) {
       getMe()
         .then((res) => setUser(res.data))
         .catch(() => {
@@ -32,7 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setToken(null)
         })
     }
-  }, [])
+  }, [token])
 
   const login = async (username: string, password: string) => {
     const res = await apiLogin(username, password)
@@ -50,7 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ token, user, isAuthenticated: !!token, login, logout }}>
+    <AuthContext.Provider value={{ token, user, isAuthenticated: !!token, ready, login, logout }}>
       {children}
     </AuthContext.Provider>
   )

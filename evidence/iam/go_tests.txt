@@ -1,0 +1,17 @@
+?   	cloudops-sentinel/cmd/server	[no test files]
+ok  	cloudops-sentinel/internal/auth	11.832s
+ok  	cloudops-sentinel/internal/cloud	(cached)
+ok  	cloudops-sentinel/internal/cost	(cached)
+?   	cloudops-sentinel/internal/db	[no test files]
+?   	cloudops-sentinel/internal/deployment	[no test files]
+?   	cloudops-sentinel/internal/environment	[no test files]
+?   	cloudops-sentinel/internal/governance	[no test files]
+?   	cloudops-sentinel/internal/infra	[no test files]
+?   	cloudops-sentinel/internal/middleware	[no test files]
+?   	cloudops-sentinel/internal/models	[no test files]
+?   	cloudops-sentinel/internal/monitor	[no test files]
+?   	cloudops-sentinel/internal/pipeline	[no test files]
+ok  	cloudops-sentinel/internal/project	11.589s
+?   	cloudops-sentinel/internal/reliability	[no test files]
+?   	cloudops-sentinel/internal/security	[no test files]
+ok  	cloudops-sentinel/internal/syllabus	(cached)

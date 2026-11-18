@@ -17,7 +17,8 @@ api.interceptors.request.use((config) => {
 export const login = (username: string, password: string) =>
   api.post('/api/v1/login', { username, password })
 export const register = (username: string, email: string, password: string) =>
-  api.post('/api/v1/register', { username, email, password, role: 'admin' })
+  // Never self-assign a privileged role. The backend decides the default role.
+  api.post('/api/v1/register', { username, email, password })
 export const getMe = () => api.get('/api/v1/me')
 
 // ── Projects ──────────────────────────────────────────────────────────────

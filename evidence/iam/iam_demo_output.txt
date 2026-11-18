@@ -1,0 +1,51 @@
+
+====================================================================
+PRACTICAL 02 - LOCAL IAM / MFA / RBAC DEMO (NO AWS, NO CLOUD CALLS)
+====================================================================
+Store : C:\Users\phani\Downloads\INT 378\practicals\02-iam\data\iam_store.json
+Audit : C:\Users\phani\Downloads\INT 378\evidence\iam\audit_log.json
+TOTP  : RFC 6238 / HMAC-SHA1 / base32 / 6 digits / 30s step / +/-1 window
+[0] Reset local IAM store and seed groups/roles
+    Roles : viewer=['read:*'], deployer=['read:*', 'deploy:*', 'pipeline:trigger'], admin=['*']
+    Group : developers       roles=['viewer']
+    Group : ops              roles=['deployer']
+    Group : platform-admins  roles=['admin']
+[1] Create local principals (AWS IAM user -> local principal)
+    User  : alice   role=viewer    groups=['developers', 'ops']
+    User  : bob     role=deployer  groups=['ops']
+    User  : carol   role=admin     groups=['platform-admins']
+[2] Role assignment + group membership
+    User  : dave    role=viewer groups=['developers', 'ops']
+    'ops' group grants the assumable 'deployer' role (STS trust analogue).
+[3] Enroll MFA (AWS MFA -> local TOTP) and generate a 6-digit code
+    alice secret (base32) : WPULJCYUGCZI6K5WYKZA63KNSLTGD2KZ
+    otpauth URI           : otpauth://totp/LocalIAMDemo:alice?secret=WPULJCYUGCZI6K5WYKZA63KNSLTGD2KZ&issuer=LocalIAMDemo&algorithm=SHA1&digits=6&period=30
+    current TOTP code     : 890761  (counter=59830158)
+[4] Verify TOTP codes with +/-1 step window
+    current code      890761 -> accepted=True step_delta=0
+    previous-step code 317932 -> accepted=True step_delta=-1
+    next-step code     934722 -> accepted=True step_delta=1 (window=+/-1)
+    bogus code         000000 -> accepted=False step_delta=None
+[5] Least-privilege permission checks (policy -> permission map)
+    - alice   role=viewer    deploy:prod        -> DENIED
+    + alice   role=viewer    read:project       -> ALLOWED
+    + bob     role=deployer  deploy:prod        -> ALLOWED
+    - bob     role=deployer  iam:createuser     -> DENIED
+    + carol   role=admin     deploy:prod        -> ALLOWED
+    + carol   role=admin     iam:createuser     -> ALLOWED
+    NOTE: viewer denied deploy; admin allowed; deployer blocked from IAM writes.
+[6] Role switch with MFA (AWS STS AssumeRole -> local switch_role)
+    alice before switch : deploy:prod -> DENIED
+    assume deployer with valid MFA -> ok=True (assumed deployer with MFA (step delta=0))
+    + alice   role=deployer  deploy:prod        -> ALLOWED
+    assume admin (no group grants it) -> ok=False (role not assumable from group memberships) [trust boundary]
+    assume deployer with bad MFA 000000 -> ok=False (invalid or expired MFA code 000000) [intentional denied case]
+    alice session role after failed switches : deployer (deploy allowed=True)
+[7] Audit log (CloudTrail analogue)
+    Wrote 15 events to C:\Users\phani\Downloads\INT 378\evidence\iam\audit_log.json
+    DENIED events: 4 (permission / trust boundaries + bad MFA are real local denials)
+
+====================================================================
+DEMO COMPLETE - all allow/deny decisions above are real local enforcement
+====================================================================
+No AWS calls were made. No credentials or third-party packages were used.

@@ -1,0 +1,64 @@
+FINAL LOCAL VERIFICATION - 2026-11-17T14:32:13.3587019+05:30
+ROOT: C:\Users\phani\Downloads\INT 378
+
+=== CONTAINERS ===
+NAMES                     STATUS                       PORTS
+cloudops-frontend         Up 2 minutes                 0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
+cloudops-backend          Up 24 minutes                0.0.0.0:8080->8080/tcp, [::]:8080->8080/tcp
+cloudops-local-registry   Up 35 minutes                0.0.0.0:5000->5000/tcp, [::]:5000->5000/tcp
+cloudops-jenkins          Up About an hour             0.0.0.0:50000->50000/tcp, [::]:50000->50000/tcp, 0.0.0.0:8085->8080/tcp, [::]:8085->8080/tcp
+tf-local-webserver        Up About an hour             0.0.0.0:8088->80/tcp
+cloudops-node-exporter    Up About an hour             0.0.0.0:9100->9100/tcp, [::]:9100->9100/tcp
+cloudops-cadvisor         Up About an hour (healthy)   0.0.0.0:8087->8080/tcp, [::]:8087->8080/tcp
+tf-local-private-app      Up 9 minutes                 
+cloudops-grafana          Up 2 hours                   0.0.0.0:3001->3000/tcp, [::]:3001->3000/tcp
+cloudops-prometheus       Up About an hour             0.0.0.0:9090->9090/tcp, [::]:9090->9090/tcp
+cloudops-postgres         Up 2 hours (healthy)         0.0.0.0:5432->5432/tcp, [::]:5432->5432/tcp
+
+=== HTTP ENDPOINTS ===
+OK   http://localhost:3000/                               200 (1396 bytes)
+OK   http://localhost:8080/api/v1/health                  200 (90 bytes)
+OK   http://localhost:8088/                               200 (397 bytes)
+OK   http://localhost:9090/-/healthy                      200 (30 bytes)
+OK   http://localhost:9100/metrics                        200 (77334 bytes)
+OK   http://localhost:8087/metrics/                       200 (7175 bytes)
+OK   http://localhost:3001/api/health                     200 (101 bytes)
+OK   http://localhost:8085/login                          200 (1965 bytes)
+OK   http://localhost:5000/v2/                            200 (2 bytes)
+
+=== PROMETHEUS TARGETS ===
+  cadvisor           up
+  cloudops-backend   up
+  node-exporter      up
+  prometheus         up
+
+=== GO TESTS ===
+?   	cloudops-sentinel/cmd/server	[no test files]
+ok  	cloudops-sentinel/internal/auth	(cached)
+ok  	cloudops-sentinel/internal/cloud	(cached)
+ok  	cloudops-sentinel/internal/cost	(cached)
+?   	cloudops-sentinel/internal/db	[no test files]
+?   	cloudops-sentinel/internal/deployment	[no test files]
+?   	cloudops-sentinel/internal/environment	[no test files]
+?   	cloudops-sentinel/internal/governance	[no test files]
+?   	cloudops-sentinel/internal/infra	[no test files]
+?   	cloudops-sentinel/internal/middleware	[no test files]
+?   	cloudops-sentinel/internal/models	[no test files]
+?   	cloudops-sentinel/internal/monitor	[no test files]
+?   	cloudops-sentinel/internal/pipeline	[no test files]
+ok  	cloudops-sentinel/internal/project	(cached)
+?   	cloudops-sentinel/internal/reliability	[no test files]
+?   	cloudops-sentinel/internal/security	[no test files]
+ok  	cloudops-sentinel/internal/syllabus	(cached)
+
+
+=== DELIVERABLES ===
+  OK   CloudOps_Sentinel_INT378_Presentation_FINAL.pptx (2274518 bytes)
+  OK   LOCAL_EXECUTION_GUIDE.md (8087 bytes)
+  OK   docs\PROJECT_REPORT.md (11228 bytes)
+  OK   evidence\jenkins\build_console.txt (13166 bytes)
+  OK   evidence\security\SUMMARY.md (7002 bytes)
+  OK   evidence\terraform\terraform_run.txt (12980 bytes)
+  OK   evidence\serverless\cost_report.md (3423 bytes)
+  OK   evidence\registry\registry_lifecycle.txt (13602 bytes)
+  OK   evidence\iam\iam_demo_output.txt (3375 bytes)

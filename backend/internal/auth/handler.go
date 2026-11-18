@@ -77,9 +77,9 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, "username, email, and password are required")
 		return
 	}
-	if req.Role == "" {
-		req.Role = "viewer"
-	}
+	// Public registration is always least-privilege: a caller cannot grant
+	// itself admin/editor by supplying a "role" field in the request.
+	req.Role = "viewer"
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {

@@ -121,4 +121,33 @@ Future enhancements include:
 3. **Multi-Region Cross-Cloud Failover**: Dynamic workload evacuation between AWS and Azure during regional outages.
 
 ---
+
+## 7. Local Execution & Verification Addendum (Session 2026–27)
+
+A dedicated verification pass was completed using **100% local infrastructure only** —
+no AWS account, credentials, cloud service or paid API was used. The complete guide,
+commands and evidence index are in `LOCAL_EXECUTION_GUIDE.md`.
+
+| Area | Verified result |
+|---|---|
+| Core stack | 8 Compose services healthy; local registry on `:5000`; Terraform web server on `:8088` |
+| Go backend | `go test ./...` — all packages PASS; JWT secret now from `JWT_SECRET`; RBAC gates enforce viewer 403 / admin 201 / anon 401 |
+| IAM / MFA | RFC 6238 TOTP with ±1 step window; 15 audit events, 4 real DENIED decisions |
+| Terraform | `kreuzwerker/docker` provider; 8 resources applied; `terraform validate` Success |
+| Jenkins | 6 real stages; build **#10 SUCCESS** (`evidence/jenkins/build_console.txt`) |
+| DevSecOps | Trivy FS / image / IaC scans executed; honest critical/high counts in `evidence/security/SUMMARY.md` |
+| Monitoring | Prometheus + Node Exporter + cAdvisor; 4 scrape targets UP; Grafana dashboard provisioned |
+| Serverless / FinOps | 3/3 Lambda invocations HTTP 200 (cold + warm); local-estimate cost report ($204.87 → $113.12 / mo) |
+| Screenshots | Real headless-browser captures of every running service in `evidence/screenshots/` |
+
+**Honest limitation:** the Trivy quality gate currently fails on genuine findings
+(4 critical FS, 2 critical IaC). These are documented rather than concealed. Cost
+figures are explicitly labelled local estimates, not AWS billing. CloudFormation
+templates are reference artifacts; the executable IaC is Terraform with a Docker
+provider. See `LOCAL_EXECUTION_GUIDE.md` §4 for the full limitations list.
+
+**Final presentation:** `CloudOps_Sentinel_INT378_Presentation_FINAL.pptx` — 22 slides,
+including 9 evidence slides built from real screenshots and measured results.
+
+---
 *Report certified for submission for INT 378 Evaluation at Lovely Professional University.*

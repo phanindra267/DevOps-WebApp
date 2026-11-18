@@ -1,0 +1,27 @@
+# ==============================================================================
+# LOCAL DOCKER REGISTRY - Practical 4 (Containerization / Registry Lifecycle)
+# ------------------------------------------------------------------------------
+# A lightweight, fully local image registry using the official `registry:2`
+# image. This is the on-prem equivalent of AWS ECR and requires NO AWS account,
+# NO credentials and NO external network calls. All pushed images are stored in
+# the `registry_data` named volume on this host.
+#
+# Usage:
+#   docker compose -f docker-compose.registry.yml up -d
+#   curl http://localhost:5000/v2/          # -> 200 {}
+#   curl http://localhost:5000/v2/_catalog # -> {"repositories":[...]}
+#   docker compose -f docker-compose.registry.yml down
+# ==============================================================================
+
+services:
+  registry:
+    container_name: cloudops-local-registry
+    image: registry:2
+    ports:
+      - "5000:5000"
+    volumes:
+      - registry_data:/var/lib/registry
+    restart: unless-stopped
+
+volumes:
+  registry_data:
