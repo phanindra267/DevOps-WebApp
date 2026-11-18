@@ -1,0 +1,11 @@
+# Supported-only stack - region ap-south-1, account 314510965803
+# Replace every XX with your own values. Never commit filled-in tfvars.
+
+project_name       = "XX"
+environment        = "XX"          # dev | staging | prod
+aws_region         = "ap-south-1"
+owner              = "XX"
+
+developer_user_name = "XX"
+deployer_role_name = "XX"
+mfa_device_name    = "XX"
