@@ -199,7 +199,8 @@ A full, self-contained AWS stack was added so every key value can be replaced by
 > Replace every `XX` before applying. The Terraform stack is already validated with
 > `terraform validate`; the CloudFormation and Kubernetes YAML files are syntax-checked.
 
-🎤 **Syllabus presentation (38 slides, all 6 units):** [`CloudOps_Sentinel_INT378_Syllabus_Deck.pptx`](CloudOps_Sentinel_INT378_Syllabus_Deck.pptx)
+🎤 **LEAN presentation (15 slides, keyword-driven, all 6 units):** [`CloudOps_Sentinel_INT378_Lean.pptx`](CloudOps_Sentinel_INT378_Lean.pptx)
+🎤 Detailed version (38 slides): [`CloudOps_Sentinel_INT378_Syllabus_Deck.pptx`](CloudOps_Sentinel_INT378_Syllabus_Deck.pptx)
 📄 **Software Requirements Specification:** [`docs/SRS_CloudOps_Sentinel.md`](docs/SRS_CloudOps_Sentinel.md)
 
 📐 **Complete architecture diagram:** [`docs/architecture-complete.png`](docs/architecture-complete.png)
