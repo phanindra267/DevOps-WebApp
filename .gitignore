@@ -51,6 +51,8 @@ infrastructure/terraform/aws-complete/*.tfplan
 infrastructure/terraform/aws-supported/terraform.tfvars
 infrastructure/terraform/aws-supported/*.tfplan
 infrastructure/terraform/aws-supported/.terraform/
+infrastructure/terraform/aws-supported/terraform.tfstate
+infrastructure/terraform/aws-supported/terraform.tfstate.backup
 infrastructure/terraform/local/terraform.tfstate
 infrastructure/terraform/local/*.tfplan
 infrastructure/terraform/local/tfplan
