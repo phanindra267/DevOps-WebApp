@@ -61,3 +61,5 @@ infrastructure/individual/*/.terraform/
 infrastructure/individual/*/terraform.tfstate
 infrastructure/individual/*/terraform.tfstate.backup
 
+
+~$*.pptx
