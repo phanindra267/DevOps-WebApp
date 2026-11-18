@@ -943,17 +943,14 @@ we capture as evidence."
 | V | DevSecOps & Cloud Security | Shift-left, Trivy, quality gates, JWT/RBAC/bcrypt, zero-trust NetworkPolicy, SLSA/SBOM/Cosign |
 | VI | Cloud-Native & Optimization | 12-factor scorecard (12/12), serverless vs containers, FinOps engine, governance + audit |
 
-### The three PowerPoint decks (use the right one)
+### PowerPoint decks (use the right one)
 
-- **`CloudOps_Sentinel_ChapWise_2026-27.pptx` (38 slides)** — chapter-wise teaching/revision aid: six
-  chapters in exact syllabus order, each with a divider, concept slides, shape-drawn diagrams, and a
-  local example. Best for *explaining concepts* in class.
-- **`CloudOps_Sentinel_INT378_Presentation.pptx` (13 slides)** — the original core capstone narrative
-  (superseded; still aspirational in places — 13-stage Jenkins, $348 spend).
-- **`CloudOps_Sentinel_INT378_Presentation_FINAL.pptx` (25 slides)** — **the one to present from.**
-  Slides 1–13 are the core narrative; slides 14–25 are real evidence/UI sections with 43 captured
-  images; full speaker notes on the non-UI slides form a complete viva script. It explicitly separates
-  "what actually ran" from "what is a conceptual mapping."
+- **`CloudOps_Sentinel_INT378_Lean.pptx` (15 slides) — the one to present from.**
+  Keyword-driven, one slide per essential topic: all six syllabus units, concise bullet points,
+  flow diagrams, and a project summary. No lengthy paragraphs.
+- **`CloudOps_Sentinel_INT378_Syllabus_Deck.pptx` (38 slides)** — detailed chapter-wise teaching
+  and revision aid: six chapters in exact syllabus order with concept slides, diagrams and project
+  examples. Best for *explaining concepts* in class or revision before viva.
 
 ---
 

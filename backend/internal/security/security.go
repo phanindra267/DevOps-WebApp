@@ -10,6 +10,7 @@ import (
 
 	"cloudops-sentinel/internal/cloud"
 	"cloudops-sentinel/internal/db"
+	"cloudops-sentinel/internal/monitor"
 
 	"github.com/gorilla/mux"
 )
@@ -104,6 +105,13 @@ func TriggerScan(w http.ResponseWriter, r *http.Request) {
 	}
 	summary += strconv.Itoa(critical) + " critical, " + strconv.Itoa(high) + " high, " + strconv.Itoa(medium) + " medium, " + strconv.Itoa(low) + " low."
 	db.DB.Exec("UPDATE security_scans SET summary=$1 WHERE id=$2", summary, scanID)
+
+	// Export real scan counts to Prometheus so the CriticalVulnerabilitiesDetected
+	// alert rule is driven by actual scan results, not an inert metric.
+	monitor.SecurityVulnerabilities.WithLabelValues("critical").Set(float64(critical))
+	monitor.SecurityVulnerabilities.WithLabelValues("high").Set(float64(high))
+	monitor.SecurityVulnerabilities.WithLabelValues("medium").Set(float64(medium))
+	monitor.SecurityVulnerabilities.WithLabelValues("low").Set(float64(low))
 
 	// Persist scan report into AWS S3 (or cost-free local fallback) and publish CloudWatch metric
 	if cloud.GlobalAWS != nil {

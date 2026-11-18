@@ -146,8 +146,9 @@ figures are explicitly labelled local estimates, not AWS billing. CloudFormation
 templates are reference artifacts; the executable IaC is Terraform with a Docker
 provider. See `LOCAL_EXECUTION_GUIDE.md` §4 for the full limitations list.
 
-**Final presentation:** `CloudOps_Sentinel_INT378_Presentation_FINAL.pptx` — 22 slides,
-including 9 evidence slides built from real screenshots and measured results.
+**Final presentation:** `CloudOps_Sentinel_INT378_Lean.pptx` — 15 concise, keyword-driven slides
+covering all six syllabus units with a project summary. Detailed version:
+`CloudOps_Sentinel_INT378_Syllabus_Deck.pptx` (38 slides).
 
 ---
 *Report certified for submission for INT 378 Evaluation at Lovely Professional University.*

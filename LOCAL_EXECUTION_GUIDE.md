@@ -128,8 +128,8 @@ animated modals, upgraded tables with search/sort/pagination/CSV export, and
 Recharts visualisations driven by real local data. No external font CDN is used.
 
 - Design & verification: `docs/UI_DESIGN_GUIDE.md`
-- Real desktop + mobile screenshots: `evidence/ui/`
-- Browser verification report: `evidence/ui/ui_report.json`
+- Real desktop + mobile screenshots: `evidence/ui_final/`
+- Browser verification report: `evidence/ui_final/ui_report.json`
 - Reproduction: `node scripts/verify_ui.js <jwt-file> evidence/ui`
 - TypeScript check: `cd frontend; npx tsc --noEmit` → clean
 
@@ -145,5 +145,5 @@ written through the API by `scripts/seed_local_metrics.ps1`.
 - Evidence: `evidence/terraform/`, `evidence/iam/`, `evidence/security/`, `evidence/serverless/`, `evidence/registry/`, `evidence/jenkins/`, `evidence/screenshots/`
 - Documentation: `README.md`, `docs/PROJECT_REPORT.md`, `docs/ARCHITECTURE.md`, `docs/API.md`, `docs/VIVA_DEFENSE_GUIDE.md`, `docs/UI_DESIGN_GUIDE.md`, this guide
 - Presentations:
-  - `CloudOps_Sentinel_ChapWise_2026-27.pptx` — **new chapter-wise syllabus deck** (38 slides, 6 chapters in exact order, shape-drawn diagrams, fade transitions)
-  - `CloudOps_Sentinel_INT378_Presentation_FINAL.pptx` — earlier project/evidence deck (25 slides)
+  - `CloudOps_Sentinel_INT378_Syllabus_Deck.pptx` — **new chapter-wise syllabus deck** (38 slides, 6 chapters in exact order, shape-drawn diagrams, fade transitions)
+  - `CloudOps_Sentinel_INT378_Lean.pptx` — earlier project/evidence deck (15 slides)

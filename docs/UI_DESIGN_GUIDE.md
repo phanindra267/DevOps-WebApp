@@ -8,7 +8,7 @@ premium, modern, responsive control-plane experience. The redesign is
 components, and every module — not just the homepage.
 
 All screenshots are real captures of the running local application at
-`http://localhost:3000` (see `evidence/ui/`), produced by `scripts/verify_ui.js`.
+`http://localhost:3000` (see `evidence/ui_final/`), produced by `scripts/verify_ui.js`.
 
 ## Design system (`frontend/styles/globals.css`)
 
@@ -76,6 +76,6 @@ docker compose up -d --force-recreate frontend
 node scripts\verify_ui.js <jwt-file> evidence\ui
 ```
 
-`evidence/ui/ui_report.json` contains captured page URLs, titles and any browser
+`evidence/ui_final/ui_report.json` contains captured page URLs, titles and any browser
 errors. The final run reported no runtime JavaScript exceptions; remaining
 network 404 is the optional favicon and does not affect the UI.

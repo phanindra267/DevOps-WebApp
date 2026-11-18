@@ -452,7 +452,7 @@ Not applicable — the deliverable is an academic software prototype submitted f
 | 6 | Jenkins CI/CD | FR-5 | 13-stage pipeline, build #10 SUCCESS | `evidence/jenkins/` |
 | 7 | DevSecOps | FR-6 | Trivy FS/image/IaC scans with real findings | `evidence/security/SUMMARY.md` |
 | 8 | Prometheus monitoring | FR-7 | Go `/metrics` + Node Exporter + cAdvisor, 4 targets UP | `monitoring/`, `evidence/screenshots/` |
-| 9 | Grafana dashboards | FR-7 | Provisioned dashboard `cloudops-overview` | `monitoring/grafana-*`, `evidence/ui/` |
+| 9 | Grafana dashboards | FR-7 | Provisioned dashboard `cloudops-overview` | `monitoring/grafana-*`, `evidence/ui_final/` |
 | 10 | Serverless / FinOps | FR-8 | Node Lambda runtime + cost simulator | `evidence/serverless/` |
 
 ## A.2 Appendix 2 — Verification Evidence Index
@@ -468,7 +468,7 @@ Not applicable — the deliverable is an academic software prototype submitted f
 | `CloudOps_Sentinel_INT378_Lean.pptx` | 15-slide lean presentation - keyword-driven, all six units |
 | `CloudOps_Sentinel_INT378_Syllabus_Deck.pptx` | 38-slide detailed presentation covering all six syllabus units |
 | `scripts/generate_int378_syllabus_deck.py` | Reproducible generator for the syllabus deck |
-| `evidence/ui/ui_report.json` | 16 desktop/mobile UI screenshots with zero browser errors |
+| `evidence/ui_final/ui_report.json` | 16 desktop/mobile UI screenshots with zero browser errors |
 | `evidence/security/SUMMARY.md` | Honest Trivy findings across source, image and IaC |
 | `evidence/jenkins/` | Jenkins build console and pipeline evidence |
 | `evidence/serverless/` | Lambda invocation output and CloudWatch-style logs |
