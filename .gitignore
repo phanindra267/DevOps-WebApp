@@ -57,4 +57,7 @@ infrastructure/terraform/local/terraform.tfstate
 infrastructure/terraform/local/terraform.tfstate.backup
 infrastructure/terraform/local/*.tfplan
 infrastructure/terraform/local/tfplan
+infrastructure/individual/*/.terraform/
+infrastructure/individual/*/terraform.tfstate
+infrastructure/individual/*/terraform.tfstate.backup
 
