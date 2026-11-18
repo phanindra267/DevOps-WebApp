@@ -465,6 +465,8 @@ Not applicable — the deliverable is an academic software prototype submitted f
 | `infrastructure/cloudformation/CA_PROTOTYPE_GUIDE.md` | AWS Free Tier assessment, deployment plan, SCP permission report |
 | `infrastructure/cloudformation/CLOUDFORMATION_SUBMISSION.md` | Individual CloudFormation deliverable with validation results |
 | `infrastructure/individual/README.md` | Five individual component stacks and verification instructions |
+| `CloudOps_Sentinel_INT378_Syllabus_Deck.pptx` | 38-slide presentation covering all six syllabus units with project mapping |
+| `scripts/generate_int378_syllabus_deck.py` | Reproducible generator for the syllabus deck |
 | `evidence/ui/ui_report.json` | 16 desktop/mobile UI screenshots with zero browser errors |
 | `evidence/security/SUMMARY.md` | Honest Trivy findings across source, image and IaC |
 | `evidence/jenkins/` | Jenkins build console and pipeline evidence |
