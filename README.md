@@ -201,3 +201,8 @@ A full, self-contained AWS stack was added so every key value can be replaced by
 
 📐 **Complete architecture diagram:** [`docs/architecture-complete.png`](docs/architecture-complete.png)
 (full explanation + Mermaid source in [`docs/ARCHITECTURE_AWS_COMPLETE.md`](docs/ARCHITECTURE_AWS_COMPLETE.md))
+
+☁️ **INT 378 CA prototype (mandatory AWS services):** [`infrastructure/cloudformation/ca-prototype.yaml`](infrastructure/cloudformation/ca-prototype.yaml)
+— parameterized CloudFormation with VPC, public/private subnets, EC2 (t2/t3.micro), and encrypted/versioned S3.
+Deploy guide, Free Tier cost assessment and SCP permission report: [`infrastructure/cloudformation/CA_PROTOTYPE_GUIDE.md`](infrastructure/cloudformation/CA_PROTOTYPE_GUIDE.md).
+Deployment is currently blocked by an AWS Organizations SCP explicit deny (documented in the guide); the local Docker prototype runs today with zero cloud cost.

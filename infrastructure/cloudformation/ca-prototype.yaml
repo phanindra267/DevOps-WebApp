@@ -1,0 +1,266 @@
+# ==============================================================================
+# CloudOps Sentinel - INT 378 CA PROTOTYPE (AWS CloudFormation)
+# ------------------------------------------------------------------------------
+# Mandatory resources (student CA):
+#   1. Amazon VPC
+#   2. Public subnet + Internet Gateway + route table
+#   3. Private subnet + its own route table
+#   4. Amazon EC2 (t2.micro / t3.micro free-tier, Amazon Linux 2023)
+#   5. Amazon S3 (versioning, AES-256 encryption, public access blocked)
+#   6. Parameterized, reusable CloudFormation template
+#
+# Deliberately EXCLUDED to stay free-tier / low cost:
+#   - NAT Gateway (paid hourly) : private subnet has a route table only
+#   - Load Balancer, EKS, RDS, Lambda : no need for a CA prototype
+#   - No IAM users/groups (handled locally in the app)
+#
+# Region: ap-south-1 (Mumbai) | Replace parameter defaults before deployment.
+# ==============================================================================
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'INT 378 CA prototype - VPC, public/private subnets, EC2 web server and secure S3 bucket'
+
+Parameters:
+  EnvironmentName:
+    Type: String
+    Default: dev
+    AllowedValues: [dev, test, ca]
+    Description: Environment name prefix
+
+  VpcCidr:
+    Type: String
+    Default: 10.0.0.0/16
+    Description: CIDR block for the VPC
+
+  PublicSubnetCidr:
+    Type: String
+    Default: 10.0.1.0/24
+    Description: CIDR for the public subnet (hosts the EC2 instance)
+
+  PrivateSubnetCidr:
+    Type: String
+    Default: 10.0.2.0/24
+    Description: CIDR for the private subnet (route table only, no NAT)
+
+  AvailabilityZone:
+    Type: String
+    Default: ap-south-1a
+    Description: AZ for both subnets (single-AZ keeps the prototype simple)
+
+  AmiId:
+    Type: AWS::EC2::AMI::Id
+    Description: Amazon Linux 2023 AMI ID valid in ap-south-1 (find via console/CLI)
+    # No default on purpose - operator supplies a real AMI (no invented values)
+
+  InstanceType:
+    Type: String
+    Default: t2.micro
+    AllowedValues: [t2.micro, t3.micro]
+    Description: Free-tier eligible EC2 type (t3.micro preferred in ap-south-1)
+
+  KeyName:
+    Type: String
+    Description: Existing EC2 key pair name for SSH (create one first in ap-south-1)
+
+  SshLocationCidr:
+    Type: String
+    Default: 0.0.0.0/0
+    Description: CIDR allowed to SSH - restrict to your own IP/32 for safety
+
+  BucketBaseName:
+    Type: String
+    Default: cloudops-ca-artifacts
+    Description: Base name for the S3 bucket (account/region suffix is appended)
+
+Conditions:
+  IsProduction: !Equals [!Ref EnvironmentName, 'prod']   # never true with AllowedValues; kept for reuse
+
+Resources:
+  # ---------------------------------------------------------------- 1. VPC
+  PrototypeVpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCidr
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Sub '${EnvironmentName}-ca-vpc'
+        - Key: Project
+          Value: INT378-CA
+
+  # ---------------------------------------------------------------- 2. Public subnet + IGW + routes
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub '${EnvironmentName}-ca-igw'
+
+  AttachInternetGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref PrototypeVpc
+      InternetGatewayId: !Ref InternetGateway
+
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref PrototypeVpc
+      CidrBlock: !Ref PublicSubnetCidr
+      AvailabilityZone: !Ref AvailabilityZone
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub '${EnvironmentName}-ca-public'
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref PrototypeVpc
+      Tags:
+        - Key: Name
+          Value: !Sub '${EnvironmentName}-ca-public-rt'
+
+  PublicDefaultRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+    DependsOn: AttachInternetGateway
+
+  PublicSubnetRouteAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet
+      RouteTableId: !Ref PublicRouteTable
+
+  # ---------------------------------------------------------------- 3. Private subnet + own route table
+  # No NAT Gateway: private subnet has isolated routing only (no internet path).
+  # This satisfies "private subnet with its own route table" at zero cost.
+  PrivateSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref PrototypeVpc
+      CidrBlock: !Ref PrivateSubnetCidr
+      AvailabilityZone: !Ref AvailabilityZone
+      Tags:
+        - Key: Name
+          Value: !Sub '${EnvironmentName}-ca-private'
+
+  PrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref PrototypeVpc
+      Tags:
+        - Key: Name
+          Value: !Sub '${EnvironmentName}-ca-private-rt'
+
+  PrivateSubnetRouteAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet
+      RouteTableId: !Ref PrivateRouteTable
+
+  # ---------------------------------------------------------------- 4. EC2 web server (public subnet)
+  WebSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: 'Least privilege: HTTP/HTTPS from anywhere, SSH from SshLocationCidr only'
+      VpcId: !Ref PrototypeVpc
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+          Description: 'HTTP for web demo'
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+          Description: 'HTTPS'
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: !Ref SshLocationCidr
+          Description: 'SSH restricted to admin CIDR'
+      SecurityGroupEgress:
+        - IpProtocol: '-1'
+          CidrIp: 0.0.0.0/0
+          Description: 'Allow outbound (yum updates)'
+      Tags:
+        - Key: Name
+          Value: !Sub '${EnvironmentName}-ca-web-sg'
+
+  WebInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref AmiId
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyName
+      SubnetId: !Ref PublicSubnet
+      SecurityGroupIds:
+        - !Ref WebSecurityGroup
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          dnf install -y nginx || yum install -y nginx
+          systemctl enable nginx
+          systemctl start nginx
+          echo "<html><body style='background:#0b0f19;color:#fff;text-align:center;padding:50px;font-family:sans-serif;'><h1 style='color:#38bdf8;'>CloudOps Sentinel CA Prototype</h1><p>Provisioned with AWS CloudFormation</p><p>Stack: ${AWS::StackName}</p></body></html>" > /usr/share/nginx/html/index.html
+      Tags:
+        - Key: Name
+          Value: !Sub '${EnvironmentName}-ca-webserver'
+        - Key: Project
+          Value: INT378-CA
+
+  # ---------------------------------------------------------------- 5. S3 bucket
+  ArtifactsBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: !Sub '${BucketBaseName}-${AWS::AccountId}-${AWS::Region}'
+      VersioningConfiguration:
+        Status: Enabled
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      Tags:
+        - Key: Name
+          Value: !Sub '${EnvironmentName}-ca-artifacts'
+        - Key: Project
+          Value: INT378-CA
+
+Outputs:
+  VpcId:
+    Description: VPC ID
+    Value: !Ref PrototypeVpc
+  PublicSubnetId:
+    Description: Public subnet ID (EC2 location)
+    Value: !Ref PublicSubnet
+  PrivateSubnetId:
+    Description: Private subnet ID (isolated, own route table)
+    Value: !Ref PrivateSubnet
+  InternetGatewayId:
+    Value: !Ref InternetGateway
+  PublicRouteTableId:
+    Value: !Ref PublicRouteTable
+  PrivateRouteTableId:
+    Value: !Ref PrivateRouteTable
+  InstanceId:
+    Description: EC2 instance ID
+    Value: !Ref WebInstance
+  PublicIp:
+    Description: Browse this URL after deployment (HTTP :80)
+    Value: !GetAtt WebInstance.PublicIp
+  SecurityGroupId:
+    Value: !Ref WebSecurityGroup
+  S3BucketName:
+    Description: Secure S3 bucket name
+    Value: !Ref ArtifactsBucket
