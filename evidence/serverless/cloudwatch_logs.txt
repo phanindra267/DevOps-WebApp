@@ -3,18 +3,18 @@
 # Log stream: 2026/11/17/[$LATEST]local-sim-stream
 # Function: cloudops-sentinel-lambda (handler: index.handler)
 
-2026-11-18T03:55:02.451Z	local-req-0001	INFO	START RequestId: local-req-0001 Version: $LATEST
-2026-11-18T03:55:02.451Z	local-req-0001	INFO	{"level":"INFO","timestamp":"2026-11-18T03:55:02.437Z","requestId":"local-req-0001","message":"CloudOps Sentinel Serverless Lambda Triggered","httpMethod":"GET","path":"/health","sourceIp":"203.0.113.10","stage":"dev"}
-2026-11-18T03:55:02.451Z	local-req-0001	INFO	END RequestId: local-req-0001
-2026-11-18T03:55:02.451Z	local-req-0001	REPORT	RequestId: local-req-0001	Duration: 14.53 ms	Billed Duration: 15 ms	Memory Size: 128 MB	Max Memory Used: ~64 MB (simulated)	Init Duration: simulated
+2026-11-18T04:09:26.701Z	local-req-0001	INFO	START RequestId: local-req-0001 Version: $LATEST
+2026-11-18T04:09:26.701Z	local-req-0001	INFO	{"level":"INFO","timestamp":"2026-11-18T04:09:26.700Z","requestId":"local-req-0001","message":"CloudOps Sentinel Serverless Lambda Triggered","httpMethod":"GET","path":"/health","sourceIp":"203.0.113.10","stage":"dev"}
+2026-11-18T04:09:26.701Z	local-req-0001	INFO	END RequestId: local-req-0001
+2026-11-18T04:09:26.701Z	local-req-0001	REPORT	RequestId: local-req-0001	Duration: 1.43 ms	Billed Duration: 2 ms	Memory Size: 128 MB	Max Memory Used: ~64 MB (simulated)	Init Duration: simulated
 
-2026-11-18T03:55:02.451Z	local-req-0002	INFO	START RequestId: local-req-0002 Version: $LATEST
-2026-11-18T03:55:02.451Z	local-req-0002	INFO	{"level":"INFO","timestamp":"2026-11-18T03:55:02.451Z","requestId":"local-req-0002","message":"CloudOps Sentinel Serverless Lambda Triggered","httpMethod":"POST","path":"/process","sourceIp":"203.0.113.11","stage":"dev"}
-2026-11-18T03:55:02.451Z	local-req-0002	INFO	END RequestId: local-req-0002
-2026-11-18T03:55:02.451Z	local-req-0002	REPORT	RequestId: local-req-0002	Duration: 0.03 ms	Billed Duration: 1 ms	Memory Size: 128 MB	Max Memory Used: ~64 MB (simulated)	Init Duration: 0.00 ms (warm)
+2026-11-18T04:09:26.701Z	local-req-0002	INFO	START RequestId: local-req-0002 Version: $LATEST
+2026-11-18T04:09:26.701Z	local-req-0002	INFO	{"level":"INFO","timestamp":"2026-11-18T04:09:26.701Z","requestId":"local-req-0002","message":"CloudOps Sentinel Serverless Lambda Triggered","httpMethod":"POST","path":"/process","sourceIp":"203.0.113.11","stage":"dev"}
+2026-11-18T04:09:26.701Z	local-req-0002	INFO	END RequestId: local-req-0002
+2026-11-18T04:09:26.701Z	local-req-0002	REPORT	RequestId: local-req-0002	Duration: 0.03 ms	Billed Duration: 1 ms	Memory Size: 128 MB	Max Memory Used: ~64 MB (simulated)	Init Duration: 0.00 ms (warm)
 
-2026-11-18T03:55:02.452Z	local-req-0003	INFO	START RequestId: local-req-0003 Version: $LATEST
-2026-11-18T03:55:02.452Z	local-req-0003	INFO	{"level":"INFO","timestamp":"2026-11-18T03:55:02.452Z","requestId":"local-req-0003","message":"CloudOps Sentinel Serverless Lambda Triggered","httpMethod":"GET","path":"/health","sourceIp":"203.0.113.12","stage":"dev"}
-2026-11-18T03:55:02.452Z	local-req-0003	INFO	END RequestId: local-req-0003
-2026-11-18T03:55:02.452Z	local-req-0003	REPORT	RequestId: local-req-0003	Duration: 0.02 ms	Billed Duration: 1 ms	Memory Size: 128 MB	Max Memory Used: ~64 MB (simulated)	Init Duration: 0.00 ms (warm)
+2026-11-18T04:09:26.702Z	local-req-0003	INFO	START RequestId: local-req-0003 Version: $LATEST
+2026-11-18T04:09:26.702Z	local-req-0003	INFO	{"level":"INFO","timestamp":"2026-11-18T04:09:26.701Z","requestId":"local-req-0003","message":"CloudOps Sentinel Serverless Lambda Triggered","httpMethod":"GET","path":"/health","sourceIp":"203.0.113.12","stage":"dev"}
+2026-11-18T04:09:26.702Z	local-req-0003	INFO	END RequestId: local-req-0003
+2026-11-18T04:09:26.702Z	local-req-0003	REPORT	RequestId: local-req-0003	Duration: 0.02 ms	Billed Duration: 1 ms	Memory Size: 128 MB	Max Memory Used: ~64 MB (simulated)	Init Duration: 0.00 ms (warm)
 
